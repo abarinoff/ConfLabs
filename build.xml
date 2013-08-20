@@ -6,7 +6,12 @@
         <equals arg1="${build.location}" arg2="local"/>
     </condition>
 
-    <target name="all" depends="clean, build, test, deploy"/>
+    <target name="all" depends="info, clean, build, test, deploy"/>
+
+    <target name="info">
+        <echo message="Ant version: ${ant.version}"/>
+        <echo message="Build location: ${build.location}"/>
+    </target>
 
     <target name="clean">
         <antcall target="execute.play.command">
@@ -26,7 +31,7 @@
         </antcall>
     </target>
 
-    <target name="deploy" depends="init.heroku.remote" unless="local.build">
+    <target name="deploy" depends="init.deployment.remote" unless="local.build">
         <exec executable="git" failonerror="true">
             <arg line="push"/>
             <arg line="${deployment.remote}"/>
@@ -42,16 +47,16 @@
         </exec>
     </target>
 
-    <target name="init.heroku.remote" unless="local.build">
+    <target name="init.deployment.remote" unless="local.build">
         <exec executable="git" failonerror="true" outputproperty="git.remotes">
             <arg line="remote"/>
         </exec>
 
-        <condition property="heroku.remote.exists">
-            <contains string="${git.remotes}" substring="heroku"/>
+        <condition property="deployment.remote.exists">
+            <contains string="${git.remotes}" substring="${deployment.remote}"/>
         </condition>
 
-        <exec executable="git" failonerror="true" unless:set="heroku.remote.exists">
+        <exec executable="git" failonerror="true" unless:set="deployment.remote.exists">
             <arg line="remote add"/>
             <arg line="${deployment.remote}"/>
             <arg line="git@${deployment.remote}.com:${project.name}.git"/>
