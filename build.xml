@@ -1,4 +1,6 @@
-<project name="ConfLabs" default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
+<project name="ConfLabs" basedir="." default="all" xmlns:if="ant:if" xmlns:unless="ant:unless">
+
+    <taskdef resource="net/sf/antcontrib/antlib.xml" />
 
     <property file="build.properties"/>
 
@@ -29,6 +31,8 @@
         <antcall target="execute.play.command">
             <param name="play.command" value="test"/>
         </antcall>
+
+        <antcall target="report.test.results"/>
     </target>
 
     <target name="deploy" depends="init.deployment.remote" unless="local.build">
@@ -45,6 +49,31 @@
             <arg line="play"/>
             <arg line="${play.command}"/>
         </exec>
+    </target>
+
+    <target name="report.test.results">
+        <junitreport todir="${test.report.dir}" tofile="${all.tests.report.file.name}">
+            <fileset dir="${test.report.dir}">
+                <include name="*.xml"/>
+            </fileset>
+        </junitreport>
+
+        <xmlproperty file="${test.report.dir}/${all.tests.report.file.name}"
+                     prefix="test.results" collapseAttributes="true" keeproot="false"/>
+
+        <for list="${test.results.testsuite.failures}" param="failures">
+            <sequential>
+                <if>
+                    <not>
+                        <equals arg1="@{failures}" arg2="0"/>
+                    </not>
+
+                    <then>
+                        <fail message="Unit tests failed."/>
+                    </then>
+                </if>
+            </sequential>
+        </for>
     </target>
 
     <target name="init.deployment.remote" unless="local.build">
