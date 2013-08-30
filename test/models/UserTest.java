@@ -22,6 +22,7 @@ public class UserTest extends WithApplication {
         start(fakeApplication(inMemoryDatabase()));
     }
 
+/*
     @Test
     public void createUserWithNonEmptyCredentialsShouldSucceed() {
         User user = new User("foo@bar.com", "123456");
@@ -113,4 +114,5 @@ public class UserTest extends WithApplication {
         exception.expect(ValidationException.class);
         user.save();
     }
+*/
 }

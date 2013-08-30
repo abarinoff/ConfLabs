@@ -1,7 +1,9 @@
-@(message: String)
-
-@main("Welcome to Play 2.1") {
-    
-    @play20.welcome(message, style = "Java")
-    
+@main(Messages("index.title", Messages("application.title"))) {
+    <div class="hero-unit">
+        <h1>@Messages("index.intro")</h1>
+        <p>@Messages("index.description")</p>
+        <p>
+            <a href="@routes.Application.conferences()" class="btn btn-primary btn-large">@Messages("index.button.create") &raquo;</a>
+        </p>
+    </div>
 }

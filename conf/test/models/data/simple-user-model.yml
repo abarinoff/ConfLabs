@@ -1,6 +1,6 @@
 # Users
 
-- !!models.User
+- !!models.authentication.User
   id: 1
   email: foo@bar.com
   password: 123456

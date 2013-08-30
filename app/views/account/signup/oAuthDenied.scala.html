@@ -1,0 +1,12 @@
+@(providerKey: String)
+
+@main(Messages("oauth.access.denied.title")) {
+
+	<h1>@Messages("oauth.access.denied.title")</h1>
+	<p>
+		@Messages("oauth.access.denied.explanation")<br/>
+	</p>
+	<p>
+		@Messages("oauth.access.denied.alternative") <a href="@routes.Application.signup">@Messages("oauth.access.denied.alternative.cta")</a>.
+	</p>
+}
