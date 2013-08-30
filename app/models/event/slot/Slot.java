@@ -1,13 +1,14 @@
 package models.event.slot;
 
+import java.util.Date;
+
 import play.data.format.Formats;
-import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
-import java.util.Date;
+import com.avaje.ebean.validation.NotEmpty;
 
 @Entity
 @Inheritance
@@ -19,13 +20,13 @@ public abstract class Slot extends Model {
     @Formats.DateTime(pattern="dd/MM/yyyy")
     public Date date;
 
-    @Constraints.Required
+    @NotEmpty
     public String startTime;
 
-    @Constraints.Required
+    @NotEmpty
     public String endTime;
 
-    protected Slot(Date date, String startTime, String endTime) {
+    public Slot(Date date, String startTime, String endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.date = date;

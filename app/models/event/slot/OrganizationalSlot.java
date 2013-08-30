@@ -1,17 +1,18 @@
 package models.event.slot;
 
-import play.data.validation.Constraints;
-
-import javax.persistence.Entity;
 import java.util.Date;
+import javax.persistence.Entity;
+
+import com.avaje.ebean.validation.NotEmpty;
 
 @Entity
 public class OrganizationalSlot extends Slot {
 
-    @Constraints.Required
+    @NotEmpty
     public String title;
 
-    protected OrganizationalSlot(String title, Date date, String startTime, String endTime) {
+    public OrganizationalSlot(String title, Date date, String startTime, String endTime) {
         super(date, startTime, endTime);
+        this.title = title;
     }
 }

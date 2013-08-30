@@ -1,10 +1,12 @@
 package models.event;
 
-import models.authentication.User;
 import play.db.ebean.Model;
 import play.data.validation.Constraints;
 
+import java.util.List;
 import javax.persistence.*;
+
+import models.event.slot.Slot;
 
 @Entity
 public class Event extends Model {
@@ -20,16 +22,14 @@ public class Event extends Model {
     @OneToOne
     public Location location;
 
-/*
     @OneToMany(cascade = CascadeType.ALL)
-    public List<Stage> stages = new LinkedList<>();
+    public List<Stage> stages;
 
     @OneToMany(cascade = CascadeType.ALL)
-    public List<Speaker> speakers = new LinkedList<>();
+    public List<Speaker> speakers;
 
     @OneToMany(cascade = CascadeType.ALL)
-    public List<Slot> slots = new LinkedList<>();
-*/
+    public List<Slot> slots;
 
-    public static Finder<Long, Event> finder = new Finder<>(Long.class, Event.class);
+    public static Finder<Long, Event> find = new Finder<Long, Event>(Long.class, Event.class);
 }

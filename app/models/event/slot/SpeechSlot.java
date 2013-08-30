@@ -16,7 +16,7 @@ public class SpeechSlot extends Slot {
     @OneToOne
     public Speech speech;
 
-    protected SpeechSlot(Date date, String startTime, String endTime) {
+    public SpeechSlot(Date date, String startTime, String endTime) {
         super(date, startTime, endTime);
     }
 }
