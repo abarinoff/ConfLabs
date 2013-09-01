@@ -1,7 +1,7 @@
 package models.event;
 
 import play.db.ebean.Model;
-import play.data.validation.Constraints;
+import com.avaje.ebean.validation.NotEmpty;
 
 import java.util.List;
 import javax.persistence.*;
@@ -14,7 +14,7 @@ public class Event extends Model {
     @Id
     public Long id;
 
-    @Constraints.Required
+    @NotEmpty
     public String title;
 
     public String description;

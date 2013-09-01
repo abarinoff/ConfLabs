@@ -1,5 +1,7 @@
 import java.util.Arrays;
+import java.util.List;
 
+import com.avaje.ebean.Ebean;
 import models.authentication.SecurityRole;
 
 import com.feth.play.module.pa.PlayAuthenticate;
@@ -9,13 +11,17 @@ import com.feth.play.module.pa.exceptions.AuthException;
 
 import controllers.routes;
 
+import models.event.Location;
 import play.Application;
 import play.GlobalSettings;
+import play.libs.Yaml;
 import play.mvc.Call;
 
 public class Global extends GlobalSettings {
 
 	public void onStart(Application app) {
+        super.onStart(app);
+
 		PlayAuthenticate.setResolver(new Resolver() {
 
 			@Override
@@ -66,7 +72,6 @@ public class Global extends GlobalSettings {
 				return super.onException(e);
 			}
 		});
-
 		initialData();
 	}
 
@@ -79,5 +84,9 @@ public class Global extends GlobalSettings {
 				role.save();
 			}
 		}
+
+        if(Location.find.findRowCount() == 0) {
+            Ebean.save((List) Yaml.load("initial-data.yml"));
+        }
 	}
 }

@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import play.db.ebean.Model;
 
 import com.feth.play.module.pa.user.AuthUser;
@@ -20,7 +21,8 @@ public class LinkedAccount extends Model {
 	public Long id;
 
 	@ManyToOne
-	public User user;
+    @JsonIgnore
+    public User user;
 
 	public String providerUserId;
 	public String providerKey;
