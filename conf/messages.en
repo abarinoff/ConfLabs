@@ -117,7 +117,7 @@ navigation.home=Home
 navigation.conferences=Conferences
 navigation.signup=Sign up
 
-handler.loginfirst=You need to log in first, to view ''{0}''
+handler.loginfirst=You need to log in first
 
 profile.title=User profile
 profile.mail=Your name is {0} and your email address is {1}!

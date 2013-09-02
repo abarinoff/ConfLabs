@@ -1,9 +1,9 @@
-@main(Messages("index.title", Messages("application.title"))) {
-    <div class="hero-unit">
+@main(Messages("index.title")) {
+    <div class="jumbotron">
         <h1>@Messages("index.intro")</h1>
         <p>@Messages("index.description")</p>
-        <p>
-            <a href="@routes.Application.conferences()" class="btn btn-primary btn-large">@Messages("index.button.create") &raquo;</a>
-        </p>
+        <div>
+            <a href="@routes.Application.conferences()" class="btn btn-primary btn-lg">@Messages("index.button.create") &raquo;</a>
+        </div>
     </div>
 }

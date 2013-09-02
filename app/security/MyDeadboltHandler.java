@@ -1,6 +1,7 @@
 package security;
 
 import models.authentication.User;
+import play.i18n.Messages;
 import play.mvc.Http;
 import play.mvc.Result;
 import be.objectify.deadbolt.java.AbstractDeadboltHandler;
@@ -15,20 +16,11 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 	@Override
 	public Result beforeAuthCheck(final Http.Context context) {
 		if (PlayAuthenticate.isLoggedIn(context.session())) {
-			// user is logged in
 			return null;
 		} else {
-			// user is not logged in
+		    PlayAuthenticate.storeOriginalUrl(context);
 
-			// call this if you want to redirect your visitor to the page that
-			// was requested before sending him to the login page
-			// if you don't call this, the user will get redirected to the page
-			// defined by your resolver
-			final String originalUrl = PlayAuthenticate
-					.storeOriginalUrl(context);
-
-			context.flash().put("error",
-					"You need to log in first, to view '" + originalUrl + "'");
+			context.flash().put("error", Messages.get("handler.loginfirst"));
 			return redirect(PlayAuthenticate.getResolver().login());
 		}
 	}

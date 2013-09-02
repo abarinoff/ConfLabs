@@ -1,0 +1,48 @@
+# Locations
+
+- !!models.event.Location
+  id: 1
+  title: Президент готель
+  address: Київ, вул. Госпітальна, 12
+
+- !!models.event.Location
+  id: 2
+  title: Український католицький університет
+  address: Львів, вул. Хуторівка, 35a
+
+# LinkedAccounts
+
+# Users
+
+- !!models.authentication.User
+  id: 1
+  email: foo@bar.com
+  name: Alex
+  firstName: null
+  lastName: null
+  lastLogin: null
+  active: true
+  emailValidated: true
+  roles:
+    - !!models.authentication.SecurityRole
+      id: 1
+  linkedAccounts:
+    - !!models.authentication.LinkedAccount
+      id: 1
+      providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+      providerKey: password
+  permissions:
+  events:
+    - !!models.event.Event
+      id: 1
+      title: IT Weekend 2013
+      description: n/a
+      location: !!models.event.Location
+                id: 1
+    - !!models.event.Event
+      id: 2
+      title: XP Days 2013
+      description: n/a
+      location: !!models.event.Location
+                id: 2
+

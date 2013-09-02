@@ -28,52 +28,67 @@
   </head>
 
   <body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+          <div class="container">
+              <div class="navbar-header">
+                  <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                      <span class="icon-bar"></span>
+                  </button>
+                  <a class="navbar-brand" href="@routes.Application.index()">@Messages("application.title")</a>
+              </div>
 
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="@routes.Application.index()">@Messages("application.title")</a>
-          
-          <div class="btn-group pull-right">
-          @subjectPresentOr() {
-          	@defining(Application.getLocalUser(session())) { user =>
-            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-user"></i> @user.name
-              <span class="caret"></span>
-            </a>
-            <ul class="dropdown-menu">
-              <li><a href="@routes.Application.profile()">@Messages("navigation.profile")</a></li>
-              <li><a href="@routes.Account.link()">@Messages("navigation.link_more")</a></li>
-              <li class="divider"></li>
-              <li><a href="@com.feth.play.module.pa.controllers.routes.Authenticate.logout()"><i class="icon-off"></i> @Messages("navigation.logout")</a></li>
-            </ul>
-            }
-          }{
-            <a href="@routes.Application.login()" class="btn btn-primary btn-mini @("disabled".when(nav == "login"))">@Messages("navigation.login")</a>
-          }
+              <div class="collapse navbar-collapse">
+                  <ul class="nav navbar-nav">
+                      <li class="@("active".when(nav == ""))">
+                          <a href="@routes.Application.index()">@Messages("navigation.home")</a>
+                      </li>
+                      <li class="@("active".when(nav == "conferences"))">
+                          <a href="@routes.Application.conferences()">@Messages("navigation.conferences")</a>
+                      </li>
+                      @subjectNotPresent() {
+                          <li class="@("active".when(nav == "signup"))">
+                              <a href="@routes.Application.signup()">@Messages("navigation.signup")</a>
+                          </li>
+                      }
+                  </ul>
+
+                  <div class="btn-group navbar-btn navbar-right">
+                      @subjectPresentOr() {
+                          @defining(Application.getLocalUser(session())) { user =>
+                              <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                                  <span class="glyphicon glyphicon-user"></span> @user.name
+                                  <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu">
+                                  <li>
+                                      <a href="@routes.Application.profile()">@Messages("navigation.profile")</a>
+                                  </li>
+                                  <li>
+                                      <a href="@routes.Account.link()">@Messages("navigation.link_more")</a>
+                                  </li>
+                                  <li class="divider"></li>
+                                  <li>
+                                      <a href="@com.feth.play.module.pa.controllers.routes.Authenticate.logout()">
+                                        <span class="glyphicon glyphicon-log-out"></span> @Messages("navigation.logout")
+                                      </a>
+                                  </li>
+                              </ul>
+                          }
+                      } {
+                          <a href="@routes.Application.login()" type="button" class="btn btn-primary @("disabled".when(nav == "login"))">
+                              <span class="glyphicon glyphicon-log-in"></span> @Messages("navigation.login")
+                          </a>
+                      }
+                  </div>
+              </div>
           </div>
-
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="@("active".when(nav == ""))"><a href="@routes.Application.index()">@Messages("navigation.home")</a></li>
-              <li class="@("active".when(nav == "conferences"))"><a href="@routes.Application.conferences()">@Messages("navigation.conferences")</a></li>
-                @subjectNotPresent() {
-			    	<li class="@("active".when(nav == "signup"))"><a href="@routes.Application.signup()">@Messages("navigation.signup")</a></li>
-			    }
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div>
       </div>
-    </div>
 
     <div class="container">
 	    @if(flash.contains(Application.FLASH_ERROR_KEY)) {
-	      <div class="alert alert-error">
+	      <div class="alert alert-danger">
 	      	@flash().get(Application.FLASH_ERROR_KEY)
 	      </div>
 	    }

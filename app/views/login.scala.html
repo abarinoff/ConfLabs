@@ -6,14 +6,14 @@
 @main(Messages("login.title"),"login") {
 
   <div class="row">
-    <div class="span6">
+    <div class="col-md-6">
       <h1>@Messages("login.title")</h1>
     </div>
   </div>
     
   <div id="login" class="row">
 
-    <div class="span3">
+    <div class="col-md-3">
       @* Display proprietary login form *@
     	@helper.form(routes.Application.doLogin) {
     	
@@ -38,7 +38,7 @@
     	}
     </div>
 
-    <div class="span3">
+    <div class="col-md-3">
       @Messages("login.oauth")
       @* Display list of available providers *@
       @_providerPartial(skipCurrent=false)
