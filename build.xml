@@ -62,8 +62,7 @@
     </target>
 
     <target name="execute.play.command.on.unix" if="is.unix">
-        <exec executable="bash" failonerror="true">
-            <arg line="play"/>
+        <exec executable="play" failonerror="true">
             <arg line="${play.command}"/>
         </exec>
     </target>
