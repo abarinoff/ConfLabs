@@ -8,6 +8,14 @@
         <equals arg1="${build.location}" arg2="local"/>
     </condition>
 
+    <condition property="is.windows">
+        <os family="windows"/>
+    </condition>
+
+    <condition property="is.unix">
+        <os family="unix"/>
+    </condition>
+
     <target name="all" depends="info, clean, build, test, deploy"/>
 
     <target name="info">
@@ -43,9 +51,18 @@
         </exec>
     </target>
 
-    <target name="execute.play.command">
+    <target name="execute.play.command" depends="execute.play.command.on.windows, execute.play.command.on.unix"/>
+
+    <target name="execute.play.command.on.windows" if="is.windows">
         <exec executable="cmd" failonerror="true">
             <arg line="/c"/>
+            <arg line="play"/>
+            <arg line="${play.command}"/>
+        </exec>
+    </target>
+
+    <target name="execute.play.command.on.unix" if="is.unix">
+        <exec executable="bash" failonerror="true">
             <arg line="play"/>
             <arg line="${play.command}"/>
         </exec>
