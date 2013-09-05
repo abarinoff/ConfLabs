@@ -1,7 +1,6 @@
 package models.event;
 
 import com.avaje.ebean.validation.NotEmpty;
-import play.data.validation.Constraints;
 import play.db.ebean.Model;
 
 import javax.persistence.Id;
@@ -19,4 +18,32 @@ public class Location extends Model {
     public String address;
 
     public static Finder<Long, Location> find = new Finder<Long, Location>(Long.class, Location.class);
+
+    public Location(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Location location = (Location) o;
+
+        if (address != null ? !address.equals(location.address) : location.address != null) return false;
+        if (!id.equals(location.id)) return false;
+        if (!title.equals(location.title)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        result = 31 * result + title.hashCode();
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        return result;
+    }
 }

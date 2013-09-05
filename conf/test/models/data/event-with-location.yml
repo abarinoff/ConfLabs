@@ -1,0 +1,26 @@
+locations:
+  - &fooLocation !!models.event.Location
+    id: 1
+    title: President Hotel
+    address: Pimonenka 9a, Kyiv, Ukraine
+
+events:
+  - &fooEvent !!models.event.Event
+    title: IT Weekend
+    description: n/a
+    location:
+      *fooLocation
+
+users:
+  - &fooUser !!models.authentication.User
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+    linkedAccounts:
+    permissions:
+    events:
+      - *fooEvent
