@@ -24,7 +24,7 @@ public class Event extends Model {
     public Location location;
 
     @OneToMany(cascade = CascadeType.ALL)
-    public List<Stage> stages;
+    public List<Stage> stages = new LinkedList<Stage>();
 
     @OneToMany(cascade = CascadeType.ALL)
     public List<Speaker> speakers = new LinkedList<Speaker>();

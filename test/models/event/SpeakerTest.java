@@ -1,43 +1,17 @@
-package models;
+package models.event;
 
-import models.event.Event;
-import models.event.Speaker;
-
-import play.GlobalSettings;
-import play.libs.Yaml;
-import play.db.ebean.Model;
-import play.test.WithApplication;
-
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Before;
-import org.junit.rules.ExpectedException;
 
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.ValidationException;
-
-import java.util.Map;
-import java.util.List;
+import models.AbstractModelTest;
 
 import static org.junit.Assert.*;
-import static play.test.Helpers.*;
 import static org.hamcrest.CoreMatchers.*;
 
-public class SpeakerTest extends WithApplication {
-
-    private static final String UPDATED = "-updated";
-
-    @Rule
-    public ExpectedException exception = ExpectedException.none();
-
-    @Before
-    public void setUp() {
-        start(fakeApplication(inMemoryDatabase(), new GlobalSettings()));
-    }
+public class SpeakerTest extends AbstractModelTest {
 
     @Test
     public void createSpeakerWithNonEmptyNameShouldSucceed() {
-        initializeDatabase("test/models/data/single-user-with-one-event.yml");
+        initializeDatabase("test/models/data/user-with-event.yml");
 
         Speaker speaker = new Speaker("foo");
 
@@ -54,19 +28,19 @@ public class SpeakerTest extends WithApplication {
 
     @Test
     public void createSpeakerWithEmptyNameShouldFail() {
-        initializeDatabase("test/models/data/single-user-with-one-event.yml");
+        initializeDatabase("test/models/data/user-with-event.yml");
 
         Speaker speaker = new Speaker("");
 
         Event event = Event.find.byId(1L);
         event.speakers.add(speaker);
 
-        checkValidationExceptionOnSave(event);
+        checkValidationExceptionOnInvalidModelSave(event);
     }
 
     @Test
     public void createSpeakerShouldPopulateEntityId() {
-        initializeDatabase("test/models/data/single-user-with-one-event.yml");
+        initializeDatabase("test/models/data/user-with-event.yml");
 
         Speaker speaker = new Speaker("foo");
 
@@ -79,7 +53,7 @@ public class SpeakerTest extends WithApplication {
 
     @Test
     public void createSpeakerShouldPersistFieldsCorrectly() {
-        initializeDatabase("test/models/data/single-user-with-one-event.yml");
+        initializeDatabase("test/models/data/user-with-event.yml");
 
         Speaker speaker = new Speaker("foo");
         speaker.position = "bar";
@@ -118,7 +92,7 @@ public class SpeakerTest extends WithApplication {
         Speaker speaker = Speaker.find.byId(1L);
         speaker.setName("");
 
-        checkValidationExceptionOnSave(speaker);
+        checkValidationExceptionOnInvalidModelSave(speaker);
     }
 
     @Test
@@ -126,7 +100,7 @@ public class SpeakerTest extends WithApplication {
         initializeDatabase("test/models/data/event-with-speaker.yml");
 
         Speaker speaker = Speaker.find.byId(1L);
-        speaker.setName(speaker.name + UPDATED);
+        speaker.setName(speaker.name + UPDATED_POSTFIX);
         speaker.save();
 
         Speaker updatedSpeaker = Speaker.find.byId(1L);
@@ -140,7 +114,7 @@ public class SpeakerTest extends WithApplication {
         initializeDatabase("test/models/data/event-with-speaker.yml");
 
         Speaker speaker = Speaker.find.byId(1L);
-        speaker.setName(speaker.name + UPDATED);
+        speaker.setName(speaker.name + UPDATED_POSTFIX);
         speaker.save();
 
         assertEquals(1, Speaker.find.all().size());
@@ -152,9 +126,9 @@ public class SpeakerTest extends WithApplication {
         initializeDatabase("test/models/data/event-with-speaker.yml");
 
         Speaker speaker = Speaker.find.byId(1L);
-        speaker.setName(speaker.name + UPDATED);
-        speaker.setPosition(speaker.position + UPDATED);
-        speaker.setDescription(speaker.description + UPDATED);
+        speaker.setName(speaker.name + UPDATED_POSTFIX);
+        speaker.setPosition(speaker.position + UPDATED_POSTFIX);
+        speaker.setDescription(speaker.description + UPDATED_POSTFIX);
         speaker.save();
 
         Speaker updatedSpeaker = Speaker.find.byId(1L);
@@ -175,15 +149,5 @@ public class SpeakerTest extends WithApplication {
 
         event = Event.find.byId(1L);
         assertThat(event.speakers.size(), equalTo(0));
-    }
-
-    private void checkValidationExceptionOnSave(Model model) {
-        exception.expect(ValidationException.class);
-        model.save();
-    }
-
-    private void initializeDatabase(String dataFile) {
-        Map<String, List> all = (Map<String, List>) Yaml.load(dataFile);
-        Ebean.save(all.get("users"));
     }
 }
