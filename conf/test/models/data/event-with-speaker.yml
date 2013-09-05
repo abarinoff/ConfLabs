@@ -1,0 +1,33 @@
+speakers:
+  - &speakerAlex !!models.event.Speaker
+    id: 1
+    name: Alex
+    position: Programmer
+    description: Bla-bla-bla
+
+events:
+  - &eventITWeekend !!models.event.Event
+    id: 1
+    title: IT Weekend
+    description: n/a
+    location:
+    stages:
+    speakers:
+      - *speakerAlex
+    slots:
+
+users:
+  - &userAlex !!models.authentication.User
+    id: 1
+    email: foo@bar.com
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+    linkedAccounts:
+    permissions:
+    events:
+      - *eventITWeekend

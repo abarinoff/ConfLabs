@@ -3,6 +3,7 @@ package models.event;
 import play.db.ebean.Model;
 import com.avaje.ebean.validation.NotEmpty;
 
+import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.*;
 
@@ -19,14 +20,14 @@ public class Event extends Model {
 
     public String description;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     public Location location;
 
     @OneToMany(cascade = CascadeType.ALL)
     public List<Stage> stages;
 
     @OneToMany(cascade = CascadeType.ALL)
-    public List<Speaker> speakers;
+    public List<Speaker> speakers = new LinkedList<Speaker>();
 
     @OneToMany(cascade = CascadeType.ALL)
     public List<Slot> slots;
