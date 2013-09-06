@@ -1,0 +1,46 @@
+speakers:
+  - &fooSpeaker !!models.event.Speaker
+    id: 1
+    name: Foo
+    position: engineer
+    description: Has over 10 years of overall experience
+
+  - &barSpeaker !!models.event.Speaker
+    id: 2
+    name: Bar
+    position: junior engineer
+    description: just fresh, talented (hopefully) engineer
+
+speeches:
+  - &fooSpeach !!models.event.Speech
+    id: 1
+    title: RESTful applications
+    speakers:
+      - *fooSpeaker
+
+events:
+  - &fooEvent !!models.event.Event
+    id: 1
+    title: Foo Event
+    description: n/a
+    location:
+    stages:
+    speakers:
+      - *fooSpeaker
+      - *barSpeaker
+
+users:
+  - &fooUser !!models.authentication.User
+    id: 1
+    email: foo@bar.com
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+    linkedAccounts:
+    permissions:
+    events:
+     - *fooEvent
