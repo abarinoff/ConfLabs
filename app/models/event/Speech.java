@@ -19,7 +19,7 @@ public class Speech extends Model {
     public String title;
 
     @ManyToMany
-    public List<Speaker> speakers;
+    public List<Speaker> speakers = new LinkedList<Speaker>();
 
     public static Finder<Long, Speech> find = new Finder<Long, Speech>(Long.class, Speech.class);
 }

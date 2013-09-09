@@ -19,7 +19,7 @@ public class StageTest extends AbstractModelTest {
         event.stages.add(stage);
         event.save();
 
-        assertEquals(1, Stage.find.all().size());
+        assertEquals(1, Stage.find.findRowCount());
 
         Stage savedStage = Stage.find.byId(stage.id);
         assertNotNull(savedStage);
@@ -62,7 +62,7 @@ public class StageTest extends AbstractModelTest {
         event.stages.add(stage);
         event.save();
 
-        assertEquals(1, Stage.find.all().size());
+        assertEquals(1, Stage.find.findRowCount());
 
         Stage savedStage = Stage.find.byId(stage.id);
         assertNotNull(savedStage);
@@ -114,7 +114,7 @@ public class StageTest extends AbstractModelTest {
         stage.setTitle(stage.title + UPDATED_POSTFIX);
         stage.save();
 
-        assertEquals(1, Stage.find.all().size());
+        assertEquals(1, Stage.find.findRowCount());
         assertThat(stage.id, equalTo(1L));
     }
 
@@ -141,7 +141,7 @@ public class StageTest extends AbstractModelTest {
         assertThat(event.stages.size(), equalTo(1));
 
         event.stages.get(0).delete();
-        assertEquals(0, Stage.find.all().size());
+        assertEquals(0, Stage.find.findRowCount());
 
         event = Event.find.byId(1L);
         assertThat(event.stages.size(), equalTo(0));

@@ -1,0 +1,33 @@
+slots:
+  - &orgSlot !!models.event.slot.OrganizationalSlot
+    id: 1
+    title: Cofee break
+    start: 2001-11-23 15:03:17
+    end: 2001-11-23 15:05:17
+
+events:
+  - &eventITWeekend !!models.event.Event
+    id: 1
+    title: IT Weekend
+    description: n/a
+    location:
+    stages:
+    speakers:
+    slots:
+      - *orgSlot
+
+users:
+  - &userAlex !!models.authentication.User
+    id: 1
+    email: foo@bar.com
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+    linkedAccounts:
+    permissions:
+    events:
+      - *eventITWeekend

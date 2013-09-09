@@ -19,7 +19,7 @@ public class SpeakerTest extends AbstractModelTest {
         event.speakers.add(speaker);
         event.save();
 
-        assertEquals(1, Speaker.find.all().size());
+        assertEquals(1, Speaker.find.findRowCount());
 
         Speaker savedSpeaker = Speaker.find.byId(speaker.id);
         assertNotNull(savedSpeaker);
@@ -63,7 +63,7 @@ public class SpeakerTest extends AbstractModelTest {
         event.speakers.add(speaker);
         event.save();
 
-        assertEquals(1, Speaker.find.all().size());
+        assertEquals(1, Speaker.find.findRowCount());
 
         Speaker savedSpeaker = Speaker.find.byId(speaker.id);
         assertNotNull(savedSpeaker);
@@ -117,7 +117,7 @@ public class SpeakerTest extends AbstractModelTest {
         speaker.setName(speaker.name + UPDATED_POSTFIX);
         speaker.save();
 
-        assertEquals(1, Speaker.find.all().size());
+        assertEquals(1, Speaker.find.findRowCount());
         assertThat(speaker.id, equalTo(1L));
     }
 
@@ -145,7 +145,7 @@ public class SpeakerTest extends AbstractModelTest {
         assertThat(event.speakers.size(), equalTo(1));
 
         event.speakers.get(0).delete();
-        assertEquals(0, Speaker.find.all().size());
+        assertEquals(0, Speaker.find.findRowCount());
 
         event = Event.find.byId(1L);
         assertThat(event.speakers.size(), equalTo(0));
