@@ -72,36 +72,6 @@ public abstract class SlotTest extends AbstractModelTest {
         checkValidationExceptionOnInvalidModelSave(event);
     }
 
-/*
-    @Test
-    public void createSlotWithEndDateWhichPrecedesStartDateShouldFail() {
-        initializeDatabase("test/models/data/user-with-event.yml");
-
-        Date start = new Date();
-        Date end = new Date(start.getTime() - OFFSET);
-        Slot slot = createSlot(start, end);
-
-        Event event = Event.find.byId(1L);
-        event.slots.add(slot);
-
-        checkValidationExceptionOnInvalidModelSave(event);
-    }
-
-    @Test
-    public void createSlotWithEndDateEqualsToStartDateShouldFail() {
-        initializeDatabase("test/models/data/user-with-event.yml");
-
-        Date start = new Date();
-        Date end = new Date(start.getTime());
-        Slot slot = createSlot(start, end);
-
-        Event event = Event.find.byId(1L);
-        event.slots.add(slot);
-
-        checkValidationExceptionOnInvalidModelSave(event);
-    }
-*/
-
     @Test
     public void createSlotShouldPopulateEntityId() {
         initializeReadyForSlotCreationDatabase();
@@ -200,36 +170,6 @@ public abstract class SlotTest extends AbstractModelTest {
 
         checkValidationExceptionOnInvalidModelSave(slot);
     }
-
-/*
-    @Test
-    public void updateExistingSlotWithEndDateWhichPrecedesStartDateShouldFail() {
-        initializeDatabaseWithSlot();
-
-        Slot slot = Slot.find.byId(1L);
-
-        Date newStart = new Date();
-        Date newEnd = new Date(start.getTime() - OFFSET);
-        slot.setStart(newStart);
-        slot.setEnd(newEnd);
-
-        checkValidationExceptionOnInvalidModelSave(slot);
-    }
-
-    @Test
-    public void createSlotWithEndDateEqualsToStartDateShouldFail() {
-        initializeDatabaseWithSlot();
-
-        Slot slot = Slot.find.byId(1L);
-
-        Date newStart = new Date();
-        Date newEnd = new Date(newStart.getTime());
-        slot.setStart(newStart);
-        slot.setEnd(newEnd);
-
-        checkValidationExceptionOnInvalidModelSave(slot);
-    }
-*/
 
     @Test
     public void updateExistingSlotShouldNotCreateNewEntity() {
