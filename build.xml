@@ -33,6 +33,8 @@
         <antcall target="execute.play.command">
             <param name="play.command" value="compile"/>
         </antcall>
+
+        <antcall target="report.build.results"/>
     </target>
 
     <target name="test">
@@ -67,7 +69,21 @@
         </exec>
     </target>
 
+    <target name="report.build.results">
+        <fail message="Compilation failed.">
+            <condition>
+                <resourcecontains resource="${compilation.report.dir}/${compilation.report.file.name}" substring="[error]"/>
+            </condition>
+        </fail>
+    </target>
+
     <target name="report.test.results">
+        <fail message="Tests compilation failed.">
+            <condition>
+                <resourcecontains resource="${test.compilation.report.dir}/${test.compilation.report.file.name}" substring="[error]"/>
+            </condition>
+        </fail>
+
         <junitreport todir="${test.report.dir}" tofile="${all.tests.report.file.name}">
             <fileset dir="${test.report.dir}">
                 <include name="*.xml"/>
