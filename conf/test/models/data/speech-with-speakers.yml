@@ -12,8 +12,7 @@ speakers:
     description: just fresh, talented (hopefully) engineer
 
 speeches:
-  - &fooSpeach !!models.event.Speech
-    id: 1
+  - &fooSpeech !!models.event.Speech
     title: RESTful applications
     speakers:
       - *fooSpeaker
@@ -28,6 +27,8 @@ events:
     speakers:
       - *fooSpeaker
       - *barSpeaker
+    speeches:
+      - *fooSpeech
 
 users:
   - &fooUser !!models.authentication.User

@@ -28,11 +28,11 @@ public class Stage extends Model {
         if (other == null || getClass() != other.getClass()) return false;
         if (!super.equals(other)) return false;
 
-        Stage stage = (Stage) other;
+        Stage otherStage = (Stage) other;
 
-        if (id != null ? !id.equals(stage.id) : stage.id != null) return false;
-        if (!title.equals(stage.title)) return false;
-        if (capacity != stage.capacity) return false;
+        if (id != null ? !id.equals(otherStage.id) : otherStage.id != null) return false;
+        if (title != null ? !title.equals(otherStage.title) : otherStage.title != null) return false;
+        if (capacity != otherStage.capacity) return false;
 
         return true;
     }

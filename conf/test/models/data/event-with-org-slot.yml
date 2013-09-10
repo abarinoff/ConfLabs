@@ -1,8 +1,9 @@
-speakers:
-  - &speakerAlex !!models.event.Speaker
-    name: Alex
-    position: Programmer
-    description: Bla-bla-bla
+slots:
+  - &orgSlot !!models.event.slot.OrganizationalSlot
+    id: 1
+    title: Cofee break
+    start: 2001-11-23 15:03:17
+    end: 2001-11-23 15:05:17
 
 events:
   - &eventITWeekend !!models.event.Event
@@ -12,8 +13,8 @@ events:
     location:
     stages:
     speakers:
-      - *speakerAlex
     slots:
+      - *orgSlot
 
 users:
   - &userAlex !!models.authentication.User

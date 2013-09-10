@@ -1,8 +1,22 @@
+stages:
+  - &stage1 !!models.event.Stage
+    id: 1
+    title: Stage1
+    capacity: 200
+
 speakers:
   - &speakerAlex !!models.event.Speaker
+    id: 1
     name: Alex
     position: Programmer
     description: Bla-bla-bla
+
+speeches:
+  - &fooSpeech !!models.event.Speech
+    id: 1
+    title: foo speech
+    speakers:
+      - *speakerAlex
 
 events:
   - &eventITWeekend !!models.event.Event
@@ -11,8 +25,11 @@ events:
     description: n/a
     location:
     stages:
+      - *stage1
     speakers:
       - *speakerAlex
+    speeches:
+      - *fooSpeech
     slots:
 
 users:

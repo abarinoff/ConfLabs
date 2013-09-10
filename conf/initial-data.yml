@@ -9,11 +9,6 @@ locations:
     title: Український католицький університет
     address: Львів, вул. Хуторівка, 35a
 
-securityRoles:
-  - &userRole !!models.authentication.SecurityRole
-    id: 1
-    roleName: user
-
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount
     id: 1
@@ -44,7 +39,8 @@ users:
   active: true
   emailValidated: true
   roles:
-    - *userRole
+    - !!models.authentication.SecurityRole
+      id: 1
   linkedAccounts:
     - *fooAccount
   permissions:

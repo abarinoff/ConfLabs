@@ -30,12 +30,12 @@ public class Speaker extends Model {
         if (other == null || getClass() != other.getClass()) return false;
         if (!super.equals(other)) return false;
 
-        Speaker speaker = (Speaker) other;
+        Speaker otherSpeaker = (Speaker) other;
 
-        if (id != null ? !id.equals(speaker.id) : speaker.id != null) return false;
-        if (!name.equals(speaker.name)) return false;
-        if (position != null ? !position.equals(speaker.position) : speaker.position != null) return false;
-        if (description != null ? !description.equals(speaker.description) : speaker.description != null) return false;
+        if (id != null ? !id.equals(otherSpeaker.id) : otherSpeaker.id != null) return false;
+        if (name != null ? !name.equals(otherSpeaker.name) : otherSpeaker.name != null) return false;
+        if (position != null ? !position.equals(otherSpeaker.position) : otherSpeaker.position != null) return false;
+        if (description != null ? !description.equals(otherSpeaker.description) : otherSpeaker.description != null) return false;
 
         return true;
     }

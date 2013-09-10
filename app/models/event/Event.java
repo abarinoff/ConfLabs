@@ -30,7 +30,10 @@ public class Event extends Model {
     public List<Speaker> speakers = new LinkedList<Speaker>();
 
     @OneToMany(cascade = CascadeType.ALL)
-    public List<Slot> slots;
+    public List<Speech> speeches = new LinkedList<Speech>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    public List<Slot> slots = new LinkedList<Slot>();
 
     public static Finder<Long, Event> find = new Finder<Long, Event>(Long.class, Event.class);
 }

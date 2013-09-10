@@ -2,33 +2,44 @@ package models.event.slot;
 
 import java.util.Date;
 
-import play.data.format.Formats;
 import play.db.ebean.Model;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import com.avaje.ebean.validation.NotEmpty;
+import javax.persistence.*;
+
+import com.avaje.ebean.validation.NotNull;
 
 @Entity
-@Inheritance
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Slot extends Model {
 
     @Id
     public Long id;
 
-    @Formats.DateTime(pattern="dd/MM/yyyy")
-    public Date date;
+    @NotNull
+    public Date start;
 
-    @NotEmpty
-    public String startTime;
+    @NotNull
+    public Date end;
 
-    @NotEmpty
-    public String endTime;
-
-    public Slot(Date date, String startTime, String endTime) {
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.date = date;
+    public Slot(Date start, Date end) {
+        this.start = start;
+        this.end = end;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+        if (other == null || getClass() != other.getClass()) return false;
+        if (!super.equals(other)) return false;
+
+        Slot otherSlot = (Slot) other;
+
+        if (id != null ? !id.equals(otherSlot.id) : otherSlot.id != null) return false;
+        if (start != null ? !start.equals(otherSlot.start) : otherSlot.start != null) return false;
+        if (end != null ? !end.equals(otherSlot.end) : otherSlot.end != null) return false;
+
+        return true;
+    }
+
+    public static Finder<Long, Slot> find = new Finder<Long, Slot>(Long.class, Slot.class);
 }
