@@ -1,11 +1,13 @@
 package models.event.slot;
 
 import java.util.Date;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
 import com.avaje.ebean.validation.NotEmpty;
 
 @Entity
+@DiscriminatorValue("org")
 public class OrganizationalSlot extends Slot {
 
     @NotEmpty

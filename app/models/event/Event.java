@@ -1,5 +1,6 @@
 package models.event;
 
+import com.avaje.ebean.Ebean;
 import play.db.ebean.Model;
 import com.avaje.ebean.validation.NotEmpty;
 
@@ -33,4 +34,33 @@ public class Event extends Model {
     public List<Slot> slots;
 
     public static Finder<Long, Event> find = new Finder<Long, Event>(Long.class, Event.class);
+
+    public Event(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        Event event = (Event) o;
+
+        if (description != null ? !description.equals(event.description) : event.description != null) return false;
+        if (!id.equals(event.id)) return false;
+        if (location != null ? !location.equals(event.location) : event.location != null) return false;
+        if (slots != null ? !slots.equals(event.slots) : event.slots != null) return false;
+        if (speakers != null ? !speakers.equals(event.speakers) : event.speakers != null) return false;
+        if (stages != null ? !stages.equals(event.stages) : event.stages != null) return false;
+        if (!title.equals(event.title)) return false;
+
+        return true;
+    }
+
+    @Override
+    public void delete() {
+        Ebean.delete(slots);
+        super.delete();
+    }
 }

@@ -1,8 +1,6 @@
-package models;
+package models.event;
 
-import com.avaje.ebean.ValidationException;
-import models.event.Event;
-import models.event.Location;
+import models.AbstractModelTest;
 
 import org.junit.*;
 import static org.junit.Assert.*;

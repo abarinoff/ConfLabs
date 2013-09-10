@@ -1,0 +1,67 @@
+locations:
+  - &fooLocation !!models.event.Location
+    id: 1
+    title: foo
+    address: 14/1 Wall Street
+
+  - &barLocation !!models.event.Location
+    id: 2
+    title: bar
+    address: Baker's street
+
+stages:
+  - &fooStage !!models.event.Stage
+    title: foo
+    capacity: 128
+
+speakers:
+  - &fooSpeaker !!models.event.Speaker
+    name: John Doe
+    position: Engineer
+    description: Senior Software Engineer, Lead
+
+speeches:
+  - &fooSpeech !!models.event.Speech
+    id: 1
+    title: Foo Speach
+    speakers:
+
+slots:
+  - &fooSlot !!models.event.slot.SpeechSlot
+    date: 2013-09-02
+    startTime: 09:00:00
+    endTime: 18:00:00
+    stage:
+      *fooStage
+    speech:
+      *fooSpeech
+
+events:
+  - &fooEvent !!models.event.Event
+    id: 1
+    title: Foo Event
+    description: Description
+    location:
+      *fooLocation
+    stages:
+      - *fooStage
+    speakers:
+      - *fooSpeaker
+    slots:
+      - *fooSlot
+
+users:
+  - &userAlex !!models.authentication.User
+    id: 1
+    email: foo@bar.com
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+    linkedAccounts:
+    permissions:
+    events:
+      - *fooEvent
