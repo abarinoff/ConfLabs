@@ -1,19 +1,39 @@
-# Locations
+locations:
+  - &fooLocation !!models.event.Location
+    id: 1
+    title: Президент готель
+    address: Київ, вул. Госпітальна, 12
 
-- !!models.event.Location
-  id: 1
-  title: Президент готель
-  address: Київ, вул. Госпітальна, 12
+  - &barLocation !!models.event.Location
+    id: 2
+    title: Український католицький університет
+    address: Львів, вул. Хуторівка, 35a
 
-- !!models.event.Location
-  id: 2
-  title: Український католицький університет
-  address: Львів, вул. Хуторівка, 35a
+securityRoles:
+  - &userRole !!models.authentication.SecurityRole
+    id: 1
+    roleName: user
 
-# LinkedAccounts
+linkedAccounts:
+  - &fooAccount !!models.authentication.LinkedAccount
+    id: 1
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
 
-# Users
+events:
+  - &fooEvent !!models.event.Event
+    id: 1
+    title: IT Weekend 2013
+    description: n/a
+    location: *fooLocation
 
+  - &barEvent !!models.event.Event
+    id: 2
+    title: XP Days 2013
+    description: n/a
+    location: *barLocation
+
+users:
 - !!models.authentication.User
   id: 1
   email: foo@bar.com
@@ -24,25 +44,11 @@
   active: true
   emailValidated: true
   roles:
-    - !!models.authentication.SecurityRole
-      id: 1
+    - *userRole
   linkedAccounts:
-    - !!models.authentication.LinkedAccount
-      id: 1
-      providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
-      providerKey: password
+    - *fooAccount
   permissions:
   events:
-    - !!models.event.Event
-      id: 1
-      title: IT Weekend 2013
-      description: n/a
-      location: !!models.event.Location
-                id: 1
-    - !!models.event.Event
-      id: 2
-      title: XP Days 2013
-      description: n/a
-      location: !!models.event.Location
-                id: 2
+    - *fooEvent
+    - *barEvent
 
