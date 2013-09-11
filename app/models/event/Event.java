@@ -31,7 +31,10 @@ public class Event extends Model {
     public List<Speaker> speakers = new LinkedList<Speaker>();
 
     @OneToMany(cascade = CascadeType.ALL)
-    public List<Slot> slots;
+    public List<Speech> speeches = new LinkedList<Speech>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    public List<Slot> slots = new LinkedList<Slot>();
 
     public static Finder<Long, Event> find = new Finder<Long, Event>(Long.class, Event.class);
 
@@ -48,11 +51,12 @@ public class Event extends Model {
         Event event = (Event) o;
 
         if (description != null ? !description.equals(event.description) : event.description != null) return false;
-        if (!id.equals(event.id)) return false;
+        if (id != null ? !id.equals(event.id) : event.id != null) return false;
         if (location != null ? !location.equals(event.location) : event.location != null) return false;
-        if (slots != null ? !slots.equals(event.slots) : event.slots != null) return false;
-        if (speakers != null ? !speakers.equals(event.speakers) : event.speakers != null) return false;
-        if (stages != null ? !stages.equals(event.stages) : event.stages != null) return false;
+        if (!slots.equals(event.slots)) return false;
+        if (!speakers.equals(event.speakers)) return false;
+        if (!speeches.equals(event.speeches)) return false;
+        if (!stages.equals(event.stages)) return false;
         if (!title.equals(event.title)) return false;
 
         return true;

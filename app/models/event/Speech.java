@@ -1,13 +1,12 @@
 package models.event;
 
-import com.avaje.ebean.validation.NotEmpty;
-import play.data.validation.Constraints;
 import play.db.ebean.Model;
+import com.avaje.ebean.validation.NotEmpty;
 
 import javax.persistence.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedList;
 
 @Entity
 public class Speech extends Model {
@@ -19,9 +18,7 @@ public class Speech extends Model {
     public String title;
 
     @ManyToMany(cascade = CascadeType.ALL)
-    public List<Speaker> speakers = new ArrayList<Speaker>();
-
-    public static Finder<Long, Speech> find = new Finder<Long, Speech>(Long.class, Speech.class);
+    public List<Speaker> speakers = new LinkedList<Speaker>();
 
     public Speech(String title) {
         this.title = title;
@@ -41,4 +38,6 @@ public class Speech extends Model {
 
         return true;
     }
+
+    public static Finder<Long, Speech> find = new Finder<Long, Speech>(Long.class, Speech.class);
 }

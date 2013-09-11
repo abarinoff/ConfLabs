@@ -1,0 +1,75 @@
+stages:
+  - &stage1 !!models.event.Stage
+    id: 1
+    title: Stage1
+    capacity: 200
+  - &stage2 !!models.event.Stage
+    id: 2
+    title: Stage2
+    capacity: 400
+
+speakers:
+  - &speakerAlex !!models.event.Speaker
+    id: 1
+    name: Alex
+    position: Programmer
+    description: Bla-bla-bla
+  - &speakerAndriy !!models.event.Speaker
+    id: 2
+    name: Andriy
+    position: Manager
+    description: Obladi Oblada
+
+speeches:
+  - &fooSpeech !!models.event.Speech
+    id: 1
+    title: foo speech
+    speakers:
+      - *speakerAlex
+  - &barSpeech !!models.event.Speech
+    id: 2
+    title: bar speech
+    speakers:
+      - *speakerAndriy
+
+slots:
+  - &speechSlot !!models.event.slot.SpeechSlot
+    id: 1
+    start: 2001-11-23 15:03:17
+    end: 2001-11-23 15:05:17
+    stage: *stage1
+    speech: *fooSpeech
+
+events:
+  - &eventITWeekend !!models.event.Event
+    id: 1
+    title: IT Weekend
+    description: n/a
+    location:
+    stages:
+      - *stage1
+      - *stage2
+    speeches:
+      - *fooSpeech
+      - *barSpeech
+    speakers:
+      - *speakerAlex
+      - *speakerAndriy
+    slots:
+      - *speechSlot
+
+users:
+  - &userAlex !!models.authentication.User
+    id: 1
+    email: foo@bar.com
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+    linkedAccounts:
+    permissions:
+    events:
+      - *eventITWeekend

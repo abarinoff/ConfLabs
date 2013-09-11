@@ -1,11 +1,9 @@
 locations:
   - &fooLocation !!models.event.Location
-    id: 1
     title: foo
     address: 14/1 Wall Street
 
   - &barLocation !!models.event.Location
-    id: 2
     title: bar
     address: Baker's street
 
@@ -22,15 +20,13 @@ speakers:
 
 speeches:
   - &fooSpeech !!models.event.Speech
-    id: 1
-    title: Foo Speach
+    title: Foo Speech
     speakers:
 
 slots:
   - &fooSlot !!models.event.slot.SpeechSlot
-    date: 2013-09-02
-    startTime: 09:00:00
-    endTime: 18:00:00
+    start: !!timestamp 2013-09-02 09:00:00 +3
+    end: !!timestamp 2013-09-02 18:00:00 +3
     stage:
       *fooStage
     speech:
@@ -49,6 +45,8 @@ events:
       - *fooSpeaker
     slots:
       - *fooSlot
+    speeches:
+      - *fooSpeech
 
 users:
   - &userAlex !!models.authentication.User

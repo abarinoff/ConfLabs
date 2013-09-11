@@ -1,43 +1,59 @@
 package models.event.slot;
 
-import com.avaje.ebean.Ebean;
-import models.AbstractModelTest;
+import models.event.Event;
 import models.event.Speaker;
 import models.event.Speech;
+import models.AbstractModelTest;
 
 import org.junit.*;
-import play.libs.Yaml;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.LinkedList;
 
 import static org.junit.Assert.*;
+import static org.hamcrest.CoreMatchers.*;
 
 public class SpeechTest extends AbstractModelTest {
 
     @Test
     public void createSpeechWitNonEmptyTitleShouldSucceed() {
-        Speech speech = new Speech("Foo");
-        speech.save();
+        initializeDatabase("test/models/data/user-with-event.yml");
 
-        Speech savedSpeech = Speech.find.byId(1L);
+        Speech speech = new Speech("Foo");
+
+        Event event = Event.find.byId(1L);
+        event.speeches.add(speech);
+        event.save();
+
+        assertEquals(1, Speech.find.all().size());
+
+        Speech savedSpeech = Speech.find.byId(speech.id);
+        assertNotNull(savedSpeech);
         assertEquals(speech, savedSpeech);
     }
 
     @Test
     public void createSpeechWithEmptyTitleShouldFail() {
+        initializeDatabase("test/models/data/user-with-event.yml");
+
         Speech speech = new Speech("");
 
-        checkValidationExceptionOnInvalidModelSave(speech);
+        Event event = Event.find.byId(1L);
+        event.speeches.add(speech);
+
+        checkValidationExceptionOnInvalidModelSave(event);
     }
 
     @Test
     public void createSpeechShouldPopulateId() {
-        Speech speech = new Speech("Foo");
-        speech.save();
+        initializeDatabase("test/models/data/user-with-event.yml");
 
-        assertTrue(0 < speech.id);
+        Speech speech = new Speech("Foo");
+
+        Event event = Event.find.byId(1L);
+        event.speeches.add(speech);
+        event.save();
+
+        assertThat(speech.id, not(equalTo(0L)));
     }
 
     @Test
@@ -47,9 +63,15 @@ public class SpeechTest extends AbstractModelTest {
         Speech speech = new Speech("Foo");
         Speaker speaker = Speaker.find.byId(1L);
         speech.speakers.add(speaker);
-        speech.save();
+
+        Event event = Event.find.byId(1L);
+        event.speeches.add(speech);
+        event.save();
+
+        assertEquals(2, Speech.find.findRowCount());
 
         Speech savedSpeech = Speech.find.byId(speech.id);
+        assertNotNull(savedSpeech);
         assertEquals(speech, savedSpeech);
     }
 
@@ -81,7 +103,7 @@ public class SpeechTest extends AbstractModelTest {
 
         Speech speech = Speech.find.byId(1L);
         speech.setTitle(speech.title + UPDATED_POSTFIX);
-        speech.setSpeakers(new ArrayList<Speaker>());
+        speech.setSpeakers(new LinkedList<Speaker>());
         Speaker newSpeaker = Speaker.find.byId(2L);
         speech.speakers.add(newSpeaker);
         speech.update();
@@ -101,12 +123,5 @@ public class SpeechTest extends AbstractModelTest {
 
         Speaker speaker = Speaker.find.byId(1L);
         assertNotNull(speaker);
-    }
-
-    @Override
-    protected void initializeDatabase(String dataFile) {
-        Map<String, List> all = (Map<String, List>) Yaml.load(dataFile);
-        Ebean.save(all.get("users"));
-        Ebean.save(all.get("speeches"));
     }
 }
