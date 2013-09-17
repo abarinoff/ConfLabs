@@ -1,6 +1,7 @@
 package models.event;
 
 import com.avaje.ebean.validation.NotEmpty;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import play.db.ebean.Model;
 
 import javax.persistence.Id;
@@ -17,6 +18,7 @@ public class Location extends Model {
 
     public String address;
 
+    @JsonIgnore
     public static Finder<Long, Location> find = new Finder<Long, Location>(Long.class, Location.class);
 
     public Location(String title) {

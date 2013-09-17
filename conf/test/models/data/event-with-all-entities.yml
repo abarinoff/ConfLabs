@@ -34,7 +34,6 @@ slots:
 
 events:
   - &fooEvent !!models.event.Event
-    id: 1
     title: Foo Event
     description: Description
     location:
@@ -48,6 +47,21 @@ events:
     speeches:
       - *fooSpeech
 
+linkedAccounts:
+  - &fooAccount !!models.authentication.LinkedAccount
+    id: 1
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
+  - &barAccount !!models.authentication.LinkedAccount
+    id: 2
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
+roles:
+  - &fooRole !!models.authentication.SecurityRole
+    id: 1
+
 users:
   - &userAlex !!models.authentication.User
     id: 1
@@ -59,7 +73,25 @@ users:
     active: true
     emailValidated: true
     roles:
+      - *fooRole
     linkedAccounts:
+      - *fooAccount
     permissions:
     events:
       - *fooEvent
+
+  - &userBar !!models.authentication.User
+    id: 2
+    email: bar@gmail.com
+    name: Bar
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+      - *fooRole
+    linkedAccounts:
+      - *barAccount
+    permissions:
+    events:

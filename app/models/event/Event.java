@@ -1,6 +1,8 @@
 package models.event;
 
 import com.avaje.ebean.Ebean;
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonView;
 import play.db.ebean.Model;
 import com.avaje.ebean.validation.NotEmpty;
 
@@ -13,29 +15,38 @@ import models.event.slot.Slot;
 @Entity
 public class Event extends Model {
 
+    @JsonView(util.JsonView.ShortView.class)
     @Id
     public Long id;
 
+    @JsonView(util.JsonView.ShortView.class)
     @NotEmpty
     public String title;
 
+    @JsonView(util.JsonView.FullView.class)
     public String description;
 
+    @JsonView(util.JsonView.FullView.class)
     @OneToOne(cascade = CascadeType.ALL)
     public Location location;
 
+    @JsonView(util.JsonView.FullView.class)
     @OneToMany(cascade = CascadeType.ALL)
     public List<Stage> stages = new LinkedList<Stage>();
 
+    @JsonView(util.JsonView.FullView.class)
     @OneToMany(cascade = CascadeType.ALL)
     public List<Speaker> speakers = new LinkedList<Speaker>();
 
+    @JsonView(util.JsonView.FullView.class)
     @OneToMany(cascade = CascadeType.ALL)
     public List<Speech> speeches = new LinkedList<Speech>();
 
+    @JsonView(util.JsonView.FullView.class)
     @OneToMany(cascade = CascadeType.ALL)
     public List<Slot> slots = new LinkedList<Slot>();
 
+    @JsonIgnore
     public static Finder<Long, Event> find = new Finder<Long, Event>(Long.class, Event.class);
 
     public Event(String title) {

@@ -1,0 +1,8 @@
+{
+    "title":"Foo Event",
+    "description":"Description",
+    "location":{
+        "title":"foo",
+        "address":"14/1 Wall Street"
+    }
+}

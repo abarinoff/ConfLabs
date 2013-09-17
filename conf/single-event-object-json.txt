@@ -1,0 +1,13 @@
+{
+    "title":"Features of Java 8",
+    "description":"Overview of the Java 8 features",
+    "location":
+     {
+        "title":"IT Mall",
+        "address":"14/1 Wall Street, NY, USA"
+     },
+     "stages":[],
+     "speakers":[],
+     "speeches":[],
+     "slots":[]
+}
