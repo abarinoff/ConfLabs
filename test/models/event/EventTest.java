@@ -14,11 +14,9 @@ import models.event.slot.Slot;
 import models.event.slot.SpeechSlot;
 import org.junit.Test;
 import play.db.ebean.Model;
+import play.libs.Yaml;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -28,7 +26,7 @@ public class EventTest extends AbstractModelTest {
 
     @Test
     public void createEventWithNonEmptyTitleShouldSucceed() {
-        initializeDatabase("test/models/data/single-user-model.yml");
+        initializeDatabase("test/models/data/event-with-all-entities.yml");
         User user = User.find.byId(1L);
 
         Event event = new Event("Foo");
@@ -41,7 +39,7 @@ public class EventTest extends AbstractModelTest {
 
     @Test
     public void createEventWithEmptyTitleShouldFail() {
-        initializeDatabase("test/models/data/single-user-model.yml");
+        initializeDatabase("test/models/data/event-with-all-entities.yml");
         User user = User.find.byId(1L);
 
         Event event = new Event("");
@@ -52,7 +50,7 @@ public class EventTest extends AbstractModelTest {
 
     @Test
     public void createEventShouldPersistFieldsCorrectly() {
-        initializeDatabase("test/models/data/single-user-model.yml");
+        initializeDatabase("test/models/data/event-with-all-entities.yml");
         User user = User.find.byId(1L);
 
         Event event = new Event("Foo");
@@ -84,7 +82,7 @@ public class EventTest extends AbstractModelTest {
 
     @Test
     public void persistEventShouldPopulateIdField() {
-        initializeDatabase("test/models/data/single-user-model.yml");
+        initializeDatabase("test/models/data/event-with-all-entities.yml");
         User user = User.find.byId(1L);
 
         Event event = new Event("Foo");
@@ -345,5 +343,16 @@ public class EventTest extends AbstractModelTest {
         query.where(expressionIn);
 
         return query.findList();
+    }
+
+    @Override
+    protected void initializeDatabase(String dataFile) {
+        Map<String, List> all = (Map<String, List>) Yaml.load(dataFile);
+        Ebean.save(all.get("roles"));
+        Ebean.save(all.get("users"));
+
+        for(Object user : all.get("users")) {
+            Ebean.saveManyToManyAssociations(user, "roles");
+        }
     }
 }
