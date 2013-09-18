@@ -1,0 +1,56 @@
+<div class="row">
+    <div class="col-md-3">
+        <div class="events-sidebar">
+            <div role="side-navigation">
+                <ul class="nav events-sidenav">
+                    <% _.each( events, function(event){ %>
+                    <% var eventId = event.get('id'); %>
+                    <li id="event-sidenav-<%= eventId %>">
+                        <a href="#events/<%= eventId %>"><%= event.get('title') %></a>
+                    </li>
+                    <% }); %>
+                </ul>
+            </div>
+            <div role="side-pagination" class="text-center">
+                <ul class="pagination">
+                    <li><a href="#">&laquo;</a></li>
+                    <li><a href="#">1</a></li>
+                    <li><a href="#">2</a></li>
+                    <li><a href="#">3</a></li>
+                    <li><a href="#">&raquo;</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <ul id="event-tabs" class="nav nav-tabs" data-tabs="event-tabs">
+            <li class="active"><a href="#description" data-toggle="tab">Description</a></li>
+            <li><a href="#stages" data-toggle="tab">Stages</a></li>
+            <li><a href="#speakers" data-toggle="tab">Speakers</a></li>
+            <li><a href="#speeches" data-toggle="tab">Speeches</a></li>
+            <li><a href="#schedule" data-toggle="tab">Schedule</a></li>
+            <li><a href="#location" data-toggle="tab">Location</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="description">
+                <h1>Description</h1>
+            </div>
+            <div class="tab-pane" id="stages">
+                <h1>Stages</h1>
+            </div>
+            <div class="tab-pane" id="speakers">
+                <h1>Speakers</h1>
+            </div>
+            <div class="tab-pane" id="speeches">
+                <h1>Speeches</h1>
+            </div>
+            <div class="tab-pane" id="schedule">
+                <h1>Schedule</h1>
+            </div>
+            <div class="tab-pane" id="location">
+                <h1>Location</h1>
+            </div>
+        </div>
+    </div>
+</div>

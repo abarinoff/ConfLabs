@@ -1,8 +1,6 @@
-var application = application || {};
-
-(function($) {
-    application.EventsView = Backbone.View.extend({
-        template: _.template($('#events-template').html()),
+define(['jquery', 'underscore', 'backbone', 'require.text!templates/events.html'], function($, _, Backbone, eventsTemplate) {
+    var EventsView = Backbone.View.extend({
+        template: _.template(eventsTemplate),
 
         initialize: function () {
             this.listenTo(this.model, 'change', this.render);
@@ -13,4 +11,6 @@ var application = application || {};
             return this;
         }
     });
-})(jQuery);
+
+    return EventsView;
+});

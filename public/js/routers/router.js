@@ -1,7 +1,6 @@
-var application = application || {};
+define(['jquery', 'backbone', 'views/events', 'models/in.memory.model'], function($, Backbone, EventsView, Model) {
 
-(function() {
-    application.Router = Backbone.Router.extend({
+    var Router = Backbone.Router.extend({
         routes: {
             "events": "events",
             "events/:id": "eventDetails"
@@ -14,19 +13,21 @@ var application = application || {};
         events: function () {
             console.log("events");
 
-            var events = new application.EventCollection();
+            var events = new Model.EventCollection();
             var self = this;
             events.fetch({
                 success: function (data) {
                     console.log(data);
-                    var eventsView = new application.EventsView({model: data});
+                    var eventsView = new EventsView({model: data});
                     self.$content.html(eventsView.render().el);
                 }
             });
             selectMenuItem("nav-conferences");
         },
 
-        conferenceDetails: function (id) {
+        eventDetails: function (id) {
+            console.log("Event selected: " + id);
+            selectEvent(id);
         }
     });
 
@@ -37,6 +38,10 @@ var application = application || {};
         }
     }
 
-    application.router = new application.Router();
-    Backbone.history.start();
-})();
+    var selectEvent = function(id) {
+        $('.events-sidenav li').removeClass('active');
+        $('#event-sidenav-' + id).addClass('active');
+    }
+
+    return Router;
+});

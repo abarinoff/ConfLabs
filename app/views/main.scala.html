@@ -18,11 +18,8 @@
     <link href="@routes.Assets.at("css/events.min.css")" rel="stylesheet">
     <link href="@routes.Assets.at("css/bootstrap.min.css")" rel="stylesheet">
 
-    <script src="@routes.Assets.at("js/lib/jquery.min.js")"></script>
-    <script src="@routes.Assets.at("js/lib/underscore.min.js")"></script>
-    <script src="@routes.Assets.at("js/lib/backbone.min.js")"></script>
-    <script src="@routes.Assets.at("js/lib/bootstrap.min.js")"></script>
-    <script src="@routes.Application.jsRoutes" defer="defer"></script>
+      <script data-main="@routes.Assets.at("js/application.js")" src="@routes.Assets.at("js/lib/require.js")"></script>
+      <script src="@routes.Application.jsRoutes" defer="defer"></script>
 
     <!--[if lt IE 9]>
       <script src="@routes.Assets.at("js/lib/html5shiv.js")"></script>
@@ -31,7 +28,7 @@
   </head>
 
   <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="navbar navbar-inverse navbar-fixed-top">
           <div class="container">
               <div class="navbar-header">
                   <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -87,90 +84,29 @@
                   </div>
               </div>
           </div>
-      </div>
-
-    <div class="container">
-	    @if(flash.contains(Application.FLASH_ERROR_KEY)) {
-	      <div class="alert alert-danger">
-	      	@flash().get(Application.FLASH_ERROR_KEY)
-	      </div>
-	    }
-	    @if(flash.contains(Application.FLASH_MESSAGE_KEY)) {
-	      <div class="alert alert-success">
-	      	@flash().get(Application.FLASH_MESSAGE_KEY)
-	      </div>
-	    }
-        <div id="content">
-            @content
         </div>
 
-        <hr>
-
-        <footer>
-        <p>&copy; 2013 Intelliarts Inc. &middot; <small>Styles by <a href="http://twitter.github.com/bootstrap/index.html" target="_blank">Twitter Bootstrap</a></small></p>
-        </footer>
-    </div>
-
-        <script type="text/template" id="events-template">
-          <div class="row">
-              <div class="col-md-3">
-                  <div class="events-sidebar">
-                      <div role="side-navigation">
-                          <ul class="nav events-sidenav">
-                              <% _.each( events, function(event){ %>
-                                  <li><a href="#events/<%= event.get('id') %>"><%= event.get('title') %></a></li>
-                              <% }); %>
-                          </ul>
-                      </div>
-                      <div role="side-pagination" class="text-center">
-                          <ul class="pagination">
-                              <li><a href="#">&laquo;</a></li>
-                              <li><a href="#">1</a></li>
-                              <li><a href="#">2</a></li>
-                              <li><a href="#">3</a></li>
-                              <li><a href="#">&raquo;</a></li>
-                          </ul>
-                      </div>
-                  </div>
+        <div class="container">
+            @if(flash.contains(Application.FLASH_ERROR_KEY)) {
+              <div class="alert alert-danger">
+                @flash().get(Application.FLASH_ERROR_KEY)
               </div>
-              <div class="col-md-9">
-                  <ul id="event-tabs" class="nav nav-tabs" data-tabs="event-tabs">
-                      <li class="active"><a href="#description" data-toggle="tab">Description</a></li>
-                      <li><a href="#stages" data-toggle="tab">Stages</a></li>
-                      <li><a href="#speakers" data-toggle="tab">Speakers</a></li>
-                      <li><a href="#speeches" data-toggle="tab">Speeches</a></li>
-                      <li><a href="#schedule" data-toggle="tab">Schedule</a></li>
-                      <li><a href="#location" data-toggle="tab">Location</a></li>
-                  </ul>
-
-                  <div class="tab-content">
-                      <div class="tab-pane active" id="description">
-                          <h1>Description</h1>
-                      </div>
-                      <div class="tab-pane" id="stages">
-                          <h1>Stages</h1>
-                      </div>
-                      <div class="tab-pane" id="speakers">
-                          <h1>Speakers</h1>
-                      </div>
-                      <div class="tab-pane" id="speeches">
-                          <h1>Speeches</h1>
-                      </div>
-                      <div class="tab-pane" id="schedule">
-                          <h1>Schedule</h1>
-                      </div>
-                      <div class="tab-pane" id="location">
-                          <h1>Location</h1>
-                      </div>
-                  </div>
+            }
+            @if(flash.contains(Application.FLASH_MESSAGE_KEY)) {
+              <div class="alert alert-success">
+                @flash().get(Application.FLASH_MESSAGE_KEY)
               </div>
-          </div>
-        </script>
-        <script src="@routes.Assets.at("js/views/events.view.js")"></script>
+            }
+            <div id="content">
+                @content
+            </div>
 
-        <script src="@routes.Assets.at("js/models/in.memory.model.js")"></script>
+            <hr>
 
-        <script src="@routes.Assets.at("js/routers/router.js")"></script>
-        <script src="@routes.Assets.at("js/application.js")"></script>
+            <footer>
+            <p>&copy; 2013 Intelliarts Inc. &middot; <small>Styles by <a href="http://twitter.github.com/bootstrap/index.html" target="_blank">Twitter Bootstrap</a></small></p>
+            </footer>
+        </div>
+
     </body>
 </html>

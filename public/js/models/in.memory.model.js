@@ -1,11 +1,12 @@
-var application = application || {};
+define(['backbone'], function(Backbone) {
 
-(function() {
-    application.Event = Backbone.Model.extend({
+    var Model = {};
+
+    Model.Event = Backbone.Model.extend({
 
         sync: function(method, model, options) {
             if (method === "read") {
-                application.store.findById(parseInt(this.id), function (data) {
+                Model.store.findById(parseInt(this.id), function (data) {
                     options.success(data);
                 });
             }
@@ -13,18 +14,17 @@ var application = application || {};
 
     });
 
-    application.EventCollection = Backbone.Collection.extend({
-        model: application.Event,
+    Model.EventCollection = Backbone.Collection.extend({
+        model: Model.Event,
 
         sync: function(method, model, options) {
             if (method === "read") {
-                options.success(application.store.events);
+                options.success(Model.store.events);
             }
         }
     });
 
-    application.MemoryStore = function () {
-
+    var MemoryStore = function () {
         this.findById = function (id, callback) {
             var event = null;
             for (var i = 0; i < this.events.length; i++) {
@@ -52,5 +52,7 @@ var application = application || {};
         ];
     }
 
-    application.store = new application.MemoryStore();
-})();
+    Model.store = new MemoryStore();
+
+    return Model;
+});
