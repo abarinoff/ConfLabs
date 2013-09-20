@@ -52,6 +52,40 @@ public class EventManager extends Controller {
     }
 
     @Restrict(@Group(Application.USER_ROLE))
+    public static Result getEventById(Long id) {
+        String header = request().getHeader("X-Requested-With");
+        if (header == null || !header.equals("XMLHttpRequest")) {
+            return notFound();
+        }
+
+        AuthUser authUser = PlayAuthenticate.getUser(session());
+        User user = User.findByAuthUserIdentity(authUser);
+
+        Event event = Event.find.byId(id);
+
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter objectWriter = mapper.writerWithView(JsonView.FullView.class);
+
+        Status response;
+        if (event != null) {
+            try {
+                String responseBody = objectWriter.writeValueAsString(event);
+                response = ok(responseBody);
+            }
+            catch (IOException e) {
+                Logger.error(e.getMessage(), e);
+
+                JsonNode error = errorResponse();
+                response = internalServerError(error);
+            }
+        } else {
+            response = notFound(errorResponse("Event with a given id was not found"));
+        }
+
+        return response.as("application/json");
+    }
+
+    @Restrict(@Group(Application.USER_ROLE))
     @BodyParser.Of(BodyParser.Json.class)
     public static Result addEvent() {
         Http.RequestBody requestBody = request().body();
@@ -99,10 +133,16 @@ public class EventManager extends Controller {
         return status.as("application/json");
     }
 
-    private static JsonNode errorResponse() {
+    private static JsonNode errorResponse(String ... message) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode responseJson = mapper.createObjectNode();
-        responseJson.put("error", true);
+
+        if (message.length == 1) {
+            responseJson.put("error", message[0]);
+        }
+        else {
+            responseJson.put("error", true);
+        }
 
         return responseJson;
     }

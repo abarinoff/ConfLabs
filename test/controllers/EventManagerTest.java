@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableMap;
 
 import models.authentication.SecurityRole;
 
+import models.event.Event;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -138,6 +139,59 @@ public class EventManagerTest extends WithApplication {
         JsonNode receivedJson = mapper.readTree(responseBody);
 
         JsonNode expectedJson = mapper.readTree("{\"error\":true}");
+
+        assertEquals(expectedJson, receivedJson);
+    }
+
+    @Test
+    public void getEventWithNonAjaxRequestShouldFail() {
+        Http.Cookie playSession = getAuthorizationCookie();
+
+        final Result result = callAction(routes.ref.EventManager.getEventById(1L),
+                fakeRequest()
+                        .withCookies(playSession)
+        );
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void getEventWithAjaxRequestShouldSucceed() throws IOException {
+        Http.Cookie playSession = getAuthorizationCookie();
+
+        final Result result = callAction(routes.ref.EventManager.getEventById(1L),
+                fakeRequest()
+                        .withCookies(playSession)
+                        .withHeader("X-Requested-With", "XMLHttpRequest")
+        );
+
+        assertThat(status(result)).isEqualTo(OK);
+
+        JsonNode eventsArrayNode = mapper.readTree(new File("conf/test/json/data/events-for-user-with-id-1.json"));
+        JsonNode expectedJson = eventsArrayNode.get(0);
+
+        String responseBody = contentAsString(result);
+        JsonNode receivedJson = mapper.readTree(responseBody);
+
+        assertEquals(expectedJson, receivedJson);
+    }
+
+    @Test
+    public void getEventWithNonexistentIdShouldReturnNotFoundAndErrorMessage() throws IOException {
+        Http.Cookie playSession = getAuthorizationCookie();
+
+        final Result result = callAction(routes.ref.EventManager.getEventById(100L),
+                fakeRequest()
+                        .withCookies(playSession)
+                        .withHeader("X-Requested-With", "XMLHttpRequest")
+        );
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+
+        JsonNode expectedJson = mapper.readTree("{\"error\":\"Event with a given id was not found\"}");
+
+        String responseBody = contentAsString(result);
+        JsonNode receivedJson = mapper.readTree(responseBody);
 
         assertEquals(expectedJson, receivedJson);
     }

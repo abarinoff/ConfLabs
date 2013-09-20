@@ -51,3 +51,5 @@ GET     /assets/*file               controllers.Assets.at(path="/public", file)
 # Ajax Controller routes
 GET     /events                     controllers.EventManager.getEvents()
 POST    /events                     controllers.EventManager.addEvent()
+GET     /events/:id                 controllers.EventManager.getEventById(id: Long)
+
