@@ -1,32 +1,40 @@
 requirejs.config({
     shim: {
-        'underscore': {
-            exports: '_'
+        "underscore": {
+            exports: "_"
         },
-        'backbone': {
+        "backbone": {
             deps: [
-                'underscore',
-                'jquery'
+                "underscore",
+                "jquery"
             ],
-            exports: 'Backbone'
+            exports: "Backbone"
         },
-        'bootstrap': {
-            deps: ['jquery'],
+        "bootstrap": {
+            deps: ["jquery"],
             exports: "$.fn.popover"
         }
     },
     paths: {
-        'jquery': 'lib/jquery',
-        'underscore': 'lib/underscore',
-        'backbone': 'lib/backbone',
-        'bootstrap': 'lib/bootstrap',
-        'require.text': 'lib/require.text'
+        "jquery": "lib/jquery",
+        "underscore": "lib/underscore",
+        "backbone": "lib/backbone",
+        "bootstrap": "lib/bootstrap",
+        "require.text": "lib/require.text"
     },
     enforceDefine: true
 });
 
-define(['backbone', 'routers/router'], function(Backbone, Router) {
-    new Router();
-    Backbone.history.start();
-});
+define([
+    "backbone",
+    "routers/router",
+    "bootstrap"],
 
+function(Backbone, Router) {
+    var Application = function() {
+        this.router = new Router();
+        Backbone.history.start();
+    }
+
+    window.application = new Application();
+});
