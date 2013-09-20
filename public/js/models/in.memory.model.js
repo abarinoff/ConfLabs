@@ -1,5 +1,7 @@
-define(['backbone'], function(Backbone) {
+define([
+    "backbone"],
 
+function(Backbone) {
     var Model = {};
 
     Model.Event = Backbone.Model.extend({
@@ -27,9 +29,9 @@ define(['backbone'], function(Backbone) {
     var MemoryStore = function () {
         this.findById = function (id, callback) {
             var event = null;
-            for (var i = 0; i < this.events.length; i++) {
-                if (this.events[i].id === id) {
-                    event = this.events[i];
+            for (var i = 0; i < this.eventsDetails.length; i++) {
+                if (this.eventsDetails[i].id === id) {
+                    event = this.eventsDetails[i];
                     break;
                 }
             }
@@ -49,6 +51,21 @@ define(['backbone'], function(Backbone) {
             {"id": 10, "title": "IT Weekend 2010"},
             {"id": 11, "title": "XP Days 2010"},
             {"id": 12, "title": "JDay Lviv 2010"}
+        ];
+
+        this.eventsDetails = [
+            {"id": 1, "title": "IT Weekend 2013", "description": "Cool event 1"},
+            {"id": 2, "title": "XP Days 2013", "description": "Cool event 2"},
+            {"id": 3, "title": "JDay Lviv 2013", "description": "Cool event 3"},
+            {"id": 4, "title": "IT Weekend 2012", "description": "Cool event 4"},
+            {"id": 5, "title": "XP Days 2012", "description": "Cool event 5"},
+            {"id": 6, "title": "JDay Lviv 2012", "description": "Cool event 6"},
+            {"id": 7, "title": "IT Weekend 2011", "description": "Cool event 7"},
+            {"id": 8, "title": "XP Days 2011", "description": "Cool event 8"},
+            {"id": 9, "title": "JDay Lviv 2011", "description": "Cool event 9"},
+            {"id": 10, "title": "IT Weekend 2010", "description": "Cool event 10"},
+            {"id": 11, "title": "XP Days 2010", "description": "Cool event 11"},
+            {"id": 12, "title": "JDay Lviv 2010", "description": "Cool event 12"}
         ];
     }
 

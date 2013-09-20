@@ -1,4 +1,11 @@
-define(['jquery', 'backbone', 'views/events', 'models/in.memory.model'], function($, Backbone, EventsView, Model) {
+define([
+    "jquery",
+    "backbone",
+    "views/events",
+    "views/events.list",
+    "models/model"],
+
+function($, Backbone, EventsView, EventsListView, Model) {
 
     var Router = Backbone.Router.extend({
         routes: {
@@ -6,41 +13,29 @@ define(['jquery', 'backbone', 'views/events', 'models/in.memory.model'], functio
             "events/:id": "eventDetails"
         },
 
-        initialize: function () {
-            this.$content = $("#content");
-        },
-
         events: function () {
-            console.log("events");
-
-            var events = new Model.EventCollection();
-            var self = this;
-            events.fetch({
-                success: function (data) {
-                    console.log(data);
-                    var eventsView = new EventsView({model: data});
-                    self.$content.html(eventsView.render().el);
-                }
-            });
-            selectMenuItem("nav-conferences");
+            console.log("Events");
+            this.eventDetails();
         },
 
         eventDetails: function (id) {
-            console.log("Event selected: " + id);
-            selectEvent(id);
+            var events = new Model.EventCollection();
+
+            var eventsView = new EventsView();
+            eventsView.render();
+
+            var eventsListView = new EventsListView({model: events, activeEventId: id});
+            events.fetch();
+
+            selectMenuItem("nav-conferences");
         }
     });
 
     var selectMenuItem = function(menuItem) {
-        $('.navbar .nav li').removeClass('active');
+        $(".navbar .nav li").removeClass("active");
         if (menuItem) {
-            $('#' + menuItem).addClass('active');
+            $("#" + menuItem).addClass("active");
         }
-    }
-
-    var selectEvent = function(id) {
-        $('.events-sidenav li').removeClass('active');
-        $('#event-sidenav-' + id).addClass('active');
     }
 
     return Router;

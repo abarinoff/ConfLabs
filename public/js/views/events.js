@@ -1,13 +1,16 @@
-define(['jquery', 'underscore', 'backbone', 'require.text!templates/events.html'], function($, _, Backbone, eventsTemplate) {
-    var EventsView = Backbone.View.extend({
-        template: _.template(eventsTemplate),
+define([
+    "underscore",
+    "backbone",
+    "require.text!templates/events.html"],
 
-        initialize: function () {
-            this.listenTo(this.model, 'change', this.render);
-        },
+function(_, Backbone, template) {
+    var EventsView = Backbone.View.extend({
+
+        el: "#content",
+        template: _.template(template),
 
         render: function () {
-            this.$el.html(this.template({events: this.model.models}));
+            this.$el.html(this.template());
             return this;
         }
     });
