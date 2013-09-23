@@ -33,8 +33,8 @@ define([
 function(Backbone, Router) {
     var Application = function() {
         this.router = new Router();
-        Backbone.history.start();
     }
 
     window.application = new Application();
+    Backbone.history.start();
 });

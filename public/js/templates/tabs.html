@@ -1,0 +1,66 @@
+<ul id="event-tabs" class="nav nav-tabs" data-tabs="event-tabs">
+    <li class="active"><a href="#description" data-toggle="tab">Description</a></li>
+    <li><a href="#stages" data-toggle="tab">Stages</a></li>
+    <li><a href="#speakers" data-toggle="tab">Speakers</a></li>
+    <li><a href="#speeches" data-toggle="tab">Speeches</a></li>
+    <li><a href="#schedule" data-toggle="tab">Schedule</a></li>
+    <li><a href="#location" data-toggle="tab">Location</a></li>
+</ul>
+
+<div id="event-tabs-content" class="tab-content">
+    <div class="tab-pane active" id="description">
+        <h1>Description</h1>
+        <textarea rows="5" cols="100"><%= event.get('description') %></textarea>
+    </div>
+    <div class="tab-pane" id="stages">
+        <h1>Stages</h1>
+        <button id="add-new-stage" type="button" class="btn btn-primary">Add Stage</button>
+
+        <!-- @todo remove the inline styling to a separate css -->
+        <div class="event-stage new-stage form-horizontal" style="display: none">
+            <div class="form-group">
+                <label for="stage-title" class="col-lg-2 control-label">Title</label>
+                <div class="col-lg-5">
+                    <input id="stage-title" class="form-control col-lg-7" type="text" value="">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="stage-capacity" class="col-lg-2 control-label">Capacity</label>
+                <div class="col-lg-5">
+                    <input id="stage-capacity" class="form-control col-lg-7" type="text" value="">
+                </div>
+            </div>
+        </div>
+
+        <% _.each(event.get('stages'), function(stage, index) { %>
+        <h4>Stage <%= (index+1) %></h4>
+        <div class="event-stage form-horizontal">
+            <div class="form-group">
+                <label for="stage-title-<%= stage.id %>" class="col-lg-2 control-label">Title</label>
+                <div class="col-lg-5">
+                    <input id="stage-title-<%= stage.id %>" class="form-control col-lg-7" type="text" value="<%= stage.title %>">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="stage-capacity-<%= stage.id %>" class="col-lg-2 control-label">Capacity</label>
+                <div class="col-lg-5">
+                    <input id="stage-capacity-<%= stage.id %>" class="form-control col-lg-7" type="text" value="<%= stage.capacity %>">
+                </div>
+            </div>
+        </div>
+        <hr>
+        <% }); %>
+    </div>
+    <div class="tab-pane" id="speakers">
+        <h1>Speakers</h1>
+    </div>
+    <div class="tab-pane" id="speeches">
+        <h1>Speeches</h1>
+    </div>
+    <div class="tab-pane" id="schedule">
+        <h1>Schedule</h1>
+    </div>
+    <div class="tab-pane" id="location">
+        <h1>Location</h1>
+    </div>
+</div>
