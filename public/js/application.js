@@ -3,6 +3,7 @@ requirejs.config({
         "underscore": {
             exports: "_"
         },
+
         "backbone": {
             deps: [
                 "underscore",
@@ -10,18 +11,27 @@ requirejs.config({
             ],
             exports: "Backbone"
         },
+
+        "paginator": {
+            deps: ["backbone"],
+            exports: "Backbone.Paginator"
+        },
+
         "bootstrap": {
             deps: ["jquery"],
             exports: "$.fn.popover"
         }
     },
+
     paths: {
         "jquery": "lib/jquery",
         "underscore": "lib/underscore",
         "backbone": "lib/backbone",
+        "paginator": "lib/backbone.paginator",
         "bootstrap": "lib/bootstrap",
         "require.text": "lib/require.text"
     },
+
     enforceDefine: true
 });
 

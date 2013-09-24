@@ -1,0 +1,21 @@
+<% if(previous || next ) { %>
+    <% if(!previous) { %>
+        <li><span>&laquo;</span></li>
+    <% } else { %>
+        <li><a href="#" class="previous">&laquo;</a></li>
+    <% } %>
+
+    <% _.each(pageSet, function(page) { %>
+    <% if(currentPage == page) { %>
+        <li class="active"><span><%= page %></span></span></li>
+    <% } else { %>
+        <li><a href="#" class="page"><%= page %></a></li>
+    <% } %>
+    <% }); %>
+
+    <% if(!next) { %>
+        <li><span>&raquo;</span></li>
+    <% } else { %>
+        <li><a href="#" class="next">&raquo;</a></li>
+    <% } %>
+<% } %>

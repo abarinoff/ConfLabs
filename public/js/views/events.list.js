@@ -1,25 +1,43 @@
 define([
+    "underscore",
     "backbone",
     "views/events.list.item"],
 
-function (Backbone, EventsListItemView) {
+function (_, Backbone, EventsListItemView) {
     var EventsListView = Backbone.View.extend({
         el: "#events-list",
 
         initialize: function () {
-            this.model.on("add", this.renderEventListItem, this);
+            this.model.on("reset", this.renderItems, this);
         },
 
-        renderEventListItem: function (eventModel) {
+        renderItems: function () {
+            this.$el.empty();
+            this.activeEventItem = undefined;
+
+            this.model.each(_.bind(this.renderItem, this));
+        },
+
+        renderItem: function(eventModel) {
             var eventListItem = new EventsListItemView({model: eventModel});
+            eventListItem.on("selected", this.itemSelected, this);
             this.$el.append(eventListItem.render().el);
 
-            var activeEventId = this.options.activeEventId;
+            var activeEventId = this.model.activeEventId;
 
-            if ((!activeEventId && !window.application.activeEvent) || (activeEventId == eventModel.get("id"))) {
-                window.application.activeEvent = eventListItem;
-                window.application.activeEvent.select();
+            if ((!activeEventId && !this.activeEventItem) || (activeEventId == eventModel.get("id"))) {
+                this.activeEventItem = eventListItem;
+                this.activeEventItem.select();
             }
+        },
+
+        itemSelected: function (eventItem) {
+            if(!_.isUndefined(this.activeEventItem)) {
+                this.activeEventItem.deactivate();
+            }
+
+            this.activeEventItem = eventItem;
+            this.activeEventItem.activate();
         }
     });
 

@@ -1,10 +1,12 @@
 define([
-    "backbone"],
+    "backbone",
+    "paginator",
+    "models/restful.model"],
 
-function(Backbone) {
+function(Backbone, Paginator, RestfulModel) {
     var Model = {};
 
-    Model.Event = Backbone.Model.extend({
+    Model.Event = RestfulModel.Event.extend({
 
         sync: function(method, model, options) {
             if (method === "read") {
@@ -16,15 +18,14 @@ function(Backbone) {
 
     });
 
-    Model.EventCollection = Backbone.Collection.extend({
-        model: Model.Event,
-
+    Model.EventCollection = RestfulModel.EventCollection.extend({
         sync: function(method, model, options) {
             if (method === "read") {
                 options.success(Model.store.events);
             }
         }
     });
+
 
     var MemoryStore = function () {
         this.findById = function (id, callback) {

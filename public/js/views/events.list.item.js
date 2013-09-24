@@ -21,25 +21,21 @@ function($, _, Backbone, Model, EventView, template) {
         },
 
         select: function(event) {
-            var replaceRoute = typeof event === "undefined";
-
-            this.deactivate(window.application.activeEvent);
-            this.activate(this);
+            this.trigger("selected", this);
             this.show();
+
+            var replaceRoute = _.isUndefined(event);
             this.updateRoute(replaceRoute);
 
             return false;
         },
 
         activate: function(item) {
-            window.application.activeEvent = item;
-            item.$el.addClass("active");
+            this.$el.addClass("active");
         },
 
-        deactivate: function(item) {
-            if(item) {
-                item.$el.removeClass("active");
-            }
+        deactivate: function() {
+            this.$el.removeClass("active");
         },
 
         show: function() {
