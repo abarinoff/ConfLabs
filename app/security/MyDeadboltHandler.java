@@ -18,10 +18,8 @@ public class MyDeadboltHandler extends AbstractDeadboltHandler {
 		if (PlayAuthenticate.isLoggedIn(context.session())) {
 			return null;
 		} else {
-		    PlayAuthenticate.storeOriginalUrl(context);
-
 			context.flash().put("error", Messages.get("handler.loginfirst"));
-			return redirect(PlayAuthenticate.getResolver().login());
+            return unauthorized();
 		}
 	}
 
