@@ -38,12 +38,6 @@ public class Application extends Controller {
     }
 
     @Restrict(@Group(Application.USER_ROLE))
-    public static Result conferences() {
-        final User localUser = getLocalUser(session());
-        return ok(conferences.render(localUser));
-    }
-
-    @Restrict(@Group(Application.USER_ROLE))
     public static Result profile() {
         final User localUser = getLocalUser(session());
         return ok(profile.render(localUser));

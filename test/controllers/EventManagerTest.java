@@ -61,7 +61,7 @@ public class EventManagerTest extends WithApplication {
     public void getEventsForNonAuthorizedUserShouldFail() {
         Result result = callAction(routes.ref.EventManager.getEvents());
 
-        assertThat(status(result)).isEqualTo(SEE_OTHER);
+        assertThat(status(result)).isEqualTo(UNAUTHORIZED);
     }
 
     @Test

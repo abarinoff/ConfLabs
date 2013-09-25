@@ -16,6 +16,7 @@ function(_, Backbone, Paginator) {
         initialize: function(options) {
             Paginator.clientPager.prototype.initialize.apply(this);
             this.setActiveEventId(options.activeEventId);
+            this.bind("error", this.handleError);
         },
 
         paginator_core: {
@@ -53,6 +54,12 @@ function(_, Backbone, Paginator) {
                 .value();
 
             return _.isEqual(eventIndex, -1) ? -1 : Math.ceil((eventIndex + 1) / this.perPage);
+        },
+
+        handleError: function(model, error) {
+            if(error.status == 401) {
+                window.location.replace('/login');
+            }
         }
     });
 

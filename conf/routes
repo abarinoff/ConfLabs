@@ -6,7 +6,6 @@
 GET     /                           controllers.Application.index
 
 # Play authenticate routes
-GET     /conferences                 controllers.Application.conferences
 GET     /assets/javascript/routes.js    controllers.Application.jsRoutes
 
 GET     /profile                    controllers.Application.profile
