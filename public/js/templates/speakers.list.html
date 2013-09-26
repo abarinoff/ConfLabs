@@ -1,11 +1,11 @@
 <h3 class="col-md-5">Speakers</h3>
 <div class="">
-    <button id="btn-edit-speaker-new" class="btn btn-primary btn-add-item">Add</button>
+    <button id="btn-edit-speaker-new" class="btn btn-primary btn-add-item" type="button">Add</button>
 </div>
+<div class="clearfix"></div>
 
 <% _.each(speakers, function(speaker, index) { %>
 <div>
-    <div class="clearfix"></div>
     <div class="row">
         <div class="col-md-2 item-row">Name:</div>
         <div class="col-md-5 item-row"><%= speaker.name %></div>
