@@ -1,0 +1,71 @@
+<h3 class="col-md-5">Speakers</h3>
+<div class="">
+    <button id="btn-edit-speaker-new" class="btn btn-primary btn-add-item">Add</button>
+</div>
+
+<% _.each(speakers, function(speaker, index) { %>
+<div>
+    <div class="clearfix"></div>
+    <div class="row">
+        <div class="col-md-2 item-row">Name:</div>
+        <div class="col-md-5 item-row"><%= speaker.name %></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 item-row">Position:</div>
+        <div class="col-md-5 item-row"><%= speaker.position %></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 item-row">Description:</div>
+        <div class="col-md-5 item-row"><%= speaker.description %></div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 item-buttons">
+            <button id="btn-edit-speaker-<%= speaker.id %>" class="btn btn-primary" type="button">Edit</button>
+            <button id="btn-remove-speaker-<%= speaker.id %>" class="btn btn-primary" type="button">Remove</button>
+        </div>
+    </div>
+</div>
+<hr>
+<% }); %>
+
+<!-- Speakers Dialog -->
+<div id="dlg-speaker" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Speakers</h4>
+            </div>
+            <div class="modal-body form-horizontal">
+                <input id="hdn-speaker-id" type="hidden" />
+                <div class="form-group">
+                    <label for="speaker-name" class="col-md-2 control-label">Name</label>
+                    <div class="col-md-9">
+                        <input id="speaker-name" class="form-control" type="text" >
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="speaker-position" class="col-md-2 control-label">Position</label>
+                    <div class="col-md-9">
+                        <input id="speaker-position" class="form-control" type="text"/>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="speaker-description" class="col-md-2 control-label">Description</label>
+                    <div class="col-md-9">
+                        <textarea id="speaker-description" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="form-group item-buttons">
+                    <div class="col-md-11">
+                        <button id="btn-add-speech" class="btn btn-primary pull-right" type="button">Add Speech</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" type="button">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

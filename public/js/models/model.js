@@ -1,5 +1,5 @@
 define([
-    "models/restful.model"],
+    "models/in.memory.model"],
 
 function(Model) {
     return Model;

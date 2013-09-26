@@ -1,0 +1,15 @@
+<div class="speech-item">
+    <div class="form-group">
+        <label class="col-md-2 control-label">Speech</label>
+        <div class="col-md-8">
+            <select class="form-control speech-dropdown">
+                <option value="-1">---</option>
+                <option value="new">Add New</option>
+                <% _.each(speeches, function(speech) { %>
+                <option value="<%= speech.id %>"><%= speech.title %></option>
+                <% }) %>
+            </select>
+        </div>
+        <a class="btn btn-primary btn-remove-speech" href="#">-</a>
+    </div>
+</div>

@@ -1,29 +1,23 @@
 define([
     "jquery",
     "backbone",
+    "views/stages.list",
+    "views/speakers.list",
     "require.text!templates/tabs.html"
 ],
 
-function($, Backbone, tabsTemplate) {
+function($, Backbone, StagesListView, SpeakersListView, tabsTemplate) {
     var EventView = Backbone.View.extend({
         template: _.template(tabsTemplate),
 
-        /*events: {
-            "click button[id^='add-new-']": 'addNew'
-        },*/
-
         render: function() {
-            /*this.setElement($('#event-tabs-content'));
-            this.$el.html((this.template({event: this.model})));*/
+            var $eventData = $("#event-data"),
+                $tabs = this.$el.html(this.template({event: this.model}));
 
-            this.$el.html(this.template({event: this.model}));
+            $eventData.html($tabs);
 
-            this.el = $("#event-data").html(this.$el.html());
-            $("button[id^='add-new-']").click(this.addNewToList);
-        },
-
-        addNewToList: function() {
-            console.log("Add new item to list");
+            new StagesListView({model: this.model}).render();
+            new SpeakersListView({model: this.model}).render();
         }
     });
 
