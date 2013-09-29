@@ -34,8 +34,20 @@
   .sidebar-item(#428bcd);
 }
 
-.events-sidebar {
+.events-sidebar.affix-top {
+    position: static;
+    margin-top: 20px;
+    width: 263px;
+}
+.events-sidebar.affix {
+  top: 50px;
   position: fixed;
+  width: 263px;
+}
+
+.events-sidebar.affix-bottom {
+    position: absolute;
+    width: 263px;
 }
 
 #event-tabs {

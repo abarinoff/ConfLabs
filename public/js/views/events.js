@@ -11,6 +11,18 @@ function(_, Backbone, template) {
 
         render: function () {
             this.$el.html(this.template());
+
+            // Bootstrap affix
+            $(".events-sidebar").affix({
+                offset: {
+                    top: $("navbar").height() + 10,
+                    bottom: 41
+                    /*bottom: function() {
+                        return (this.bottom = $('footer').outerHeight(true))
+                    }*/
+                }
+            });
+
             return this;
         }
     });
