@@ -24,25 +24,46 @@
     </target>
 
     <target name="clean">
-        <antcall target="execute.play.command">
-            <param name="play.command" value="clean"/>
+        <antcall target="execute.command">
+            <param name="command.name" value="play"/>
+            <param name="command.line" value="clean"/>
         </antcall>
     </target>
 
     <target name="build">
-        <antcall target="execute.play.command">
-            <param name="play.command" value="compile"/>
+        <antcall target="execute.command">
+            <param name="command.name" value="play"/>
+            <param name="command.line" value="compile"/>
         </antcall>
 
         <antcall target="report.build.results"/>
     </target>
 
-    <target name="test">
-        <antcall target="execute.play.command">
-            <param name="play.command" value="test"/>
+    <target name="test" depends="test.back.end, test.front.end, report.test.results"/>
+
+    <target name="test.back.end">
+        <antcall target="execute.command">
+            <param name="command.name" value="play"/>
+            <param name="command.line" value="test"/>
+        </antcall>
+    </target>
+
+    <target name="test.front.end">
+        <antcall target="execute.command">
+            <param name="command.name" value="karma"/>
+            <param name="command.line" value="start ${karma.config.dir}/${karma.config.file.name}"/>
         </antcall>
 
-        <antcall target="report.test.results"/>
+        <replace file="${karma.config.dir}/${karma.report.file.name}">
+            <replacefilter value="">
+                <replacetoken><![CDATA[<testsuites>]]></replacetoken>
+            </replacefilter>
+            <replacefilter value="">
+                <replacetoken><![CDATA[</testsuites>]]></replacetoken>
+            </replacefilter>
+        </replace>
+
+        <move file="${karma.config.dir}/${karma.report.file.name}" todir="${test.report.dir}"/>
     </target>
 
     <target name="deploy" depends="init.deployment.remote" unless="local.build">
@@ -53,19 +74,19 @@
         </exec>
     </target>
 
-    <target name="execute.play.command" depends="execute.play.command.on.windows, execute.play.command.on.unix"/>
+    <target name="execute.command" depends="execute.command.on.windows, execute.command.on.unix"/>
 
-    <target name="execute.play.command.on.windows" if="is.windows">
-        <exec executable="cmd" failonerror="true">
+    <target name="execute.command.on.windows" if="is.windows">
+        <exec executable="cmd">
             <arg line="/c"/>
-            <arg line="play"/>
-            <arg line="${play.command}"/>
+            <arg line="${command.name}"/>
+            <arg line="${command.line}"/>
         </exec>
     </target>
 
-    <target name="execute.play.command.on.unix" if="is.unix">
-        <exec executable="play" failonerror="true">
-            <arg line="${play.command}"/>
+    <target name="execute.command.on.unix" if="is.unix">
+        <exec executable="${command.name}">
+            <arg line="${command.line}"/>
         </exec>
     </target>
 
@@ -93,11 +114,21 @@
         <xmlproperty file="${test.report.dir}/${all.tests.report.file.name}"
                      prefix="test.results" collapseAttributes="true" keeproot="false"/>
 
-        <for list="${test.results.testsuite.failures}" param="failures">
+        <antcall target="check.test.report.results">
+            <param name="check.list" value="${test.results.testsuite.errors}"/>
+        </antcall>
+
+        <antcall target="check.test.report.results">
+            <param name="check.list" value="${test.results.testsuite.failures}"/>
+        </antcall>
+    </target>
+
+    <target name="check.test.report.results">
+        <for list="${check.list}" param="checked.value">
             <sequential>
                 <if>
                     <not>
-                        <equals arg1="@{failures}" arg2="0"/>
+                        <equals arg1="@{checked.value}" arg2="0"/>
                     </not>
 
                     <then>
