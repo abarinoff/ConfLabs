@@ -16,7 +16,7 @@
         <os family="unix"/>
     </condition>
 
-    <target name="all" depends="info, test.front.end, report.test.results"/>
+    <target name="all" depends="info, clean, build, test, deploy"/>
 
     <target name="info">
         <echo message="Ant version: ${ant.version}"/>
