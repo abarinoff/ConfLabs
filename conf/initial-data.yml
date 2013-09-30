@@ -17,182 +17,152 @@ linkedAccounts:
 
 events:
   - &event1 !!models.event.Event
-    id: 1
     title: XP Days 2014
     description: event1 - n/a
     location: *fooLocation
 
   - &event2 !!models.event.Event
-    id: 2
     title: XP Days 2013
     description: event2 - n/a
     location: *barLocation
 
   - &event3 !!models.event.Event
-    id: 3
     title: XP Days 2012
     description: event3 - n/a
     location: *barLocation
 
   - &event4 !!models.event.Event
-    id: 4
     title: XP Days 2011
     description: event4 - n/a
     location: *barLocation
 
   - &event5 !!models.event.Event
-    id: 5
     title: XP Days 2010
     description: event5 - n/a
     location: *barLocation
 
   - &event6 !!models.event.Event
-    id: 6
     title: XP Days 2009
     description: event6 - n/a
     location: *barLocation
 
   - &event7 !!models.event.Event
-    id: 7
     title: XP Days 2008
     description: event7 - n/a
     location: *barLocation
 
   - &event8 !!models.event.Event
-    id: 8
     title: XP Days 2007
     description: event8 - n/a
     location: *barLocation
 
   - &event9 !!models.event.Event
-    id: 9
     title: XP Days 2006
     description: event9 - n/a
     location: *barLocation
 
   - &event10 !!models.event.Event
-    id: 10
     title: XP Days 2005
     description: event10 - n/a
     location: *barLocation
 
 
   - &event11 !!models.event.Event
-    id: 11
     title: XP Days 2004
     description: event11 - n/a
     location: *fooLocation
 
   - &event12 !!models.event.Event
-    id: 12
     title: XP Days 2003
     description: event12 - n/a
     location: *barLocation
 
   - &event13 !!models.event.Event
-    id: 13
     title: XP Days 2002
     description: event13 - n/a
     location: *barLocation
 
   - &event14 !!models.event.Event
-    id: 14
     title: XP Days 2001
     description: event14 - n/a
     location: *barLocation
 
   - &event15 !!models.event.Event
-    id: 15
     title: XP Days 2000
     description: event15 - n/a
     location: *barLocation
 
   - &event16 !!models.event.Event
-    id: 16
     title: XP Days 1999
     description: event16 - n/a
     location: *barLocation
 
   - &event17 !!models.event.Event
-    id: 17
     title: XP Days 1998
     description: event17 - n/a
     location: *barLocation
 
   - &event18 !!models.event.Event
-    id: 18
     title: XP Days 1997
     description: event18 - n/a
     location: *barLocation
 
   - &event19 !!models.event.Event
-    id: 19
     title: XP Days 1996
     description: event19 - n/a
     location: *barLocation
 
   - &event20 !!models.event.Event
-    id: 20
     title: XP Days 1995
     description: event20 - n/a
     location: *barLocation
 
   - &event21 !!models.event.Event
-    id: 21
     title: XP Days 1994
     description: event21 - n/a
     location: *fooLocation
 
   - &event22 !!models.event.Event
-    id: 22
     title: XP Days 1993
     description: event22 - n/a
     location: *barLocation
 
   - &event23 !!models.event.Event
-    id: 23
     title: XP Days 1992
     description: event23 - n/a
     location: *barLocation
 
   - &event24 !!models.event.Event
-    id: 24
     title: XP Days 1991
     description: event24 - n/a
     location: *barLocation
 
   - &event25 !!models.event.Event
-    id: 25
     title: XP Days 1990
     description: event25 - n/a
     location: *barLocation
 
   - &event26 !!models.event.Event
-    id: 26
     title: XP Days 1989
     description: event26 - n/a
     location: *barLocation
 
   - &event27 !!models.event.Event
-    id: 27
     title: XP Days 1988
     description: event27 - n/a
     location: *barLocation
 
   - &event28 !!models.event.Event
-    id: 28
     title: XP Days 1987
     description: event28 - n/a
     location: *barLocation
 
   - &event29 !!models.event.Event
-    id: 29
     title: XP Days 1986
     description: event29 - n/a
     location: *barLocation
 
   - &event30 !!models.event.Event
-    id: 30
     title: XP Days 1985
     description: event30 - n/a
     location: *barLocation
