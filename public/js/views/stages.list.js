@@ -38,6 +38,9 @@ function($, _, Backbone, stagesListTemplate) {
                 $("#stage-capacity").val(stage.capacity);
             }
             $("#dlg-stage").modal();
+
+            // Set listener for a Save button
+            $("#save-stage").one('click', view, view.updateModel);
         },
 
         removeStage : function(event) {
@@ -55,6 +58,20 @@ function($, _, Backbone, stagesListTemplate) {
 
             // Render the view after the model has been deleted
             view.render();
+        },
+
+        updateModel: function(event) {
+            console.log("update model");
+            var view = event.data,
+                model = view.model;
+            // @todo Validation required
+
+            // @todo Investigate the ways to chage a few fields in a single call
+            model.set('title', view.$("#stage-title").val());
+            model.set('capacity', view.$('#stage-capacity').val());
+
+            // @todo Test call to a save method (should not be called explicitly, model should listen to changes)
+            model.save();
         }
     });
 

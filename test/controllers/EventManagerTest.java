@@ -17,6 +17,7 @@ import play.GlobalSettings;
 
 import play.libs.Yaml;
 
+import play.mvc.HandlerRef;
 import play.mvc.Http;
 import play.mvc.Result;
 
@@ -178,13 +179,8 @@ public class EventManagerTest extends WithApplication {
 
     @Test
     public void getEventWithNonexistentIdShouldReturnNotFoundAndErrorMessage() throws IOException {
-        Http.Cookie playSession = getAuthorizationCookie();
-
-        final Result result = callAction(routes.ref.EventManager.getEventById(100L),
-                fakeRequest()
-                        .withCookies(playSession)
-                        .withHeader("X-Requested-With", "XMLHttpRequest")
-        );
+        HandlerRef handlerRef = routes.ref.EventManager.getEventById(100L);
+        final Result result = callAjaxActionWithCookies(handlerRef);
 
         assertThat(status(result)).isEqualTo(NOT_FOUND);
 
@@ -195,6 +191,49 @@ public class EventManagerTest extends WithApplication {
 
         assertEquals(expectedJson, receivedJson);
     }
+
+    @Test
+    public void updateEventWithNonAjaxRequestShouldReturnNotFound() {
+
+    }
+
+    @Test
+    public void updateEventWithAjaxRequestShouldSucceed() {
+
+    }
+
+    @Test
+    public void updateEventWithInvalidJsonShouldFail() {
+
+    }
+
+    @Test
+    public void updateEventWithNonExistentIdShouldReturnNotFoundAndErrorMessage() throws IOException {
+        HandlerRef handlerRef = routes.ref.EventManager.updateEvent(100L);
+        final Result result = callAjaxActionWithCookies(handlerRef);
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+
+        JsonNode expectedJson = mapper.readTree("{\"error\": \"Event with a given id was not found\"}");
+
+        String responseBody = contentAsString(result);
+        JsonNode receivedJson = mapper.readTree(responseBody);
+
+        assertEquals(expectedJson, receivedJson);
+    }
+
+    @Test
+    public void updateEventWithInconsistentIdsShouldFail() {
+        Http.Cookie playSession = getAuthorizationCookie();
+
+        final Result result = callAction(routes.ref.EventManager.updateEvent(1L),
+                fakeRequest()
+                        .withCookies(playSession)
+                        .withHeader(Http.HeaderNames.CONTENT_TYPE, CONTENT_TYPE_JSON)
+                        .withHeader("X-Requested-With", "XMLHttpRequest")
+                        .withJsonBody());
+    }
+
 
     private Result sendPostWithJsonDataAsAuthorizedUser(String jsonDataFile) throws IOException {
         Http.Cookie playSession = getAuthorizationCookie();
@@ -210,6 +249,17 @@ public class EventManagerTest extends WithApplication {
 
         return result;
     }
+
+    private Result callAjaxActionWithCookies(HandlerRef handlerRef) {
+        Http.Cookie playSession = getAuthorizationCookie();
+
+        return callAction(handlerRef,
+                fakeRequest()
+                        .withCookies(playSession)
+                        .withHeader("X-Requested-With", "XMLHttpRequest")
+        );
+    }
+
 
     private Http.Cookie getAuthorizationCookie(String ... credentials) {
         String username = credentials.length > 0 ? credentials[0] : "foo@bar.com";

@@ -133,6 +133,12 @@ public class EventManager extends Controller {
         return status.as("application/json");
     }
 
+    // @todo Implementation required
+    @Restrict(@Group(Application.USER_ROLE))
+    public static Result updateEvent(Long id) {
+        return status(200);
+    }
+
     private static JsonNode errorResponse(String ... message) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode responseJson = mapper.createObjectNode();
