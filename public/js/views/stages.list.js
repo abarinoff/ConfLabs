@@ -30,12 +30,14 @@ function($, _, Backbone, stagesListTemplate) {
             if (stageId == "new") {
                 $("#stage-title").val('');
                 $("#stage-capacity").val('');
+                $("#stage-id").val('');
             }
             else {
                 var stage = _.findWhere(stages, {'id' : parseInt(stageId)});
 
                 $("#stage-title").val(stage.title);
                 $("#stage-capacity").val(stage.capacity);
+                $("#stage-id").val(stage.id);
             }
             $("#dlg-stage").modal();
 
@@ -61,17 +63,33 @@ function($, _, Backbone, stagesListTemplate) {
         },
 
         updateModel: function(event) {
-            console.log("update model");
             var view = event.data,
-                model = view.model;
+                model = view.model,
+                stages = model.get('stages'),
+                stageId = view.$("#stage-id").val(),
+                stageTitle = view.$('#stage-title').val(),
+                stageCapacity = view.$('#stage-capacity').val();
+
+            var stage;
+            if (stageId) {
+                stage = _.findWhere(stages, {'id': parseInt(stageId)});
+            }
+            else {
+                stage = {};
+                stages.push(stage);
+            }
+            stage.title = stageTitle;
+            stage.capacity = stageCapacity;
+
             // @todo Validation required
-
-            // @todo Investigate the ways to chage a few fields in a single call
-            model.set('title', view.$("#stage-title").val());
-            model.set('capacity', view.$('#stage-capacity').val());
-
-            // @todo Test call to a save method (should not be called explicitly, model should listen to changes)
-            model.save();
+            model.save({}, {
+                success: function(model, response, options) {
+                    console.log("Model saved (changes to stages has been applied)");
+                },
+                error: function(model, xhr, options) {
+                    console.log("Error saving updates (stages changed) to a model");
+                }
+            });
         }
     });
 
