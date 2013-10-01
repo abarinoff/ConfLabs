@@ -99,9 +99,9 @@ public class EventManagerTest extends WithApplication {
 
         Result result = callAction(routes.ref.EventManager.addEvent(),
                 fakeRequest()
-                    .withCookies(playSession)
-                    .withHeader(Http.HeaderNames.CONTENT_TYPE, CONTENT_TYPE_JSON)
-                    .withJsonBody(jsonNode)
+                        .withCookies(playSession)
+                        .withHeader(Http.HeaderNames.CONTENT_TYPE, CONTENT_TYPE_JSON)
+                        .withJsonBody(jsonNode)
         );
 
         assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
@@ -179,8 +179,13 @@ public class EventManagerTest extends WithApplication {
 
     @Test
     public void getEventWithNonexistentIdShouldReturnNotFoundAndErrorMessage() throws IOException {
-        HandlerRef handlerRef = routes.ref.EventManager.getEventById(100L);
-        final Result result = callAjaxActionWithCookies(handlerRef);
+        Http.Cookie playSession = getAuthorizationCookie();
+
+        final Result result = callAction(routes.ref.EventManager.getEventById(100L),
+                fakeRequest()
+                        .withCookies(playSession)
+                        .withHeader("X-Requested-With", "XMLHttpRequest")
+        );
 
         assertThat(status(result)).isEqualTo(NOT_FOUND);
 
@@ -193,28 +198,59 @@ public class EventManagerTest extends WithApplication {
     }
 
     @Test
-    public void updateEventWithNonAjaxRequestShouldReturnNotFound() {
+    public void updateEventWithNonAjaxRequestShouldReturnNotFound() throws IOException {
+        Http.Cookie playSession = getAuthorizationCookie();
 
+        JsonNode updateEventJson = mapper.readTree(new File("conf/test/json/data/event-with-stages.json"));
+
+        final Result result = callAction(routes.ref.EventManager.updateEvent(1L),
+                fakeRequest()
+                    .withCookies(playSession)
+                    .withHeader(Http.HeaderNames.CONTENT_TYPE, CONTENT_TYPE_JSON)
+                    .withJsonBody(updateEventJson)
+        );
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
     }
 
     @Test
-    public void updateEventWithAjaxRequestShouldSucceed() {
+    public void updateEventWithAjaxRequestShouldSucceed() throws IOException {
+        HandlerRef handlerRef = routes.ref.EventManager.updateEvent(1L);
+        JsonNode updateEventJson = mapper.readTree(new File("conf/test/json/data/event-with-stages.json"));
 
+        final Result result = callAjaxActionWithJsonBody(handlerRef, updateEventJson);
+
+        assertThat(status(result)).isEqualTo(OK);
+
+        String expectedHeader = header(Http.HeaderNames.CONTENT_TYPE, result);
+        assertEquals(expectedHeader, CONTENT_TYPE_JSON);
     }
 
     @Test
-    public void updateEventWithInvalidJsonShouldFail() {
+    public void updateEventWithImproperJsonShouldReturnServerError() throws IOException {
+        HandlerRef handlerRef = routes.ref.EventManager.updateEvent(1L);
+        JsonNode updateEventJson = mapper.readTree("{\"fooKey\":\"fooValue\", \"barKey\":\"barValue\"}");
 
+        final Result result = callAjaxActionWithJsonBody(handlerRef, updateEventJson);
+
+        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+
+        JsonNode receivedJson = mapper.readTree(contentAsString(result));
+        JsonNode expectedJson = mapper.readTree("{\"error\": true}");
+
+        assertEquals(receivedJson, expectedJson);
     }
 
     @Test
-    public void updateEventWithNonExistentIdShouldReturnNotFoundAndErrorMessage() throws IOException {
+    public void updateEventWithNonExistentIdShouldReturnNotFound() throws IOException {
         HandlerRef handlerRef = routes.ref.EventManager.updateEvent(100L);
-        final Result result = callAjaxActionWithCookies(handlerRef);
+        JsonNode updateEventJson = mapper.readTree(new File("conf/test/json/data/event-with-stages.json"));
+
+        final Result result = callAjaxActionWithJsonBody(handlerRef, updateEventJson);
 
         assertThat(status(result)).isEqualTo(NOT_FOUND);
 
-        JsonNode expectedJson = mapper.readTree("{\"error\": \"Event with a given id was not found\"}");
+        JsonNode expectedJson = mapper.readTree("{\"error\": true}");
 
         String responseBody = contentAsString(result);
         JsonNode receivedJson = mapper.readTree(responseBody);
@@ -223,15 +259,39 @@ public class EventManagerTest extends WithApplication {
     }
 
     @Test
-    public void updateEventWithInconsistentIdsShouldFail() {
-        Http.Cookie playSession = getAuthorizationCookie();
+    public void updateEventWithInconsistentIdsShouldReturnServerError() throws IOException {
+        HandlerRef handlerRef = routes.ref.EventManager.updateEvent(1L);
+        JsonNode updateEventJson = mapper.readTree(new File("conf/tests/json/data/event-with-nonexistent-id.json"));
 
-        final Result result = callAction(routes.ref.EventManager.updateEvent(1L),
-                fakeRequest()
-                        .withCookies(playSession)
-                        .withHeader(Http.HeaderNames.CONTENT_TYPE, CONTENT_TYPE_JSON)
-                        .withHeader("X-Requested-With", "XMLHttpRequest")
-                        .withJsonBody());
+        final Result result = callAjaxActionWithJsonBody(handlerRef, updateEventJson);
+
+        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+
+        JsonNode expectedJson = mapper.readTree("{\"error\": true}");
+        JsonNode responseJson = mapper.readTree(contentAsString(result));
+
+        assertEquals(expectedJson, responseJson);
+    }
+
+    // @todo do we need this test method? [we already have tests that check persistence of the Event object]
+    @Test
+    public void updateEventWithExtraStageShouldCreateNewStage() throws IOException {
+        HandlerRef handlerRef = routes.ref.EventManager.updateEvent(1L);
+        JsonNode updateEventJson = mapper.readTree(new File("conf/test/json/data/event-with-stages.json"));
+
+        final Result result = callAjaxActionWithJsonBody(handlerRef, updateEventJson);
+
+        // @todo Is it correct?
+        Event expectedEvent = mapper.readValue(updateEventJson, Event.class);
+        Event updatedEvent = Event.find.byId(1L);
+
+        assertEquals(expectedEvent, updatedEvent);
+    }
+
+    // @todo is there a need for this method?
+    @Test
+    public void updateEventWithUpdatedExistingStageShouldUpdateStage() {
+
     }
 
 
@@ -250,13 +310,15 @@ public class EventManagerTest extends WithApplication {
         return result;
     }
 
-    private Result callAjaxActionWithCookies(HandlerRef handlerRef) {
+    private Result callAjaxActionWithJsonBody(HandlerRef handlerRef, JsonNode json) {
         Http.Cookie playSession = getAuthorizationCookie();
 
         return callAction(handlerRef,
                 fakeRequest()
                         .withCookies(playSession)
+                        .withHeader(Http.HeaderNames.CONTENT_TYPE, CONTENT_TYPE_JSON)
                         .withHeader("X-Requested-With", "XMLHttpRequest")
+                        .withJsonBody(json)
         );
     }
 

@@ -1,0 +1,54 @@
+{
+    "id": 1,
+    "title": "Foo Event",
+    "description": "Description",
+    "location":{
+        "id": 1,
+        "title":"foo",
+        "address":"14/1 Wall Street"
+    },
+    "stages": [
+        {
+            "id": 1,
+            "title": "foo",
+            "capacity": 128
+        },
+        {
+            "id": 2,
+            "title": "new stage",
+            "capacity": 123
+        }
+    ],
+    "speakers":[
+        {
+            "id" : 1,
+            "name" : "John Doe",
+            "position" : "Engineer",
+            "description" : "Senior Software Engineer, Lead"
+        }
+    ],
+    "speeches":[
+        {
+            "id" : 1,
+            "title" : "Foo Speech",
+            "speakers" : []
+        }
+    ],
+    "slots":[
+        {
+            "id" : 1,
+            "start" : 1378101600000,
+            "end" : 1378134000000,
+            "stage" : {
+                "id": 1,
+                "title" : "foo",
+                "capacity" : 128
+            },
+            "speech" : {
+                "id" : 1,
+                "title" : "Foo Speech",
+                "speakers" : []
+            }
+        }
+    ]
+}

@@ -53,8 +53,7 @@ public class EventManager extends Controller {
 
     @Restrict(@Group(Application.USER_ROLE))
     public static Result getEventById(Long id) {
-        String header = request().getHeader("X-Requested-With");
-        if (header == null || !header.equals("XMLHttpRequest")) {
+        if (!hasHeader("X-Requested-With", "XMLHttpRequest")) {
             return notFound();
         }
 
@@ -133,10 +132,47 @@ public class EventManager extends Controller {
         return status.as("application/json");
     }
 
-    // @todo Implementation required
     @Restrict(@Group(Application.USER_ROLE))
+    @BodyParser.Of(BodyParser.Json.class)
     public static Result updateEvent(Long id) {
-        return status(200);
+        if (!hasHeader("X-Requested-With", "XMLHttpRequest")) {
+            return notFound();
+        }
+
+        AuthUser authUser = PlayAuthenticate.getUser(session());
+        User user = User.findByAuthUserIdentity(authUser);
+
+        Http.RequestBody requestBody = request().body();
+        JsonNode jsonBody = requestBody.asJson();
+
+        Event event = Event.find.byId(id);
+        Results.Status status;
+        if (event != null) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                event = mapper.readValue(jsonBody, Event.class);
+                if (event.id != id) {
+                    JsonNode response = errorResponse();
+                    status = internalServerError(response);
+                }
+                else {
+                    event.update();
+                    status = ok();
+                }
+            }
+            catch (IOException e) {
+                Logger.error("Error mapping incoming json to Event object");
+                Logger.error(requestBody.toString());
+                Logger.error(e.toString());
+
+                status = internalServerError(errorResponse());
+            }
+        } else {
+            JsonNode response = errorResponse();
+            status = internalServerError(response);
+        }
+
+        return status.as("application/json");
     }
 
     private static JsonNode errorResponse(String ... message) {
@@ -151,5 +187,11 @@ public class EventManager extends Controller {
         }
 
         return responseJson;
+    }
+
+    private static boolean hasHeader(String headerName, String headerValue) {
+        String header = request().getHeader(headerName);
+
+        return (header == null || !header.equals(headerValue)) ? false : true;
     }
 }
