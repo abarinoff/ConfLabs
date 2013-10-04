@@ -10,6 +10,7 @@ import models.event.Event;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import org.codehaus.jackson.node.ObjectNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -170,6 +171,7 @@ public class EventManagerTest extends WithApplication {
 
         JsonNode eventsArrayNode = mapper.readTree(new File("conf/test/json/data/events-for-user-with-id-1.json"));
         JsonNode expectedJson = eventsArrayNode.get(0);
+        ((ObjectNode) expectedJson).remove("type");
 
         String responseBody = contentAsString(result);
         JsonNode receivedJson = mapper.readTree(responseBody);

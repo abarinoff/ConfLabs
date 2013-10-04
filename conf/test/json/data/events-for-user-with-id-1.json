@@ -45,7 +45,8 @@
                 "id" : 1,
                 "title" : "Foo Speech",
                 "speakers" : []
-            }
+            },
+            "type": "speech"
         }]
     }
 ]
