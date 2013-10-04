@@ -179,7 +179,7 @@ public class Account extends Controller {
         // this is the user that was selected for a login
         final AuthUser bUser = PlayAuthenticate.getMergeUser(session());
         if (bUser == null) {
-            // user to merge with could not be found, silently redirect to login
+            // user to mergeUpdate with could not be found, silently redirect to login
             return redirect(routes.Application.index());
         }
 
@@ -197,13 +197,13 @@ public class Account extends Controller {
         // this is the user that was selected for a login
         final AuthUser bUser = PlayAuthenticate.getMergeUser(session());
         if (bUser == null) {
-            // user to merge with could not be found, silently redirect to login
+            // user to mergeUpdate with could not be found, silently redirect to login
             return redirect(routes.Application.index());
         }
 
         final Form<Accept> filledForm = ACCEPT_FORM.bindFromRequest();
         if (filledForm.hasErrors()) {
-            // User did not select whether to merge or not merge
+            // User did not select whether to mergeUpdate or not mergeUpdate
             return badRequest(ask_merge.render(filledForm, aUser, bUser));
         } else {
             // User made a choice :)

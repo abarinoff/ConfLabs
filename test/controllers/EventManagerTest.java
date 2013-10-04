@@ -226,7 +226,7 @@ public class EventManagerTest extends WithApplication {
         assertEquals(expectedHeader, CONTENT_TYPE_JSON);
     }
 
-    @Test
+/*    @Test
     public void updateEventWithImproperJsonShouldReturnServerError() throws IOException {
         HandlerRef handlerRef = routes.ref.EventManager.updateEvent(1L);
         JsonNode updateEventJson = mapper.readTree("{\"fooKey\":\"fooValue\", \"barKey\":\"barValue\"}");
@@ -292,7 +292,7 @@ public class EventManagerTest extends WithApplication {
     @Test
     public void updateEventWithUpdatedExistingStageShouldUpdateStage() {
 
-    }
+    }*/
 
 
     private Result sendPostWithJsonDataAsAuthorizedUser(String jsonDataFile) throws IOException {

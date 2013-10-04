@@ -1,6 +1,7 @@
 package models.event.slot;
 
 import java.util.Date;
+import java.util.List;
 
 import play.db.ebean.Model;
 
@@ -10,6 +11,11 @@ import com.avaje.ebean.validation.NotNull;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+/*@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = SpeechSlot.class, name = "speech"),
+        @JsonSubTypes.Type(value = OrganizationalSlot.class, name="organizational")
+})*/
 public abstract class Slot extends Model {
 
     @Id

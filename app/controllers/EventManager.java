@@ -11,7 +11,6 @@ import models.event.Event;
 
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.*;
 import org.codehaus.jackson.node.ObjectNode;
 
@@ -139,32 +138,31 @@ public class EventManager extends Controller {
             return notFound();
         }
 
-        AuthUser authUser = PlayAuthenticate.getUser(session());
-        User user = User.findByAuthUserIdentity(authUser);
+        /*AuthUser authUser = PlayAuthenticate.getUser(session());
+        User user = User.findByAuthUserIdentity(authUser);*/
 
         Http.RequestBody requestBody = request().body();
         JsonNode jsonBody = requestBody.asJson();
 
-        Event event = Event.find.byId(id);
         Results.Status status;
+        Event event = Event.find.byId(id);
         if (event != null) {
             ObjectMapper mapper = new ObjectMapper();
             try {
-                event = mapper.readValue(jsonBody, Event.class);
                 if (event.id != id) {
                     JsonNode response = errorResponse();
                     status = internalServerError(response);
                 }
                 else {
+                    Event receivedEvent = mapper.readValue(jsonBody, Event.class);
+                    event.merge(receivedEvent);
                     event.update();
+
                     status = ok();
                 }
             }
             catch (IOException e) {
-                Logger.error("Error mapping incoming json to Event object");
-                Logger.error(requestBody.toString());
-                Logger.error(e.toString());
-
+                Logger.error(e.getMessage());
                 status = internalServerError(errorResponse());
             }
         } else {

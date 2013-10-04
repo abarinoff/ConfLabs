@@ -12,6 +12,10 @@ stages:
     title: foo
     capacity: 128
 
+  - &firstStage !!models.event.Stage
+    title: first stage
+    capacity: 111
+
 speakers:
   - &fooSpeaker !!models.event.Speaker
     name: John Doe
@@ -40,6 +44,7 @@ events:
       *fooLocation
     stages:
       - *fooStage
+      - *firstStage
     speakers:
       - *fooSpeaker
     slots:

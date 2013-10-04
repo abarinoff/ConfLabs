@@ -146,6 +146,101 @@ public class EventTest extends AbstractModelTest {
     }
 
     @Test
+    public void updateExistingStageShouldPersistFieldsCorrectly() {
+        initializeDatabase("test/models/data/event-with-all-entities.yml");
+
+        Stage stage = Stage.find.byId(1L);
+
+        stage.setTitle(stage.title + UPDATED_POSTFIX);
+        stage.setCapacity(stage.capacity + 10);
+        stage.save();
+
+        Stage updatedStage = Stage.find.byId(1L);
+
+        assertNotNull(updatedStage);
+        assertEquals(stage, updatedStage);
+    }
+
+    @Test
+    public void updateWithMergeShouldRemoveStagesThatAreNotInNewEvent() {
+        initializeDatabase("test/models/data/event-with-all-entities.yml");
+
+        Event eventToMerge = new Event("Testing merging of the Stages");
+
+        List<Stage> stagesToMerge = new LinkedList<Stage>();
+        Stage stage1 = new Stage("Extra stage for update 1");
+        stage1.capacity = 11;
+        stagesToMerge.add(stage1);
+
+        Stage stage2 = new Stage("Extra stage for update 2");
+        stage1.capacity = 12;
+        stagesToMerge.add(stage2);
+
+        eventToMerge.setStages(stagesToMerge);
+
+        Event event = Event.find.byId(1L);
+        event.merge(eventToMerge);
+        event.update();
+
+        List<Stage> stages = Event.find.byId(1L).stages;
+
+        assertEquals(stagesToMerge, stages);
+    }
+
+    @Test
+    public void updateWithMergeShouldAddNewStages() {
+        initializeDatabase("test/models/data/event-with-all-entities.yml");
+
+        List<Stage> stagesToMerge = new LinkedList<Stage>();
+        Stage stage1 = new Stage("Extra stage for update 1");
+        stage1.capacity = 11;
+        stagesToMerge.add(stage1);
+
+        Stage stage2 = new Stage("Extra stage for update 2");
+        stage1.capacity = 12;
+        stagesToMerge.add(stage2);
+
+        Event existingEvent = Event.find.byId(1L);
+        List<Stage> existingStages = existingEvent.stages;
+        stagesToMerge.addAll(0, existingStages);
+
+        Event eventToMerge = new Event("New Event to merge with existing");
+        eventToMerge.setStages(stagesToMerge);
+
+        existingEvent.merge(eventToMerge);
+        existingEvent.update();
+
+        List<Stage> savedStages = Event.find.byId(1L).stages;
+
+        assertEquals(stagesToMerge, savedStages);
+    }
+
+    @Test
+    public void updateWithMergeShouldUpdateExistingStages() {
+        initializeDatabase("test/models/data/event-with-all-entities.yml");
+
+        List<Stage> stagesToMerge = new LinkedList<Stage>();
+        Stage stage1 = new Stage("Extra stage for update 1");
+        stage1.capacity = 11;
+        stagesToMerge.add(stage1);
+
+        Event existingEvent = Event.find.byId(1L);
+        List<Stage> existingStages = existingEvent.stages;
+
+        stagesToMerge.addAll(0, existingStages);
+        stagesToMerge.get(0).setTitle("Changed title");
+
+        Event eventToMerge = new Event("New event to merge with existing one");
+        eventToMerge.setStages(stagesToMerge);
+        existingEvent.merge(eventToMerge);
+        existingEvent.update();
+
+        List<Stage> savedStages = Event.find.byId(1L).stages;
+
+        assertEquals(stagesToMerge, savedStages);
+    }
+
+    @Test
     public void deleteEventShouldSucceed() {
         initializeDatabase("test/models/data/event-with-all-entities.yml");
 
@@ -268,7 +363,7 @@ public class EventTest extends AbstractModelTest {
         Event savedEvent = Event.find.byId(1L);
         Event expectedEvent = createExpectedEvent();
 
-        assertEquals(expectedEvent.stages, savedEvent.stages);
+        assertEquals(expectedEvent.stages.get(0), savedEvent.stages.get(0));
     }
 
     @Test

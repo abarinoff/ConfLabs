@@ -29,7 +29,7 @@ public class User extends Model implements Subject {
     public Long id;
 
 	@Email
-	// if you make this unique, keep in mind that users *must* merge/link their
+	// if you make this unique, keep in mind that users *must* mergeUpdate/link their
 	// accounts then on signup with additional providers
 	// @Column(unique = true)
     public String email;

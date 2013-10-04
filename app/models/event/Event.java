@@ -6,11 +6,13 @@ import org.codehaus.jackson.map.annotate.JsonView;
 import play.db.ebean.Model;
 import com.avaje.ebean.validation.NotEmpty;
 
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 import javax.persistence.*;
 
 import models.event.slot.Slot;
+import util.ModelMergeHelper;
 
 @Entity
 public class Event extends Model {
@@ -49,6 +51,10 @@ public class Event extends Model {
     @JsonIgnore
     public static Finder<Long, Event> find = new Finder<Long, Event>(Long.class, Event.class);
 
+    @JsonIgnore
+    @Version
+    public Timestamp lastUpdate;
+
     public Event(String title) {
         this.title = title;
     }
@@ -77,5 +83,40 @@ public class Event extends Model {
     public void delete() {
         Ebean.delete(slots);
         super.delete();
+    }
+
+    // @todo Use parametrization
+    public void merge(Event event) {
+        this.title = event.title;
+        this.description = event.description;
+
+        // Stages
+        List<Stage> stagesToMerge = new LinkedList<Stage>(event.stages);
+        List<Stage> stagesToRemove = new LinkedList<Stage>();
+
+        for(int i = 0; i < stages.size(); i++) {
+            Stage stage = stages.get(i);
+            for (int j = 0; j < stagesToMerge.size(); j++) {
+                Stage mergeStage = stagesToMerge.get(j);
+                if (stage.id == mergeStage.id) {
+                    stage.merge(mergeStage);
+                    stagesToMerge.remove(j);
+                    break;
+                }
+                if (j >= stagesToMerge.size() - 1) {
+                    stagesToRemove.add(stage);
+                }
+            }
+        }
+
+        // Remove from Original collection elements that are not present in Supplied collection
+        stages.removeAll(stagesToRemove);
+        stages.addAll(stagesToMerge);
+
+        ModelMergeHelper.resetSlotStageReference(stagesToRemove);
+
+        for(Stage stage : stagesToRemove) {
+            stage.delete();
+        }
     }
 }

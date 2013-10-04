@@ -1,11 +1,16 @@
 package models.event;
 
+import com.avaje.ebean.Ebean;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import play.db.ebean.Model;
 
-import javax.persistence.Id;
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 import com.avaje.ebean.validation.NotEmpty;
+
+import java.sql.Timestamp;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 public class Stage extends Model {
@@ -17,6 +22,14 @@ public class Stage extends Model {
     public String title;
 
     public int capacity;
+
+    @Version
+    @JsonIgnore
+    public Timestamp lastUpdate;
+
+    /*@ManyToOne
+    @JsonIgnore
+    public Event event;*/
 
     public Stage(String title) {
         this.title = title;
@@ -38,4 +51,10 @@ public class Stage extends Model {
     }
 
     public static Finder<Long, Stage> find = new Finder<Long, Stage>(Long.class, Stage.class);
+
+    public void merge(Stage stage) {
+        this.id = stage.id;
+        this.title = stage.title;
+        this.capacity = stage.capacity;
+    }
 }

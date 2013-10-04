@@ -9,17 +9,68 @@ locations:
     title: Український католицький університет
     address: Львів, вул. Хуторівка, 35a
 
+stages:
+  - &firstStage !!models.event.Stage
+    title: First stage
+    capacity: 33
+
+  - &secondStage !!models.event.Stage
+    title: Second stage
+    capacity: 44
+
+  - &thirdStage !!models.event.Stage
+    title: Third stage stage
+    capacity: 55
+
+  - &fourthStage !!models.event.Stage
+    title: Fourth stage
+    capacity: 66
+
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount
     id: 1
     providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
     providerKey: password
 
+speeches:
+  - &firstSpeech !!models.event.Speech
+    title: First Speech
+    speakers:
+
+  - &secondSpeech !!models.event.Speech
+    title: Second Speech
+    speakers:
+
+slots:
+  - &firstSlot !!models.event.slot.SpeechSlot
+    start: !!timestamp 2013-09-02 09:00:00 +3
+    end: !!timestamp 2013-09-02 18:00:00 +3
+    stage:
+      *firstStage
+    speech:
+      *firstSpeech
+
+  - &secondSlot !!models.event.slot.SpeechSlot
+    start: !!timestamp 2013-09-03 09:00:00 +3
+    end: !!timestamp 2013-09-03 18:00:00 +3
+    stage:
+      *secondStage
+    speech:
+      *secondSpeech
+
 events:
   - &event1 !!models.event.Event
     title: XP Days 2014
     description: event1 - n/a
     location: *fooLocation
+    stages:
+      - *firstStage
+      - *secondStage
+      - *thirdStage
+      - *fourthStage
+    slots:
+      - *firstSlot
+      - *secondSlot
 
   - &event2 !!models.event.Event
     title: XP Days 2013

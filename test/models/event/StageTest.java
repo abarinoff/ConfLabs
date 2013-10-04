@@ -4,6 +4,9 @@ import org.junit.Test;
 
 import models.AbstractModelTest;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import static org.junit.Assert.*;
 import static org.hamcrest.CoreMatchers.*;
 
@@ -116,21 +119,6 @@ public class StageTest extends AbstractModelTest {
 
         assertEquals(1, Stage.find.findRowCount());
         assertThat(stage.id, equalTo(1L));
-    }
-
-    @Test
-    public void updateExistingStageShouldPersistFieldsCorrectly() {
-        initializeDatabase("test/models/data/event-with-stage.yml");
-
-        Stage stage = Stage.find.byId(1L);
-        stage.setTitle(stage.title + UPDATED_POSTFIX);
-        stage.setCapacity(stage.capacity + 10);
-        stage.save();
-
-        Stage updatedStage = Stage.find.byId(1L);
-
-        assertNotNull(updatedStage);
-        assertEquals(stage, updatedStage);
     }
 
     @Test
