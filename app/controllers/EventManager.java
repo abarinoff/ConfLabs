@@ -138,9 +138,6 @@ public class EventManager extends Controller {
             return notFound();
         }
 
-        /*AuthUser authUser = PlayAuthenticate.getUser(session());
-        User user = User.findByAuthUserIdentity(authUser);*/
-
         Http.RequestBody requestBody = request().body();
         JsonNode jsonBody = requestBody.asJson();
 
