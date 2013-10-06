@@ -232,8 +232,10 @@ public class EventTest extends AbstractModelTest {
 
         Event eventToMerge = new Event("New event to merge with existing one");
         eventToMerge.setStages(stagesToMerge);
+        System.out.println("Stages to merge: " + stagesToMerge.size());
         existingEvent.merge(eventToMerge);
         existingEvent.update();
+        System.out.println("Stages to merge after update: " + stagesToMerge.size());
 
         List<Stage> savedStages = Event.find.byId(1L).stages;
 

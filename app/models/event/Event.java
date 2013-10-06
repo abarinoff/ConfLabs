@@ -3,7 +3,6 @@ package models.event;
 import com.avaje.ebean.Ebean;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonView;
-import play.db.ebean.Model;
 import com.avaje.ebean.validation.NotEmpty;
 
 import java.sql.Timestamp;
@@ -15,7 +14,7 @@ import models.event.slot.Slot;
 import util.ModelMergeHelper;
 
 @Entity
-public class Event extends Model {
+public class Event extends AbstractModel {
 
     @JsonView(util.JsonView.ShortView.class)
     @Id
@@ -86,19 +85,28 @@ public class Event extends Model {
     }
 
     // @todo Use parametrization
-    public void merge(Event event) {
+    @Override
+    public void merge(AbstractModel eventToMerge) {
+        Event event = ((Event) eventToMerge);
+
         this.title = event.title;
         this.description = event.description;
 
+        List<Stage> stagesToRemove = mergeOneToManyAssociations(this.stages, event.stages);
+        ModelMergeHelper.resetSlotStageReference(stagesToRemove);
+        for(Stage stage : stagesToRemove) {
+            stage.delete();
+        }
+
         // Stages
-        List<Stage> stagesToMerge = new LinkedList<Stage>(event.stages);
+        /*List<Stage> stagesToMerge = new LinkedList<Stage>(event.stages);
         List<Stage> stagesToRemove = new LinkedList<Stage>();
 
         for(int i = 0; i < stages.size(); i++) {
             Stage stage = stages.get(i);
             for (int j = 0; j < stagesToMerge.size(); j++) {
                 Stage mergeStage = stagesToMerge.get(j);
-                if (stage.id == mergeStage.id) {
+                if (stage.getModelId() == mergeStage.getModelId()) {
                     stage.merge(mergeStage);
                     stagesToMerge.remove(j);
                     break;
@@ -117,6 +125,11 @@ public class Event extends Model {
 
         for(Stage stage : stagesToRemove) {
             stage.delete();
-        }
+        }*/
+    }
+
+    @Override
+    public Long getModelId() {
+        return id;
     }
 }

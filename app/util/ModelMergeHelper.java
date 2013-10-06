@@ -14,7 +14,7 @@ public class ModelMergeHelper {
                 .findList();
 
             for(Slot slot : slots) {
-                ((SpeechSlot) slot).setStage(null);
+                ((SpeechSlot) slot).stage = null;
                 slot.update();
             }
         }

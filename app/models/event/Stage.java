@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @Entity
-public class Stage extends Model {
+public class Stage extends AbstractModel {
 
     @Id
     public Long id;
@@ -52,9 +52,16 @@ public class Stage extends Model {
 
     public static Finder<Long, Stage> find = new Finder<Long, Stage>(Long.class, Stage.class);
 
-    public void merge(Stage stage) {
+    @Override
+    public void merge(AbstractModel stageToMerge) {
+        Stage stage = ((Stage) stageToMerge);
         this.id = stage.id;
         this.title = stage.title;
         this.capacity = stage.capacity;
+    }
+
+    @Override
+    public Long getModelId() {
+        return id;
     }
 }
