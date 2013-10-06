@@ -28,6 +28,7 @@ requirejs.config({
         "underscore": "lib/underscore",
         "backbone": "lib/backbone",
         "paginator": "lib/backbone.paginator",
+        "validation": "lib/backbone.validation",
         "bootstrap": "lib/bootstrap",
         "require.text": "lib/require.text"
     },
@@ -38,6 +39,7 @@ requirejs.config({
 define([
     "backbone",
     "routers/router",
+    "utils/validation",
     "bootstrap"],
 
 function(Backbone, Router) {

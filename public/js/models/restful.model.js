@@ -1,13 +1,33 @@
 define([
     "underscore",
     "backbone",
-    "paginator"],
+    "paginator",
+    "validation"],
 
-function(_, Backbone, Paginator) {
+function(_, Backbone, Paginator, Validation) {
     var Model = {};
 
     Model.Event = Backbone.Model.extend({
-        urlRoot: "/events"
+        urlRoot: "/events",
+
+        getLocation: function() {
+            return this.get("location");
+        },
+
+        setLocation: function(location, options) {
+            this.set("location", location, options);
+        },
+
+        removeLocation: function() {
+            this.unset("location");
+        },
+
+        validation: {
+            "location.title": {
+                required: true,
+                msg: "Required"
+            }
+        }
     });
 
     Model.EventCollection = Paginator.clientPager.extend({

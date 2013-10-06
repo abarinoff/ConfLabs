@@ -78,7 +78,11 @@ function(Backbone, Paginator, RestfulModel) {
                     {"id" : 2, "title" : "JavaScript is not Java"},
                     {"id" : 3, "title" : "Mastering closures"},
                     {"id" : 4, "title" : "Demystifying Prototypes"}
-                ]
+                ],
+                "location" : {
+                    "title": "President hotel",
+                    "address": "вул. Госпітальна, 12, Київ, 01023, Україна"
+                }
             },
             {"id": 2, "title": "XP Days 2013", "description": "Cool event 2",
                 "stages":[
