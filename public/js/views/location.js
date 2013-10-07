@@ -34,7 +34,7 @@ function($, _, Backbone, Validation, template) {
             if(_.isUndefined(location)) {
                 this.showDialog("", "");
             } else {
-                this.showDialog(location.title, location.address);
+                this.showDialog(location.getTitle(), location.getAddress());
             }
         },
 
@@ -42,8 +42,8 @@ function($, _, Backbone, Validation, template) {
             var currentLocation = this.model.getLocation();
             var updatedLocation = $.extend(true, {}, currentLocation);
 
-            updatedLocation.title = $(this.TITLE_SELECTOR).val();
-            updatedLocation.address = $(this.ADDRESS_SELECTOR).val();
+            updatedLocation.setTitle($(this.TITLE_SELECTOR).val());
+            updatedLocation.setAddress($(this.ADDRESS_SELECTOR).val());
 
             this.model.setLocation(updatedLocation, {validate: true});
 

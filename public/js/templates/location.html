@@ -13,11 +13,11 @@
 <% if(!_.isUndefined(location)) { %>
     <div class="row info-field">
         <div class="col-md-2 info-label">Title:</div>
-        <div class="col-md-6"><%= location.title %></div>
+        <div class="col-md-6"><%= location.getTitle() %></div>
     </div>
     <div class="row info-field">
         <div class="col-md-2 info-label">Address:</div>
-        <div class="col-md-6"><%= location.address %></div>
+        <div class="col-md-6"><%= location.getAddress() %></div>
     </div>
     <div class="row">
         <div class="col-md-2 col-md-offset-8">

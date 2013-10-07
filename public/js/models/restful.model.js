@@ -7,8 +7,107 @@ define([
 function(_, Backbone, Paginator, Validation) {
     var Model = {};
 
+    Model.Location = Backbone.Model.extend({
+        initialize: function(attributes, options) {
+            this.eventId = options.eventId;
+        },
+
+        url: function() {
+            return "/events/" + this.eventId + "/location";
+        },
+
+        getTitle: function() {
+            return this.get("title");
+        },
+
+        setTitle: function(title) {
+            this.set("title", title);
+        },
+
+        getAddress: function() {
+            return this.get("address");
+        },
+
+        setAddress: function(address) {
+            this.set("address", address);
+        }
+    });
+
+    Model.Stage = Backbone.Model.extend({
+        initialize: function(attributes, options) {
+            this.eventId = options.eventId;
+        },
+
+        url: function() {
+            var url = "/events/" + this.eventId + "/stages";
+            if (!this.isNew()) {
+                url = url + "/" + this.id;
+            }
+            return url;
+        },
+
+        getTitle: function() {
+            return this.get("title");
+        },
+
+        setTitle: function(title) {
+            this.set("title", title);
+        },
+
+        getCapacity: function() {
+            return this.get("capacity");
+        },
+
+        setCapacity: function(capacity) {
+            this.set("capacity", capacity);
+        }
+    });
+
     Model.Event = Backbone.Model.extend({
         urlRoot: "/events",
+
+        model: {
+            location: Model.Location,
+            stages: Model.Stage
+        },
+
+        parseProperty: function(response, propertyName) {
+            var eventId = response.id;
+            var embeddedClass = this.model[propertyName];
+            var embeddedData = response[propertyName];
+
+            var parsedProperty;
+
+            if(_.isArray(embeddedData)) {
+                parsedProperty = this.parseArrayOfObjects(eventId, embeddedClass, embeddedData);
+            } else {
+                parsedProperty = this.parseObject(eventId, embeddedClass, embeddedData);
+            }
+
+            response[propertyName] = parsedProperty;
+        },
+
+        parseObject: function(eventId, embeddedClass, embeddedData) {
+            return new embeddedClass(embeddedData, {eventId: eventId, parse: true});
+        },
+
+        parseArrayOfObjects: function(eventId, embeddedClass, embeddedData) {
+            for (var i = 0; i < embeddedData.length; i++) {
+                embeddedData[i] = this.parseObject(eventId, embeddedClass, embeddedData[i]);
+            }
+
+            return embeddedData;
+        },
+
+        parse: function(response) {
+            for(var propertyName in this.model) {
+                if(!_.isUndefined(response[propertyName])) {
+                    this.parseProperty(response, propertyName);
+                }
+            }
+
+            return response;
+        },
 
         getLocation: function() {
             return this.get("location");
