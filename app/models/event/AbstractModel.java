@@ -15,6 +15,13 @@ abstract public class AbstractModel extends Model {
     @JsonIgnore
     abstract public Long getModelId();
 
+    /**
+     * Merge Model's OneToMany associations
+     * @param mergeInto Destination model to merge into
+     * @param mergeScr Source model to merge
+     * @param <T>
+     * @return List of models that were removed from the source model as a result of merge operation
+     */
     public <T extends AbstractModel> List<T> mergeOneToManyAssociations(List<T> mergeInto, List<T> mergeScr) {
         List<T> modelsToMerge = new LinkedList<T>(mergeScr);
         List<T> modelsToRemove = new LinkedList<T>();

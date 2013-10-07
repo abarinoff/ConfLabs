@@ -84,7 +84,6 @@ public class Event extends AbstractModel {
         super.delete();
     }
 
-    // @todo Use parametrization
     @Override
     public void merge(AbstractModel eventToMerge) {
         Event event = ((Event) eventToMerge);
@@ -97,35 +96,6 @@ public class Event extends AbstractModel {
         for(Stage stage : stagesToRemove) {
             stage.delete();
         }
-
-        // Stages
-        /*List<Stage> stagesToMerge = new LinkedList<Stage>(event.stages);
-        List<Stage> stagesToRemove = new LinkedList<Stage>();
-
-        for(int i = 0; i < stages.size(); i++) {
-            Stage stage = stages.get(i);
-            for (int j = 0; j < stagesToMerge.size(); j++) {
-                Stage mergeStage = stagesToMerge.get(j);
-                if (stage.getModelId() == mergeStage.getModelId()) {
-                    stage.merge(mergeStage);
-                    stagesToMerge.remove(j);
-                    break;
-                }
-                if (j >= stagesToMerge.size() - 1) {
-                    stagesToRemove.add(stage);
-                }
-            }
-        }
-
-        // Remove from Original collection elements that are not present in Supplied collection
-        stages.removeAll(stagesToRemove);
-        stages.addAll(stagesToMerge);
-
-        ModelMergeHelper.resetSlotStageReference(stagesToRemove);
-
-        for(Stage stage : stagesToRemove) {
-            stage.delete();
-        }*/
     }
 
     @Override
