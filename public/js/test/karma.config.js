@@ -1,13 +1,13 @@
 module.exports = function(config) {
   config.set({
-    basePath: '',
+    basePath: '..',
 
     frameworks: ['jasmine', 'requirejs'],
 
     files: [
       'test/test.application.js',
       {pattern: 'lib/**/*.js', included: false},
-      {pattern: 'models/**/*.js', included: false},
+      {pattern: 'src/**/*.js', included: false},
       {pattern: 'test/**/*.test.js', included: false}
     ],
 

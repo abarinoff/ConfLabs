@@ -9,7 +9,7 @@ for (var file in window.__karma__.files) {
 }
 
 requirejs.config({
-    baseUrl: '/base',
+    baseUrl: '/base/src',
 
     shim: {
         "underscore": {
@@ -36,12 +36,13 @@ requirejs.config({
     },
 
     paths: {
-        "jquery": "lib/jquery",
-        "underscore": "lib/underscore",
-        "backbone": "lib/backbone",
-        "paginator": "lib/backbone.paginator",
-        "bootstrap": "lib/bootstrap",
-        "require.text": "lib/require.text"
+        "jquery": "../lib/jquery",
+        "underscore": "../lib/underscore",
+        "backbone": "../lib/backbone",
+        "paginator": "../lib/backbone.paginator",
+        "validation": "../lib/backbone.validation",
+        "bootstrap": "../lib/bootstrap",
+        "require.text": "../lib/require.text"
     },
 
     deps: tests,

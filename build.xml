@@ -54,7 +54,7 @@
             <param name="command.line" value="start ${karma.config.dir}/${karma.config.file.name}"/>
         </antcall>
 
-        <replace file="${karma.config.dir}/${karma.report.file.name}">
+        <replace file="${karma.test.report.dir}/${karma.report.file.name}">
             <replacefilter value="">
                 <replacetoken><![CDATA[<testsuites>]]></replacetoken>
             </replacefilter>
@@ -63,7 +63,7 @@
             </replacefilter>
         </replace>
 
-        <move file="${karma.config.dir}/${karma.report.file.name}" todir="${test.report.dir}"/>
+        <move file="${karma.test.report.dir}/${karma.report.file.name}" todir="${test.report.dir}"/>
     </target>
 
     <target name="deploy" depends="init.deployment.remote" unless="local.build">

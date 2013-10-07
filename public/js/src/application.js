@@ -24,13 +24,13 @@ requirejs.config({
     },
 
     paths: {
-        "jquery": "lib/jquery",
-        "underscore": "lib/underscore",
-        "backbone": "lib/backbone",
-        "paginator": "lib/backbone.paginator",
-        "validation": "lib/backbone.validation",
-        "bootstrap": "lib/bootstrap",
-        "require.text": "lib/require.text"
+        "jquery": "../lib/jquery",
+        "underscore": "../lib/underscore",
+        "backbone": "../lib/backbone",
+        "paginator": "../lib/backbone.paginator",
+        "validation": "../lib/backbone.validation",
+        "bootstrap": "../lib/bootstrap",
+        "require.text": "../lib/require.text"
     },
 
     enforceDefine: true
