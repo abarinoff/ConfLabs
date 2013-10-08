@@ -43,6 +43,40 @@ public class LocationController extends AbstractController {
         return result;
     }
 
+    @Restrict(@Group(Application.USER_ROLE))
+    public static Result updateLocation(Long eventId) {
+        Result result;
+        Event event = Event.find.byId(eventId);
+
+        if((event != null) && isXmlHttpRequest()) {
+            AuthUser authUser = PlayAuthenticate.getUser(session());
+            User user = User.findByAuthUserIdentity(authUser);
+
+            if((event.location != null) && (event.user.id.equals(user.id))) {
+                JsonNode jsonNode = requestAsJson();
+
+                try {
+                    Location location = createModelFromJson(jsonNode, Location.class);
+
+                    if(event.location.id.equals(location.id)) {
+                        location.update();
+                        result = onUpdateSuccessResponse();
+                    } else {
+                        result = internalServerError();
+                    }
+                } catch (Exception e) {
+                    result = internalServerError();
+                }
+            } else {
+                result = internalServerError();
+            }
+        } else {
+            result = notFound();
+        }
+
+        return result;
+    }
+
     private static void addLocationToEvent(Event event, Location location) {
         event.location = location;
         event.save();
@@ -55,5 +89,12 @@ public class LocationController extends AbstractController {
         responseJson.put("id", id);
 
         return created(responseJson);
+    }
+
+    private static Result onUpdateSuccessResponse() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode responseJson = mapper.createObjectNode();
+
+        return ok(responseJson);
     }
 }
