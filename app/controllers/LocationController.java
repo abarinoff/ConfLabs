@@ -29,7 +29,7 @@ public class LocationController extends AbstractController {
                 try {
                     Location location = createModelFromJson(jsonNode, Location.class);
                     addLocationToEvent(event, location);
-                    result = onAddSuccessResponse(location.id);
+                    result = successResponseWithId(location.id);
                 } catch (Exception e) {
                     result = internalServerError();
                 }
@@ -48,11 +48,11 @@ public class LocationController extends AbstractController {
         Result result;
         Event event = Event.find.byId(eventId);
 
-        if((event != null) && isXmlHttpRequest()) {
+        if((event != null) && (event.location != null) && isXmlHttpRequest()) {
             AuthUser authUser = PlayAuthenticate.getUser(session());
             User user = User.findByAuthUserIdentity(authUser);
 
-            if((event.location != null) && (event.user.id.equals(user.id))) {
+            if(event.user.id.equals(user.id)) {
                 JsonNode jsonNode = requestAsJson();
 
                 try {
@@ -60,10 +60,36 @@ public class LocationController extends AbstractController {
 
                     if(event.location.id.equals(location.id)) {
                         location.update();
-                        result = onUpdateSuccessResponse();
+                        result = emptySuccessResponse();
                     } else {
                         result = internalServerError();
                     }
+                } catch (Exception e) {
+                    result = internalServerError();
+                }
+            } else {
+                result = internalServerError();
+            }
+        } else {
+            result = notFound();
+        }
+
+        return result;
+    }
+
+    @Restrict(@Group(Application.USER_ROLE))
+    public static Result deleteLocation(Long eventId) {
+        Result result;
+        Event event = Event.find.byId(eventId);
+
+        if((event != null) && (event.location != null) && isXmlHttpRequest()) {
+            AuthUser authUser = PlayAuthenticate.getUser(session());
+            User user = User.findByAuthUserIdentity(authUser);
+
+            if(event.user.id.equals(user.id)) {
+                try {
+                    deleteLocationFromEvent(event);
+                    result = emptySuccessResponse();
                 } catch (Exception e) {
                     result = internalServerError();
                 }
@@ -82,7 +108,14 @@ public class LocationController extends AbstractController {
         event.save();
     }
 
-    private static Result onAddSuccessResponse(Long id) {
+    private static void deleteLocationFromEvent(Event event) {
+        Location oldLocation = event.location;
+        event.location = null;
+        event.update();
+        oldLocation.delete();
+    }
+
+    private static Result successResponseWithId(Long id) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode responseJson = mapper.createObjectNode();
 
@@ -91,7 +124,7 @@ public class LocationController extends AbstractController {
         return created(responseJson);
     }
 
-    private static Result onUpdateSuccessResponse() {
+    private static Result emptySuccessResponse() {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode responseJson = mapper.createObjectNode();
 

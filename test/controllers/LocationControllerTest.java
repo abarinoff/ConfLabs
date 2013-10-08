@@ -109,16 +109,16 @@ public class LocationControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void updateLocationForEventWithNonExistingLocationShouldReturnNotFound() throws Exception {
+        testOperationWithAllHeadersAndCookies(routes.ref.LocationController.updateLocation(EVENT_WITHOUT_LOCATION_ID),
+                createFakeRequestWithValidUpdatedLocation(), NOT_FOUND);
+    }
+
+    @Test
     public void updateLocationViaNonXmlHttpRequestShouldReturnNotFound() throws Exception {
         operationViaNonXmlHttpRequestShouldReturnNotFound(
                 routes.ref.LocationController.updateLocation(EVENT_WITH_LOCATION_ID),
                 createFakeRequestWithValidUpdatedLocation());
-    }
-
-    @Test
-    public void updateLocationForEventWithNonExistingLocationShouldReturnInternalServerError() throws Exception {
-        testOperationWithAllHeadersAndCookies(routes.ref.LocationController.updateLocation(EVENT_WITHOUT_LOCATION_ID),
-                createFakeRequestWithValidUpdatedLocation(), INTERNAL_SERVER_ERROR);
     }
 
     @Test
@@ -176,6 +176,67 @@ public class LocationControllerTest extends AbstractControllerTest {
         assertThat(updatedLocation.getId()).isEqualTo(1);
         assertThat(updatedLocation.getTitle()).isEqualTo("new location title");
         assertThat(updatedLocation.getAddress()).isEqualTo("new location address");
+    }
+
+    @Test
+    public void deleteLocationForNonAuthorizedUserShouldReturnUnauthorized() throws Exception {
+        operationForNonAuthorizedUserShouldReturnUnauthorized(
+                routes.ref.LocationController.deleteLocation(EVENT_WITH_LOCATION_ID),
+                createEmptyFakeRequest());
+    }
+
+    @Test
+    public void deleteLocationForNonExistingEventShouldReturnNotFound() throws Exception {
+        operationForNonExistingEventShouldReturnNotFound(
+                routes.ref.LocationController.deleteLocation(NON_EXISTING_EVENT_ID),
+                createEmptyFakeRequest());
+    }
+
+    @Test
+    public void deleteLocationForEventWithNonExistingLocationShouldReturnNotFound() throws Exception {
+        testOperationWithAllHeadersAndCookies(routes.ref.LocationController.deleteLocation(EVENT_WITHOUT_LOCATION_ID),
+                createEmptyFakeRequest(), NOT_FOUND);
+    }
+
+    @Test
+    public void deleteLocationViaNonXmlHttpRequestShouldReturnNotFound() throws Exception {
+        operationViaNonXmlHttpRequestShouldReturnNotFound(
+                routes.ref.LocationController.deleteLocation(EVENT_WITH_LOCATION_ID),
+                createEmptyFakeRequest());
+    }
+
+    @Test
+    public void deleteLocationForEventOfAnotherUserShouldReturnInternalServerError() throws Exception {
+        operationForEventOfAnotherUserShouldReturnInternalServerError(
+                routes.ref.LocationController.deleteLocation(EVENT_WITH_LOCATION_ID),
+                createEmptyFakeRequest());
+    }
+
+    @Test
+    public void deleteLocationShouldReturnOk() throws Exception {
+        deleteOperationShouldReturnOk();
+    }
+
+    @Test
+    public void deleteLocationShouldReturnEmptyJsonInResponse() throws Exception {
+        Result result = deleteOperationShouldReturnOk();
+
+        JsonNode expectedJson = jsonNodeFromString("{}");
+        testJsonResponse(result, expectedJson);
+    }
+
+    @Test
+    public void deleteLocationShouldPerformDeletionCorrectly() throws Exception {
+        Event event = Event.find.byId(EVENT_WITH_LOCATION_ID);
+        Long removedLocationId = event.getLocation().getId();
+
+        deleteOperationShouldReturnOk();
+
+        Location removedLocation = Location.find.byId(removedLocationId);
+        assertEquals(null, removedLocation);
+
+        Event updatedEvent = Event.find.byId(EVENT_WITH_LOCATION_ID);
+        assertEquals(null, updatedEvent.getLocation());
     }
 
     private void testJsonResponse(Result result, JsonNode expectedJson) throws IOException {
@@ -242,7 +303,7 @@ public class LocationControllerTest extends AbstractControllerTest {
     public void operationWhenContentIsMissingShouldReturnInternalServerError(
             HandlerRef operationHandler) throws Exception {
 
-        CustomFakeRequest request = createFakeRequestWithMissingLocation();
+        CustomFakeRequest request = createEmptyFakeRequest();
         testOperationWithAllHeadersAndCookies(operationHandler, request, INTERNAL_SERVER_ERROR);
     }
 
@@ -271,6 +332,12 @@ public class LocationControllerTest extends AbstractControllerTest {
                 createFakeRequestWithValidUpdatedLocation(), OK);
     }
 
+    private Result deleteOperationShouldReturnOk() throws IOException {
+        return testOperationWithAllHeadersAndCookies(
+                routes.ref.LocationController.deleteLocation(EVENT_WITH_LOCATION_ID),
+                createEmptyFakeRequest(), OK);
+    }
+
     private CustomFakeRequest createFakeRequestWithValidNewLocation() throws IOException {
         return createFakeRequestWithJsonBody("conf/test/data/controllers/location/valid-new-location.json");
     }
@@ -291,7 +358,7 @@ public class LocationControllerTest extends AbstractControllerTest {
         return createFakeRequestWithJsonBody("conf/test/data/controllers/location/invalid-updated-location.json");
     }
 
-    private CustomFakeRequest createFakeRequestWithMissingLocation() {
+    private CustomFakeRequest createEmptyFakeRequest() {
         return new CustomFakeRequest();
     }
 }

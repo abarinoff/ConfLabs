@@ -55,3 +55,4 @@ GET         /events/:id                            controllers.EventManager.getE
 # Location controller
 POST        /events/:eventId/location              controllers.LocationController.addLocation(eventId: Long)
 PUT         /events/:eventId/location              controllers.LocationController.updateLocation(eventId: Long)
+DELETE      /events/:eventId/location              controllers.LocationController.deleteLocation(eventId: Long)
