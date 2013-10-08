@@ -1,0 +1,63 @@
+locations:
+  - &fooLocation !!models.event.Location
+    title: foo
+    address: 14/1 Wall Street
+
+events:
+  - &eventWithLocation !!models.event.Event
+    title: Foo Event
+    description: Description
+    location:
+      *fooLocation
+
+  - &eventWithoutLocation !!models.event.Event
+    title: Bar Event
+    description: Description
+
+linkedAccounts:
+  - &fooAccount !!models.authentication.LinkedAccount
+    id: 1
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
+  - &barAccount !!models.authentication.LinkedAccount
+    id: 2
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
+roles:
+  - &fooRole !!models.authentication.SecurityRole
+    id: 1
+
+users:
+  - &userAlex !!models.authentication.User
+    email: foo@bar.com
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+      - *fooRole
+    linkedAccounts:
+      - *fooAccount
+    permissions:
+    events:
+      - *eventWithLocation
+      - *eventWithoutLocation
+
+  - &userBar !!models.authentication.User
+    email: bar@gmail.com
+    name: Bar
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+      - *fooRole
+    linkedAccounts:
+      - *barAccount
+    permissions:
+    events:

@@ -1,64 +1,36 @@
 package controllers;
 
-import com.avaje.ebean.Ebean;
-import com.feth.play.module.pa.PlayAuthenticate;
-import com.google.common.collect.ImmutableMap;
-
-import models.authentication.SecurityRole;
-
-import models.event.Event;
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.map.ObjectMapper;
-
-import org.junit.Before;
 import org.junit.Test;
-
-import play.GlobalSettings;
-
-import play.libs.Yaml;
-
 import play.mvc.Http;
 import play.mvc.Result;
 
-import play.test.WithApplication;
-
-import resolvers.DefaultResolver;
-
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static play.test.Helpers.*;
 
-import static org.junit.Assert.*;
-
-public class EventManagerTest extends WithApplication {
-    private static final String CONTENT_TYPE_JSON = "application/json";
-
-    private ObjectMapper mapper;
-
-    @Before
-    public void setUp() {
-        start(fakeApplication(inMemoryDatabase(), new CustomGlobalSettings()));
-
-        mapper = new ObjectMapper();
-    }
+public class EventManagerTest extends AbstractControllerTest {
 
     @Test
     public void getEventsForAuthorizedUserShouldSucceed() {
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
         Http.Cookie playSession = getAuthorizationCookie();
 
         Result result = callAction(routes.ref.EventManager.getEvents(), fakeRequest().withCookies(playSession));
 
         assertThat(status(result)).isEqualTo(OK);
-        assertThat(contentType(result)).isEqualTo(CONTENT_TYPE_JSON);
+        assertThat(contentType(result)).isEqualTo(AbstractController.CONTENT_TYPE_JSON);
     }
 
     @Test
     public void getEventsForNonAuthorizedUserShouldFail() {
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
         Result result = callAction(routes.ref.EventManager.getEvents());
 
         assertThat(status(result)).isEqualTo(UNAUTHORIZED);
@@ -66,61 +38,69 @@ public class EventManagerTest extends WithApplication {
 
     @Test
     public void getEventsForUserWithNoEventsShouldReturnEmptyJson() throws IOException {
-        JsonNode expectedEventsJson = mapper.readTree("[]");
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
+        JsonNode expectedEventsJson = jsonNodeFromString("[]");
 
         Http.Cookie playSession = getAuthorizationCookie("bar@gmail.com", "123456");
         Result result = callAction(routes.ref.EventManager.getEvents(), fakeRequest().withCookies(playSession));
 
         String receivedEvents = contentAsString(result);
-        JsonNode receivedEventsJson = mapper.readTree(receivedEvents);
+        JsonNode receivedEventsJson = jsonNodeFromString(receivedEvents);
 
         assertEquals(expectedEventsJson, receivedEventsJson);
     }
 
     @Test
     public void getEventsForUserWithEventsShouldReturnValidJsonResponse() throws IOException {
-        JsonNode preparedEventsJson = mapper.readTree(new File("conf/test/json/data/events-for-user-with-id-1-short-view.json"));
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
+        JsonNode preparedEventsJson = jsonNodeFromFile(new File("conf/test/json/data/events-for-user-with-id-1-short-view.json"));
 
         Http.Cookie playSession = getAuthorizationCookie();
         Result result = callAction(routes.ref.EventManager.getEvents(), fakeRequest().withCookies(playSession));
 
         String receivedEvents = contentAsString(result);
-        JsonNode receivedEventsJson = mapper.readTree(receivedEvents);
+        JsonNode receivedEventsJson = jsonNodeFromString(receivedEvents);
 
         assertEquals(preparedEventsJson, receivedEventsJson);
     }
 
     @Test
     public void addNewEventWithJsonForDifferentModelShouldFail() throws IOException {
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
         Http.Cookie playSession = getAuthorizationCookie();
 
-        JsonNode jsonNode = mapper.readTree("{\"fooKey\" : \"fooValue\", \"barKey\" : \"barValue\"}");
+        JsonNode jsonNode = jsonNodeFromString("{\"fooKey\" : \"fooValue\", \"barKey\" : \"barValue\"}");
 
         Result result = callAction(routes.ref.EventManager.addEvent(),
                 fakeRequest()
                     .withCookies(playSession)
-                    .withHeader(Http.HeaderNames.CONTENT_TYPE, CONTENT_TYPE_JSON)
+                    .withHeader(Http.HeaderNames.CONTENT_TYPE, AbstractController.CONTENT_TYPE_JSON)
                     .withJsonBody(jsonNode)
         );
 
         assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
 
         String responseBody = contentAsString(result);
-        JsonNode receivedJson = mapper.readTree(responseBody);
+        JsonNode receivedJson = jsonNodeFromString(responseBody);
 
-        JsonNode expectedJson = mapper.readTree("{\"error\":true}");
+        JsonNode expectedJson = jsonNodeFromString("{\"error\":true}");
 
         assertEquals(expectedJson, receivedJson);
     }
 
     @Test
     public void addNewEventWithCorrectPostDataShouldSucceed() throws IOException {
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
         Result result = sendPostWithJsonDataAsAuthorizedUser("conf/test/json/data/event-with-location.json");
 
         assertThat(status(result)).isEqualTo(OK);
 
         String responseBody = contentAsString(result);
-        JsonNode receivedJson = mapper.readTree(responseBody);
+        JsonNode receivedJson = jsonNodeFromString(responseBody);
 
         int nodeSize = receivedJson.size();
         assertEquals(2, nodeSize);
@@ -131,20 +111,24 @@ public class EventManagerTest extends WithApplication {
 
     @Test
     public void addMultipleEventsShouldFail() throws IOException {
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
         Result result = sendPostWithJsonDataAsAuthorizedUser("conf/test/json/data/array-of-events.json");
 
         assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
 
         String responseBody = contentAsString(result);
-        JsonNode receivedJson = mapper.readTree(responseBody);
+        JsonNode receivedJson = jsonNodeFromString(responseBody);
 
-        JsonNode expectedJson = mapper.readTree("{\"error\":true}");
+        JsonNode expectedJson = jsonNodeFromString("{\"error\":true}");
 
         assertEquals(expectedJson, receivedJson);
     }
 
     @Test
     public void getEventWithNonAjaxRequestShouldFail() {
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
         Http.Cookie playSession = getAuthorizationCookie();
 
         final Result result = callAction(routes.ref.EventManager.getEventById(1L),
@@ -157,41 +141,45 @@ public class EventManagerTest extends WithApplication {
 
     @Test
     public void getEventWithAjaxRequestShouldSucceed() throws IOException {
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
         Http.Cookie playSession = getAuthorizationCookie();
 
         final Result result = callAction(routes.ref.EventManager.getEventById(1L),
                 fakeRequest()
                         .withCookies(playSession)
-                        .withHeader("X-Requested-With", "XMLHttpRequest")
+                        .withHeader(AbstractController.REQUESTED_WITH_HEADER, AbstractController.REQUEST_TYPE_XMLHTTP)
         );
 
         assertThat(status(result)).isEqualTo(OK);
 
-        JsonNode eventsArrayNode = mapper.readTree(new File("conf/test/json/data/events-for-user-with-id-1.json"));
+        JsonNode eventsArrayNode = jsonNodeFromFile(new File("conf/test/json/data/events-for-user-with-id-1.json"));
         JsonNode expectedJson = eventsArrayNode.get(0);
 
         String responseBody = contentAsString(result);
-        JsonNode receivedJson = mapper.readTree(responseBody);
+        JsonNode receivedJson = jsonNodeFromString(responseBody);
 
         assertEquals(expectedJson, receivedJson);
     }
 
     @Test
     public void getEventWithNonexistentIdShouldReturnNotFoundAndErrorMessage() throws IOException {
+        startFakeApplication("test/models/data/event-with-all-entities.yml");
+
         Http.Cookie playSession = getAuthorizationCookie();
 
         final Result result = callAction(routes.ref.EventManager.getEventById(100L),
                 fakeRequest()
                         .withCookies(playSession)
-                        .withHeader("X-Requested-With", "XMLHttpRequest")
+                        .withHeader(AbstractController.REQUESTED_WITH_HEADER, AbstractController.REQUEST_TYPE_XMLHTTP)
         );
 
         assertThat(status(result)).isEqualTo(NOT_FOUND);
 
-        JsonNode expectedJson = mapper.readTree("{\"error\":\"Event with a given id was not found\"}");
+        JsonNode expectedJson = jsonNodeFromString("{\"error\":\"Event with a given id was not found\"}");
 
         String responseBody = contentAsString(result);
-        JsonNode receivedJson = mapper.readTree(responseBody);
+        JsonNode receivedJson = jsonNodeFromString(responseBody);
 
         assertEquals(expectedJson, receivedJson);
     }
@@ -199,53 +187,15 @@ public class EventManagerTest extends WithApplication {
     private Result sendPostWithJsonDataAsAuthorizedUser(String jsonDataFile) throws IOException {
         Http.Cookie playSession = getAuthorizationCookie();
 
-        JsonNode newEventJson = mapper.readTree(new File(jsonDataFile));
+        JsonNode newEventJson = jsonNodeFromFile(new File(jsonDataFile));
 
         final Result result = callAction(routes.ref.EventManager.addEvent(),
                 fakeRequest()
                         .withCookies(playSession)
-                        .withHeader(Http.HeaderNames.CONTENT_TYPE, CONTENT_TYPE_JSON)
+                        .withHeader(Http.HeaderNames.CONTENT_TYPE, AbstractController.CONTENT_TYPE_JSON)
                         .withJsonBody(newEventJson)
         );
 
         return result;
-    }
-
-    private Http.Cookie getAuthorizationCookie(String ... credentials) {
-        String username = credentials.length > 0 ? credentials[0] : "foo@bar.com";
-        String password = credentials.length > 1 ? credentials[1] : "123456";
-
-        Map<String, String> data = ImmutableMap.of(
-                "email", username,
-                "password", password);
-        Result result = callAction(
-            routes.ref.Application.doLogin(), fakeRequest().withFormUrlEncodedBody(data)
-        );
-
-        return cookie("PLAY_SESSION", result);
-    }
-
-    private class CustomGlobalSettings extends GlobalSettings {
-        public void onStart(play.Application app) {
-            super.onStart(app);
-
-            PlayAuthenticate.setResolver(new DefaultResolver());
-
-            initializeDatabase();
-        }
-
-        private void initializeDatabase() {
-            if (SecurityRole.find.findRowCount() == 0) {
-                for (final String roleName : Arrays
-                        .asList(controllers.Application.USER_ROLE)) {
-                    final SecurityRole role = new SecurityRole();
-                    role.roleName = roleName;
-                    role.save();
-                }
-            }
-
-            Map<String, List> all = (Map<String, List>) Yaml.load("test/models/data/event-with-all-entities.yml");
-            Ebean.save(all.get("users"));
-        }
     }
 }

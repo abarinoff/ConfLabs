@@ -52,3 +52,5 @@ GET     /events                     controllers.EventManager.getEvents()
 POST    /events                     controllers.EventManager.addEvent()
 GET     /events/:id                 controllers.EventManager.getEventById(id: Long)
 
+# Location controller
+POST    /events/:eventId/location   controllers.LocationController.addLocation(eventId: Long)

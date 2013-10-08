@@ -41,6 +41,13 @@
 
     <target name="test" depends="test.back.end, test.front.end, report.test.results"/>
 
+    <target name="test-only">
+        <antcall target="execute.command">
+            <param name="command.name" value="play"/>
+            <param name="command.line" value="'test-only controllers.LocationControllerTest'"/>
+        </antcall>
+    </target>
+
     <target name="test.back.end">
         <antcall target="execute.command">
             <param name="command.name" value="play"/>

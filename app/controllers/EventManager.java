@@ -24,7 +24,7 @@ import java.io.IOException;
 
 import java.util.List;
 
-public class EventManager extends Controller {
+public class EventManager extends AbstractController {
 
     @Restrict(@Group(Application.USER_ROLE))
     public static Result getEvents() {
@@ -48,13 +48,12 @@ public class EventManager extends Controller {
             status = internalServerError(error);
         }
 
-        return status.as("application/json");
+        return status.as(CONTENT_TYPE_JSON);
     }
 
     @Restrict(@Group(Application.USER_ROLE))
     public static Result getEventById(Long id) {
-        String header = request().getHeader("X-Requested-With");
-        if (header == null || !header.equals("XMLHttpRequest")) {
+        if (!isXmlHttpRequest()) {
             return notFound();
         }
 
@@ -82,7 +81,7 @@ public class EventManager extends Controller {
             response = notFound(errorResponse("Event with a given id was not found"));
         }
 
-        return response.as("application/json");
+        return response.as(CONTENT_TYPE_JSON);
     }
 
     @Restrict(@Group(Application.USER_ROLE))
@@ -130,7 +129,7 @@ public class EventManager extends Controller {
             status = internalServerError(error);
         }
 
-        return status.as("application/json");
+        return status.as(CONTENT_TYPE_JSON);
     }
 
     private static JsonNode errorResponse(String ... message) {

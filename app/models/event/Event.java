@@ -1,6 +1,7 @@
 package models.event;
 
 import com.avaje.ebean.Ebean;
+import models.authentication.User;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.map.annotate.JsonView;
 import play.db.ebean.Model;
@@ -25,6 +26,10 @@ public class Event extends Model {
 
     @JsonView(util.JsonView.FullView.class)
     public String description;
+
+    @JsonIgnore
+    @ManyToOne
+    public User user;
 
     @JsonView(util.JsonView.FullView.class)
     @OneToOne(cascade = CascadeType.ALL)
