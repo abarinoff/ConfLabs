@@ -1,0 +1,115 @@
+locations:
+  - &fooLocation !!models.event.Location
+    title: foo
+    address: 14/1 Wall Street
+
+  - &barLocation !!models.event.Location
+    title: bar
+    address: Baker's street
+
+stages:
+  - &fooStage !!models.event.Stage
+    title: foo
+    capacity: 128
+
+  - &barStage !!models.event.Stage
+    title: bar
+    capacity: 256
+
+  - &secondEventStage !!models.event.Stage
+    title: Second Event Stage
+    capacity: 512
+
+speakers:
+  - &fooSpeaker !!models.event.Speaker
+    name: John Doe
+    position: Engineer
+    description: Senior Software Engineer, Lead
+
+speeches:
+  - &fooSpeech !!models.event.Speech
+    title: Foo Speech
+    speakers:
+
+slots:
+  - &fooSlot !!models.event.slot.SpeechSlot
+    start: !!timestamp 2013-09-02 09:00:00 +3
+    end: !!timestamp 2013-09-02 18:00:00 +3
+    stage:
+      *fooStage
+    speech:
+      *fooSpeech
+
+events:
+  - &fooEvent !!models.event.Event
+    title: Foo Event
+    description: Description
+    location:
+      *fooLocation
+    stages:
+      - *fooStage
+      - *barStage
+    speakers:
+      - *fooSpeaker
+    slots:
+      - *fooSlot
+    speeches:
+      - *fooSpeech
+
+  - &secondEvent !!models.event.Event
+    title: Second Event
+    description: Simple Test Event
+    location:
+      *barLocation
+    stages:
+      - *secondEventStage
+
+linkedAccounts:
+  - &fooAccount !!models.authentication.LinkedAccount
+    id: 1
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
+  - &barAccount !!models.authentication.LinkedAccount
+    id: 2
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
+roles:
+  - &fooRole !!models.authentication.SecurityRole
+    id: 1
+
+users:
+  - &userAlex !!models.authentication.User
+    id: 1
+    email: foo@bar.com
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+      - *fooRole
+    linkedAccounts:
+      - *fooAccount
+    permissions:
+    events:
+      - *fooEvent
+      - *secondEvent
+
+  - &userBar !!models.authentication.User
+    id: 2
+    email: bar@gmail.com
+    name: Bar
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+      - *fooRole
+    linkedAccounts:
+      - *barAccount
+    permissions:
+    events:

@@ -53,7 +53,7 @@ public class EventManagerTest extends AbstractControllerTest {
 
     @Test
     public void getEventsForUserWithEventsShouldReturnValidJsonResponse() throws IOException {
-        startFakeApplication("test/models/data/event-with-all-entities.yml");
+        startFakeApplication("test/data/controllers/event-with-all-entities.yml");
 
         JsonNode preparedEventsJson = jsonNodeFromFile(new File("conf/test/json/data/events-for-user-with-id-1-short-view.json"));
 
@@ -141,7 +141,7 @@ public class EventManagerTest extends AbstractControllerTest {
 
     @Test
     public void getEventWithAjaxRequestShouldSucceed() throws IOException {
-        startFakeApplication("test/models/data/event-with-all-entities.yml");
+        startFakeApplication("test/data/controllers/event-with-all-entities.yml");
 
         Http.Cookie playSession = getAuthorizationCookie();
 

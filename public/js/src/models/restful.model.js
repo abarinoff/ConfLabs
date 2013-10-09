@@ -154,6 +154,36 @@ function(_, Backbone, Paginator, Validation) {
             this.unset("location");
         },
 
+        getStage: function(id) {
+            return _.findWhere(this.getStages(), {id: parseInt(id)});
+        },
+
+        getStages: function() {
+            return this.get("stages");
+        },
+
+        saveStage: function(stage) {
+            var stages = this.getStages(),
+                eventStage = _.findWhere(stages, {id: parseInt(stage.id)}),
+                stagePos = _.indexOf(stages, eventStage);
+
+            if (stagePos >= 0) {
+                stages[stagePos] = stage;
+            }
+            else {
+                stages.push(stage);
+
+            }
+        },
+
+        removeStage: function(stage) {
+            var stages = this.get('stages'),
+                stagePos = _.indexOf(stages, stage);
+            if (stagePos >= 0) {
+                this.getStages().splice(stagePos, 1);
+            }
+        },
+
         validation: {
             title: {
                 required: true,
