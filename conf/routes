@@ -53,6 +53,6 @@ POST        /events                                controllers.EventManager.addE
 GET         /events/:id                            controllers.EventManager.getEventById(id: Long)
 
 # Location controller
-POST        /events/:eventId/location              controllers.LocationController.addLocation(eventId: Long)
+POST        /events/:eventId/location              controllers.LocationController.createLocation(eventId: Long)
 PUT         /events/:eventId/location              controllers.LocationController.updateLocation(eventId: Long)
 DELETE      /events/:eventId/location              controllers.LocationController.deleteLocation(eventId: Long)

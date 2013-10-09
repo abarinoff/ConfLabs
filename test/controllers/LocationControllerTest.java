@@ -26,65 +26,71 @@ public class LocationControllerTest extends AbstractControllerTest {
     }
 
     @Test
-    public void addLocationForNonAuthorizedUserShouldReturnUnauthorized() throws Exception {
+    public void createLocationForNonAuthorizedUserShouldReturnUnauthorized() throws Exception {
         operationForNonAuthorizedUserShouldReturnUnauthorized(
-                routes.ref.LocationController.addLocation(EVENT_WITHOUT_LOCATION_ID),
+                routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID),
                 createFakeRequestWithValidNewLocation());
     }
 
     @Test
-    public void addLocationForNonExistingEventShouldReturnNotFound() throws Exception {
+    public void createLocationForNonExistingEventShouldReturnNotFound() throws Exception {
         operationForNonExistingEventShouldReturnNotFound(
-                routes.ref.LocationController.addLocation(NON_EXISTING_EVENT_ID),
+                routes.ref.LocationController.createLocation(NON_EXISTING_EVENT_ID),
                 createFakeRequestWithValidNewLocation());
     }
 
     @Test
-    public void addLocationViaNonXmlHttpRequestShouldReturnNotFound() throws Exception {
+    public void createLocationViaNonXmlHttpRequestShouldReturnNotFound() throws Exception {
         operationViaNonXmlHttpRequestShouldReturnNotFound(
-                routes.ref.LocationController.addLocation(EVENT_WITHOUT_LOCATION_ID),
+                routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID),
                 createFakeRequestWithValidNewLocation());
     }
 
     @Test
-    public void addLocationForEventWithExistingLocationShouldReturnInternalServerError() throws Exception {
-        testOperationWithAllHeadersAndCookies(routes.ref.LocationController.addLocation(EVENT_WITH_LOCATION_ID),
+    public void createLocationForEventWithExistingLocationShouldReturnInternalServerError() throws Exception {
+        testOperationWithAllHeadersAndCookies(routes.ref.LocationController.createLocation(EVENT_WITH_LOCATION_ID),
                 createFakeRequestWithValidNewLocation(), INTERNAL_SERVER_ERROR);
     }
 
     @Test
-    public void addLocationForEventOfAnotherUserShouldReturnInternalServerError() throws Exception {
+    public void createLocationForEventOfAnotherUserShouldReturnInternalServerError() throws Exception {
         operationForEventOfAnotherUserShouldReturnInternalServerError(
-                routes.ref.LocationController.addLocation(EVENT_WITHOUT_LOCATION_ID),
+                routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID),
                 createFakeRequestWithValidNewLocation());
     }
 
     @Test
-    public void addLocationWhenContentIsMissingShouldReturnInternalServerError() throws Exception {
+    public void createLocationWhenContentIsMissingShouldReturnInternalServerError() throws Exception {
         operationWhenContentIsMissingShouldReturnInternalServerError(
-                routes.ref.LocationController.addLocation(EVENT_WITHOUT_LOCATION_ID));
+                routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID));
     }
 
     @Test
-    public void addLocationWhenNonLocationModelIsPassedShouldReturnInternalServerError() throws Exception {
+    public void createLocationWhenNonLocationModelIsPassedShouldReturnInternalServerError() throws Exception {
         operationWhenNonLocationModelIsPassedShouldReturnInternalServerError(
-                routes.ref.LocationController.addLocation(EVENT_WITHOUT_LOCATION_ID));
+                routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID));
     }
 
     @Test
-    public void addLocationWhenInvalidLocationIsPassedShouldReturnInternalServerError() throws Exception {
+    public void createLocationWhenIdIsSpecifiedInRequestDataShouldReturnServerError() throws IOException {
+        testOperationWithAllHeadersAndCookies(routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID),
+                createFakeRequestWithNewLocationWithId(), INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void createLocationWhenInvalidLocationIsPassedShouldReturnInternalServerError() throws Exception {
         operationWhenInvalidLocationIsPassedShouldReturnInternalServerError(
-                routes.ref.LocationController.addLocation(EVENT_WITHOUT_LOCATION_ID),
+                routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID),
                 createFakeRequestWithInvalidNewLocation());
     }
 
     @Test
-    public void addLocationShouldReturnCreated() throws Exception {
+    public void createLocationShouldReturnCreated() throws Exception {
         addOperationShouldReturnCreated();
     }
 
     @Test
-    public void addLocationShouldReturnLocationIdInResponse() throws Exception {
+    public void createLocationShouldReturnLocationIdInResponse() throws Exception {
         Result result = addOperationShouldReturnCreated();
 
         Event event = Event.find.byId(EVENT_WITHOUT_LOCATION_ID);
@@ -322,7 +328,7 @@ public class LocationControllerTest extends AbstractControllerTest {
 
     private Result addOperationShouldReturnCreated() throws IOException {
         return testOperationWithAllHeadersAndCookies(
-                routes.ref.LocationController.addLocation(EVENT_WITHOUT_LOCATION_ID),
+                routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID),
                 createFakeRequestWithValidNewLocation(), CREATED);
     }
 
@@ -344,6 +350,10 @@ public class LocationControllerTest extends AbstractControllerTest {
 
     private CustomFakeRequest createFakeRequestWithInvalidNewLocation() throws IOException {
         return createFakeRequestWithJsonBody("conf/test/data/controllers/location/invalid-new-location.json");
+    }
+
+    private CustomFakeRequest createFakeRequestWithNewLocationWithId() throws IOException {
+        return createFakeRequestWithJsonBody("conf/test/data/controllers/location/new-location-with-id.json");
     }
 
     private CustomFakeRequest createFakeRequestWithValidUpdatedLocation() throws IOException {

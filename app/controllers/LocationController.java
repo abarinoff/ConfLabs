@@ -15,7 +15,7 @@ import play.mvc.Result;
 public class LocationController extends AbstractController {
 
     @Restrict(@Group(Application.USER_ROLE))
-    public static Result addLocation(Long eventId) {
+    public static Result createLocation(Long eventId) {
         Result result;
         Event event = Event.find.byId(eventId);
 
@@ -28,8 +28,12 @@ public class LocationController extends AbstractController {
 
                 try {
                     Location location = createModelFromJson(jsonNode, Location.class);
-                    addLocationToEvent(event, location);
-                    result = successResponseWithId(location.id);
+                    if(location.id == null) {
+                        addLocationToEvent(event, location);
+                        result = successResponseWithId(location.id);
+                    } else {
+                        result = internalServerError();
+                    }
                 } catch (Exception e) {
                     result = internalServerError();
                 }
