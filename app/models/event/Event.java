@@ -27,10 +27,6 @@ public class Event extends Model {
     @JsonView(util.JsonView.FullView.class)
     public String description;
 
-    @JsonIgnore
-    @ManyToOne
-    public User user;
-
     @JsonView(util.JsonView.FullView.class)
     @OneToOne(cascade = CascadeType.ALL)
     public Location location;
@@ -50,6 +46,10 @@ public class Event extends Model {
     @JsonView(util.JsonView.FullView.class)
     @OneToMany(cascade = CascadeType.ALL)
     public List<Slot> slots = new LinkedList<Slot>();
+
+    @JsonIgnore
+    @ManyToOne
+    public User user;
 
     @JsonIgnore
     public static Finder<Long, Event> find = new Finder<Long, Event>(Long.class, Event.class);
@@ -76,6 +76,25 @@ public class Event extends Model {
         if (!title.equals(event.title)) return false;
 
         return true;
+    }
+
+    /*public boolean hasStage(long id) {
+        for(Stage stage : stages) {
+            if (stage.id == id) {
+                return true;
+            }
+        }
+        return false;
+    }*/
+
+    public Stage getStageById(Long id) {
+        for(Stage stage : stages) {
+            if (stage.id.equals(id)) {
+                return stage;
+            }
+        }
+
+        return null;
     }
 
     @Override

@@ -8,11 +8,18 @@
             "title":"foo",
             "address":"14/1 Wall Street"
         },
-        "stages":[{
-            "id": 1,
-            "title" : "foo",
-            "capacity" : 128
-        }],
+        "stages":[
+            {
+                "id": 1,
+                "title" : "foo",
+                "capacity" : 128
+            },
+            {
+                "id": 2,
+                "title": "bar",
+                "capacity": 256
+            }
+        ],
         "speakers":[{
             "id" : 1,
             "name" : "John Doe",

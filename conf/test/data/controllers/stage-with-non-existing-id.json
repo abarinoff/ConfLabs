@@ -1,0 +1,5 @@
+{
+    "id": 100,
+    "title": "Test Stage (current id should not exist in the DB)",
+    "capacity": 128
+}

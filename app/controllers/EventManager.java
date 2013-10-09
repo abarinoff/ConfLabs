@@ -9,6 +9,7 @@ import com.feth.play.module.pa.user.AuthUser;
 import models.authentication.User;
 import models.event.Event;
 
+import models.event.Stage;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParseException;

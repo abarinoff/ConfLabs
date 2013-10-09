@@ -24,6 +24,20 @@ stages:
     title: East
     capacity: 400
 
+speeches:
+  - &speech1 !!models.event.Speech
+    title: Foo Speech
+    speakers:
+
+slots:
+  - &slot1 !!models.event.slot.SpeechSlot
+    start: !!timestamp 2013-09-02 09:00:00 +3
+    end: !!timestamp 2013-09-02 18:00:00 +3
+    stage:
+      *stage1
+    speech:
+      *speech1
+
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount
     id: 1
@@ -38,6 +52,8 @@ events:
     stages:
       - *stage1
       - *stage2
+    slots:
+      - *slot1
 
   - &event2 !!models.event.Event
     title: XP Days 2013

@@ -56,3 +56,7 @@ GET         /events/:id                            controllers.EventManager.getE
 POST        /events/:eventId/location              controllers.LocationController.createLocation(eventId: Long)
 PUT         /events/:eventId/location              controllers.LocationController.updateLocation(eventId: Long)
 DELETE      /events/:eventId/location              controllers.LocationController.deleteLocation(eventId: Long)
+
+POST        /events/:eventId/stages                controllers.StagesController.createStage(eventId: Long)
+PUT         /events/:eventId/stages/:stageId       controllers.StagesController.updateStage(eventId: Long, stageId: Long)
+DELETE      /events/:eventId/stages/:stageId       controllers.StagesController.deleteStage(eventId: Long, stageId: Long)
