@@ -24,7 +24,7 @@ requirejs.config({
             exports: "Backbone"
         },
 
-        "paginator": {
+        "backbone.paginator": {
             deps: ["backbone"],
             exports: "Backbone.Paginator"
         },
@@ -39,8 +39,8 @@ requirejs.config({
         "jquery": "../lib/jquery",
         "underscore": "../lib/underscore",
         "backbone": "../lib/backbone",
-        "paginator": "../lib/backbone.paginator",
-        "validation": "../lib/backbone.validation",
+        "backbone.paginator": "../lib/backbone.paginator",
+        "backbone.validation": "../lib/backbone.validation",
         "bootstrap": "../lib/bootstrap",
         "require.text": "../lib/require.text"
     },

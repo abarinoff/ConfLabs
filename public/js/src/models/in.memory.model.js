@@ -1,6 +1,6 @@
 define([
     "backbone",
-    "paginator",
+    "backbone.paginator",
     "models/restful.model"],
 
 function(Backbone, Paginator, RestfulModel) {

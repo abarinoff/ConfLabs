@@ -19,7 +19,7 @@ function($, Backbone, StagesListView, SpeakersListView, LocationView, tabsTempla
 
             new StagesListView({model: this.model}).render();
             new SpeakersListView({model: this.model}).render();
-            new LocationView({model: this.model}).render();
+            new LocationView({eventModel: this.model}).render();
         }
     });
 

@@ -2,10 +2,12 @@ define([
     "jquery",
     "underscore",
     "backbone",
-    "validation",
-    'require.text!templates/location.html'],
+    "backbone.validation",
+    "models/model",
+    "validation/validation.handler",
+    "require.text!templates/location.html"],
 
-function($, _, Backbone, Validation, template) {
+function($, _, Backbone, Validation, Model, ValidationHandler, template) {
 
     var LocationView = Backbone.View.extend({
         DIALOG_SELECTOR: "#dlg-location",
@@ -22,56 +24,78 @@ function($, _, Backbone, Validation, template) {
             "click button#btn-remove-location" : "removeLocation"
         },
 
+        initialize: function(options) {
+            this.eventModel = options.eventModel;
+            this.setModelFromEvent();
+        },
+
+        setModelFromEvent: function() {
+            this.model = this.eventModel.getLocation();
+        },
+
         render: function() {
-            var renderedTemplate = this.template({location: this.model.getLocation()});
+            var renderedTemplate = this.template({location: this.model});
             this.$el.html(renderedTemplate);
             return this;
         },
 
         editLocation: function() {
-            var location = this.model.getLocation();
-
-            if(_.isUndefined(location)) {
+            if(_.isEmpty(this.model)) {
                 this.showDialog("", "");
             } else {
-                this.showDialog(location.getTitle(), location.getAddress());
+                this.showDialog(this.model.getTitle(), this.model.getAddress());
             }
         },
 
         saveLocation: function() {
-            var currentLocation = this.model.getLocation();
-            var updatedLocation = $.extend(true, {}, currentLocation);
-
-            updatedLocation.setTitle($(this.TITLE_SELECTOR).val());
-            updatedLocation.setAddress($(this.ADDRESS_SELECTOR).val());
-
-            this.model.setLocation(updatedLocation, {validate: true});
-
-            if(this.model.isValid()) {
-                this.hideDialog();
+            if(_.isEmpty(this.model)) {
+                this.model = new Model.Location({}, {eventId: this.eventModel.id});
             }
+            Validation.bind(this, new ValidationHandler("location."));
+
+            var values = {title: $(this.TITLE_SELECTOR).val(), address: $(this.ADDRESS_SELECTOR).val()};
+            this.model.save(values, {
+                success: _.bind(this.onSaveSuccess, this),
+                error: _.bind(this.onError, this)
+            });
         },
 
         removeLocation: function() {
-            this.model.removeLocation();
-            this.render();
+            this.model.destroy({
+                success: _.bind(this.onDestroySuccess, this),
+                error: _.bind(this.onError, this)
+            });
         },
 
         showDialog: function(title, address) {
-            Validation.bind(this);
-
             $(this.TITLE_SELECTOR).val(title);
             $(this.ADDRESS_SELECTOR).val(address);
 
             $(this.DIALOG_SELECTOR).modal();
         },
 
-        hideDialog: function() {
+        hideDialog: function(callback) {
             var dialog = $(this.DIALOG_SELECTOR);
 
-            dialog.one("hidden.bs.modal", _.bind(this.render, this));
+            dialog.one("hidden.bs.modal", _.bind(callback, this));
             dialog.modal("hide");
+        },
+
+        onSaveSuccess: function() {
+            this.eventModel.setLocation(this.model);
+            this.hideDialog(this.render);
+        },
+
+        onDestroySuccess: function() {
+            this.eventModel.removeLocation();
+            this.setModelFromEvent();
+            this.render();
+        },
+
+        onError: function(model, response) {
+            this.hideDialog(Model.ErrorHandler[response.status]);
         }
+
     });
 
     return LocationView;
