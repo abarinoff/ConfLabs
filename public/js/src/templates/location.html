@@ -3,14 +3,14 @@
         <h3>Location</h3>
     </div>
 
-    <% if(_.isUndefined(location)) { %>
+    <% if(_.isEmpty(location)) { %>
         <div class="col-md-2 col-md-offset-2">
             <button id="btn-add-location" class="btn btn-primary btn-block" type="button">Add</button>
         </div>
     <% } %>
 </div>
 
-<% if(!_.isUndefined(location)) { %>
+<% if(!_.isEmpty(location)) { %>
     <div class="row info-field">
         <div class="col-md-2 info-label">Title:</div>
         <div class="col-md-6"><%= location.getTitle() %></div>

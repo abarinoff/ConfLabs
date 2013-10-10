@@ -1,11 +1,25 @@
 define([
     "underscore",
     "backbone",
-    "paginator",
-    "validation"],
+    "backbone.paginator",
+    "backbone.validation"],
 
 function(_, Backbone, Paginator, Validation) {
     var Model = {};
+
+    Model.ErrorHandler = {
+        401: function() {
+            window.location.replace('/login');
+        },
+
+        404: function() {
+            window.application.router.navigate("notFound", {trigger: true});
+        },
+
+        500: function() {
+            window.application.router.navigate("serverError", {trigger: true});
+        }
+    };
 
     Model.Location = Backbone.Model.extend({
         initialize: function(attributes, options) {
@@ -14,6 +28,10 @@ function(_, Backbone, Paginator, Validation) {
 
         url: function() {
             return "/events/" + this.eventId + "/location";
+        },
+
+        getId: function() {
+            return this.get("id");
         },
 
         getTitle: function() {
@@ -30,6 +48,13 @@ function(_, Backbone, Paginator, Validation) {
 
         setAddress: function(address) {
             this.set("address", address);
+        },
+
+        validation: {
+            title: {
+                required: true,
+                msg: "Required"
+            }
         }
     });
 
@@ -44,6 +69,10 @@ function(_, Backbone, Paginator, Validation) {
                 url = url + "/" + this.id;
             }
             return url;
+        },
+
+        getId: function() {
+            return this.get("id");
         },
 
         getTitle: function() {
@@ -101,12 +130,16 @@ function(_, Backbone, Paginator, Validation) {
 
         parse: function(response) {
             for(var propertyName in this.model) {
-                if(!_.isUndefined(response[propertyName])) {
+                if(!_.isEmpty(response[propertyName])) {
                     this.parseProperty(response, propertyName);
                 }
             }
 
             return response;
+        },
+
+        getId: function() {
+            return this.get("id");
         },
 
         getLocation: function() {
@@ -152,7 +185,7 @@ function(_, Backbone, Paginator, Validation) {
         },
 
         validation: {
-            "location.title": {
+            title: {
                 required: true,
                 msg: "Required"
             }

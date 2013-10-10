@@ -1,10 +1,8 @@
 define([
-    "jquery",
-    "underscore",
-    "validation"
+    "jquery"
 ],
 
-function($, _, Validation) {
+function($) {
     var FormControl =  function(view, attr, selector) {
         var selectorValue = attr.replace(".", "-");
         var control = view.$('[' + selector + '="' + selectorValue + '"]');
@@ -26,19 +24,21 @@ function($, _, Validation) {
         }
     }
 
-    Validation.configure({
-        selector: 'id'
-    });
+    var ValidationHandler = function(attrPrefix) {
+        return {
+            valid: function(view, attr, selector){
+                var fullAttr = attrPrefix + attr;
+                var control = new FormControl(view, fullAttr, selector);
+                control.unsetError();
+            },
 
-    _.extend(Validation.callbacks, {
-        valid: function(view, attr, selector){
-            var control = new FormControl(view, attr, selector);
-            control.unsetError();
-        },
-
-        invalid: function(view, attr, error, selector) {
-            var control = new FormControl(view, attr, selector);
-            control.setError(error);
+            invalid: function(view, attr, error, selector) {
+                var fullAttr = attrPrefix + attr;
+                var control = new FormControl(view, fullAttr, selector);
+                control.setError(error);
+            }
         }
-    });
+    }
+
+    return ValidationHandler;
 });

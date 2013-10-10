@@ -11,7 +11,9 @@ function($, Backbone, EventsView, EventsListView, EventsPaginationView, Model) {
     var Router = Backbone.Router.extend({
         routes: {
             "events": "events",
-            "events/:id": "eventDetails"
+            "events/:id": "eventDetails",
+            "serverError": "serverError",
+            "notFound": "notFound"
         },
 
         events: function () {
@@ -36,6 +38,14 @@ function($, Backbone, EventsView, EventsListView, EventsPaginationView, Model) {
             });
 
             selectMenuItem("nav-conferences");
+        },
+
+        serverError: function() {
+            $("#content").html("<b>Server Error</b>")
+        },
+
+        notFound: function() {
+            $("#content").html("<b>Not Found</b>")
         }
     });
 
