@@ -1,49 +1,37 @@
 <div class="row tab-header">
     <div class="col-md-8">
-        <h3>Location</h3>
+        <h3>Details</h3>
     </div>
-
-    <% if(_.isEmpty(location)) { %>
-        <div class="col-md-2 col-md-offset-2">
-            <button id="btn-add-location" class="btn btn-primary btn-block" type="button">Add</button>
-        </div>
-    <% } %>
 </div>
 
-<% if(!_.isEmpty(location)) { %>
-    <div class="row info-field">
-        <div class="col-md-2 info-label">Title:</div>
-        <div class="col-md-6"><%= location.getTitle() %></div>
+<div class="row info-field">
+    <div class="col-md-2 info-label">Title:</div>
+    <div class="col-md-6"><%= event.getTitle() %></div>
+</div>
+<div class="row info-field">
+    <div class="col-md-2 info-label">Description:</div>
+    <div class="col-md-6"><%= event.getDescription() %></div>
+</div>
+<div class="row">
+    <div class="col-md-2 col-md-offset-10">
+        <button id="btn-edit-details" class="btn btn-primary btn-block" type="button">Edit</button>
     </div>
-    <div class="row info-field">
-        <div class="col-md-2 info-label">Address:</div>
-        <div class="col-md-6"><%= location.getAddress() %></div>
-    </div>
-    <div class="row">
-        <div class="col-md-2 col-md-offset-8">
-            <button id="btn-edit-location" class="btn btn-primary btn-block" type="button">Edit</button>
-        </div>
+</div>
+<hr>
 
-        <div class="col-md-2">
-            <button id="btn-remove-location" class="btn btn-primary btn-block" type="button">Remove</button>
-        </div>
-    </div>
-    <hr>
-<% } %>
-
-<div id="dlg-location" class="modal fade" tabindex="-1" aria-hidden="true" role="dialog">
+<div id="dlg-details" class="modal fade" tabindex="-1" aria-hidden="true" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Add/Edit Location</h4>
+                <h4 class="modal-title">Edit Event Details</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form">
                     <div class="form-group">
-                        <label for="location-title" class="col-md-2 control-label">Title</label>
+                        <label for="event-title" class="col-md-2 control-label">Title</label>
                         <div class="col-md-10">
-                            <input id="location-title" class="form-control" type="text" value="">
+                            <input id="event-title" class="form-control" type="text" value="">
                             <span class="help-block hidden"></span>
                         </div>
                     </div>
@@ -51,6 +39,7 @@
                         <label for="location-address" class="col-md-2 control-label">Address</label>
                         <div class="col-md-10">
                             <input id="location-address" class="form-control" type="text" value="">
+                            <textarea class="form-control" rows="5"><%= event.get('description') %></textarea>
                             <span class="help-block hidden"></span>
                         </div>
                     </div>
