@@ -89,6 +89,18 @@ function(_, Backbone, Paginator, Validation) {
 
         setCapacity: function(capacity) {
             this.set("capacity", capacity);
+        },
+
+        validation: {
+            title: {
+                required: true,
+                msg: "Required"
+            },
+            capacity: {
+                required: true,
+                pattern: /^[1-9](\d)*$/,
+                msg: "Any positive number greater than zero"
+            }
         }
     });
 
