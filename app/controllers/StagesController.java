@@ -39,7 +39,7 @@ public class StagesController extends AbstractController {
                 try {
                     JsonNode jsonNode = requestAsJson();
                     Stage stage = createModelFromJson(jsonNode, Stage.class);
-                    if (stage.getId() == null) {
+                    if (stage.id == null) {
                         event.stages.add(stage);
                         event.save();
                         ObjectMapper mapper = new ObjectMapper();
@@ -144,7 +144,7 @@ public class StagesController extends AbstractController {
                 .findList();
 
         for (Slot slot : slots) {
-            ((SpeechSlot) slot).setStage(null);
+            ((SpeechSlot) slot).stage = null;
             slot.update();
         }
     }
