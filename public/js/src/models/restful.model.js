@@ -104,12 +104,64 @@ function(_, Backbone, Paginator, Validation) {
         }
     });
 
+    Model.Speaker = Backbone.Model.extend({
+        initialize: function(attributes, options) {
+            this.eventId = options.eventId;
+        },
+
+        url: function() {
+            var url = "/events/" + this.eventId + "/speakers";
+            if (!this.isNew()) {
+                url += "/" + this.id;
+            }
+            return url;
+        },
+
+        getId: function() {
+            return this.get("id");
+        },
+
+        getName: function() {
+            return this.get("name");
+        },
+
+        setName: function(name) {
+            this.set('name', name);
+        },
+
+        setDescription: function(description) {
+            this.set('description', description);
+        },
+
+        getPosition: function() {
+            return this.get("position");
+        },
+
+        setPosition: function(position) {
+            this.set('position', position);
+        },
+
+        getDescription: function() {
+            return this.get("description");
+        },
+
+        validation: {
+            name: {
+                required: true,
+                msg: "Required field"
+            },
+            position: {},
+            description: {}
+        }
+    });
+
     Model.Event = Backbone.Model.extend({
         urlRoot: "/events",
 
         model: {
             location: Model.Location,
-            stages: Model.Stage
+            stages: Model.Stage,
+            speakers: Model.Speaker
         },
 
         parseProperty: function(response, propertyName) {
@@ -194,6 +246,31 @@ function(_, Backbone, Paginator, Validation) {
             if (stagePos >= 0) {
                 this.getStages().splice(stagePos, 1);
             }
+        },
+
+        getSpeaker: function(id) {
+            return _.findWhere(this.getSpeakers(), {id: parseInt(id)});
+        },
+
+        getSpeakers: function() {
+            return this.get("speakers");
+        },
+
+        saveSpeaker: function(speaker) {
+            var speakers = this.getSpeakers(),
+                updateSpeaker = _.findWhere(speakers, {id: parseInt(speaker.id)}),
+                speakerPos = _.indexOf(speakers, updateSpeaker);
+
+            if (speakerPos >= 0) {
+                speakers[speakerPos] = speaker;
+            }
+            else {
+                speakers.push(speaker);
+            }
+        },
+
+        removeSpeaker: function(speaker) {
+
         },
 
         validation: {

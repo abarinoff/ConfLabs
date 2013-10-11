@@ -57,6 +57,12 @@ POST        /events/:eventId/location              controllers.LocationControlle
 PUT         /events/:eventId/location              controllers.LocationController.updateLocation(eventId: Long)
 DELETE      /events/:eventId/location              controllers.LocationController.deleteLocation(eventId: Long)
 
+# Stages controller
 POST        /events/:eventId/stages                controllers.StagesController.createStage(eventId: Long)
 PUT         /events/:eventId/stages/:stageId       controllers.StagesController.updateStage(eventId: Long, stageId: Long)
 DELETE      /events/:eventId/stages/:stageId       controllers.StagesController.deleteStage(eventId: Long, stageId: Long)
+
+# Speakers controller
+POST        /events/:eventId/speakers              controllers.SpeakersController.createSpeaker(eventId: Long)
+#PUT         /events/:eventId/speakers/:speakerId   controllers.SpeakersController.editSpeaker(eventId: Long, speakerId: Long)
+#DELETE      /events/:eventId/speakers/:speakerId   controllers.SpeakerController.deleteSpeaker(eventId: Long, speakerId: Long)

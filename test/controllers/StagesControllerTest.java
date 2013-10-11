@@ -20,7 +20,7 @@ import static play.test.Helpers.*;
 
 public class StagesControllerTest extends AbstractControllerTest {
     private static final String EVENTS_URL = "events";
-    public static final String STAGES_URL = "stages";
+    private static final String STAGES_URL = "stages";
 
     @Test
     public void createStageWithIdShouldReturnServerError() throws IOException {

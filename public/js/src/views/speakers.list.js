@@ -2,119 +2,126 @@ define([
     'underscore',
     'jquery',
     'backbone',
-    'require.text!templates/speakers.list.html',
-    'require.text!templates/speeches.dropdown.html',
-    'require.text!templates/new.speech.html'
+    'models/model',
+    'backbone.validation',
+    'validation/validation.handler',
+    'require.text!templates/speakers.list.html'
 ],
-function(_, $, Backbone, speakersListTemplate, speechesDropdownTemplate, newSpeechTemplate) {
+function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTemplate) {
     var SpeakersListView = Backbone.View.extend({
+        ID_SELECTOR         : "#hdn-speaker-id",
+        NAME_SELECTOR       : "#speaker-name",
+        POSITION_SELECTOR   : "#speaker-position",
+        DESCRIPTION_SELECTOR: "#speaker-description",
+
+        DIALOG_SELECTOR     : "#dlg-speaker",
+
         speakersListTemplate : _.template(speakersListTemplate),
-        speechDropdownTemplate: _.template(speechesDropdownTemplate),
-        addNewSpeechTemplate: _.template(newSpeechTemplate),
 
         el : "#speakers",
 
+        events: {
+            "click button[id^='btn-edit-speaker-']"     : "showModal",
+            "click button[id^='btn-remove-speaker-']"   : "removeSpeaker",
+            "click button#save-speaker"                 : "saveSpeaker"
+        },
+
+        initialize: function(options) {
+            this.eventModel = options.eventModel;
+            _.bindAll(this, "speakerSaved", "speakerRemoved", "errorSaveSpeaker", "errorRemoveSpeaker", "dialogHidden");
+        },
+
         render : function() {
-            this.$el.html(this.speakersListTemplate({speakers : this.model.get('speakers')}));
+            this.$el.html(this.speakersListTemplate({speakers : this.eventModel.getSpeakers()}));
 
-            $("button[id^='btn-edit-speaker-']").click(this, this.showModal);
-            $("button[id^='btn-remove-speaker-']").click(this, this.removeSpeaker);
-            $("#btn-add-speech").click(this, this.addSpeech);
+            $(this.DIALOG_SELECTOR).on('hidden.bs.modal', this.dialogHidden);
 
-            this.$("#dlg-speaker").on('change', '.speech-dropdown', this, this.selectSpeech);
-            this.$("#dlg-speaker").on('click', '.btn-remove-speech', this, this.removeSpeech);
+            return this;
         },
 
         showModal : function(event) {
-            var $this = $(this),
-                view = event.data,
-                buttonId = $this.attr('id'),
+            var $target = $(event.target),
+                view = this,
+                buttonId = $target.attr('id'),
                 id = buttonId.replace("btn-edit-speaker-", '');
 
             if (id == "new") {
-                $("#hdn-speaker-id").val('');
-                $("#speaker-name").val('');
-                $("#speaker-position").val('');
-                $("#speaker-description").val('');
+                $(view.ID_SELECTOR).val('');
+                $(view.NAME_SELECTOR).val('');
+                $(view.POSITION_SELECTOR).val('');
+                $(view.DESCRIPTION_SELECTOR).val('');
             }
             else {
-                var speakers = view.model.get('speakers'),
-                    speaker = _.findWhere(speakers, {'id' : parseInt(id)})
+                var speaker = view.eventModel.getSpeaker(id);
 
-                $("#hdn-speaker-id").val(speaker.id);
-                $("#speaker-name").val(speaker.name);
-                $("#speaker-position").val(speaker.position);
-                $("#speaker-description").val(speaker.description);
+                $(view.ID_SELECTOR).val(speaker.getId());
+                $(view.NAME_SELECTOR).val(speaker.getName());
+                $(view.POSITION_SELECTOR).val(speaker.getPosition());
+                $(view.DESCRIPTION_SELECTOR).val(speaker.getDescription());
             }
-            $("#dlg-speaker").modal();
+            $(view.DIALOG_SELECTOR).modal();
+        },
+
+        saveSpeaker: function() {
+            var view = this,
+                id = $(this.ID_SELECTOR).val(),
+                attributes = view.collectFields(),
+                speaker = isNaN(parseInt(id)) ? null : view.eventModel.getSpeaker(id);
+
+            view.model = speaker
+                ? new Model.Speaker(speaker.toJSON(), {eventId: view.eventModel.id})
+                : new Model.Speaker({}, {eventId: view.eventModel.id});
+
+            Validation.bind(view, new ValidationHandler("speaker."));
+
+            view.model.set(attributes);
+
+            view.model.save({}, {
+                success : view.speakerSaved,
+                error   : view.errorSaveSpeaker
+            });
         },
 
         removeSpeaker : function(event) {
-            var $this = $(this),
-                view = event.data,
-                speakers = view.model.get('speakers'),
-                buttonId = $this.attr('id'),
+            var $target = $(event.target),
+                view = this,
+                speakers = view.eventModel.getSpeakers(),
+                buttonId = $target.attr('id'),
                 id = buttonId.replace("btn-edit-speaker-", '');
+            console.log("remove speaker with id: " + id);
+            /*view.render();*/
+        },
 
-            var speaker = _.findWhere(speakers, {'id' : parseInt(id)});
-            var speakerIndex = _.indexOf(speakers, speaker);
+        speakerSaved: function(model, respose, options) {
+            var view = this;
+            view.eventModel.saveSpeaker(model);
+            $(view.DIALOG_SELECTOR).modal('hide');
+        },
 
-            speakers.splice(speakerIndex, 1);
-            view.model.trigger('change:speakers');
+        speakerRemoved: function(model, response, options) {
+            console.log("speaker removed");
+        },
 
+        errorSaveSpeaker: function() {
+            console.log("Error saving Speaker on the remote server");
+        },
+
+        errorRemoveSpeaker: function() {
+            console.log("Error removing Speaker from a remote server");
+        },
+
+        dialogHidden: function() {
+            var view = this;
             view.render();
         },
 
-        addSpeech : function(event) {
-            var $this = $(this),
-                view = event.data,
-                speeches = view.model.get('speeches');
-
-            if (view.hasEmptySpeechContainers()) {
-                return;
+        collectFields: function() {
+            var view = this;
+            return {
+                name        : $(view.NAME_SELECTOR).val(),
+                position    : $(view.POSITION_SELECTOR).val(),
+                description : $(view.DESCRIPTION_SELECTOR).val()
             }
-
-            var html = view.speechDropdownTemplate({"speeches" : speeches}),
-                buttonsContainer = $this.parents(".item-buttons")[0];
-
-            $(buttonsContainer).before($(html));
-        },
-
-        selectSpeech : function(event) {
-            var $this = $(this),
-                speechItemRow = $this.parents('.speech-item')[0],
-                view = event.data;
-
-            if ($this.val() == 'new') {
-                if ($(speechItemRow).find('.new-speech-title').length == 0) {
-                    var html = view.addNewSpeechTemplate();
-                    $(speechItemRow).append($(html));
-                }
-            }
-            else {
-                $(speechItemRow).find(".new-speech-title").remove()
-            }
-        },
-
-        removeSpeech : function(event) {
-            var $this = $(this),
-                speechItemRow = $this.parents('.speech-item')[0];
-            $(speechItemRow).remove();
-        },
-
-        hasEmptySpeechContainers : function() {
-            // We do not allow adding new dropdowns for a new speech while there are empty ones
-            var speechDropdowns = $("#dlg-speaker select.speech-dropdown"),
-                emptySpeeches = false;
-
-            $.each(speechDropdowns, function (index, speechDropdown) {
-                if ($(speechDropdown).val() == '-1') {
-                    emptySpeeches = true;
-                    return false;
-                }
-            });
-
-            return emptySpeeches;
         }
     });
 
