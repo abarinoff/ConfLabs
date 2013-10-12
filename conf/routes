@@ -48,9 +48,9 @@ POST        /login/password/forgot                 controllers.Signup.doForgotPa
 GET         /assets/*file                          controllers.Assets.at(path="/public", file)
 
 # Ajax Controller routes
-GET         /events                                controllers.EventManager.getEvents()
-POST        /events                                controllers.EventManager.addEvent()
-GET         /events/:id                            controllers.EventManager.getEventById(id: Long)
+GET         /events                                controllers.EventController.getEvents()
+POST        /events                                controllers.EventController.createEvent()
+GET         /events/:id                            controllers.EventController.getEventById(id: Long)
 
 # Location controller
 POST        /events/:eventId/location              controllers.LocationController.createLocation(eventId: Long)

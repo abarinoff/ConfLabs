@@ -9,12 +9,9 @@ import com.feth.play.module.pa.user.AuthUser;
 import models.authentication.User;
 import models.event.Event;
 
-import models.event.Stage;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.node.ObjectNode;
 
 import play.Logger;
 import play.mvc.*;
@@ -25,7 +22,7 @@ import java.io.IOException;
 
 import java.util.List;
 
-public class EventManager extends AbstractController {
+public class EventController extends AbstractController {
 
     @Restrict(@Group(Application.USER_ROLE))
     public static Result getEvents() {
@@ -33,20 +30,14 @@ public class EventManager extends AbstractController {
         User user = User.findByAuthUserIdentity(authUser);
 
         List<Event> events = user.events;
-
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectWriter objectWriter = mapper.writerWithView(JsonView.ShortView.class);
-
         Status status;
         try {
-            String response = objectWriter.writeValueAsString(events);
+            String response = createJsonStringWithView(JsonView.ShortView.class, events);
             status = ok(response);
         }
         catch (IOException e) {
             Logger.error(e.getMessage(), e);
-
-            JsonNode error = errorResponse();
-            status = internalServerError(error);
+            status = internalServerError();
         }
 
         return status.as(CONTENT_TYPE_JSON);
@@ -63,23 +54,23 @@ public class EventManager extends AbstractController {
 
         Event event = Event.find.byId(id);
 
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectWriter objectWriter = mapper.writerWithView(JsonView.FullView.class);
-
         Status response;
         if (event != null) {
-            try {
-                String responseBody = objectWriter.writeValueAsString(event);
-                response = ok(responseBody);
+            if (event.user.id.equals(user.id)) {
+                try {
+                    String responseBody = createJsonStringWithView(JsonView.FullView.class, event);
+                    response = ok(responseBody);
+                }
+                catch (IOException e) {
+                    Logger.error(e.getMessage(), e);
+                    response = internalServerError();
+                }
             }
-            catch (IOException e) {
-                Logger.error(e.getMessage(), e);
-
-                JsonNode error = errorResponse();
-                response = internalServerError(error);
+            else {
+                response = internalServerError();
             }
         } else {
-            response = notFound(errorResponse("Event with a given id was not found"));
+            response = notFound();
         }
 
         return response.as(CONTENT_TYPE_JSON);
@@ -87,7 +78,7 @@ public class EventManager extends AbstractController {
 
     @Restrict(@Group(Application.USER_ROLE))
     @BodyParser.Of(BodyParser.Json.class)
-    public static Result addEvent() {
+    public static Result createEvent() {
         Http.RequestBody requestBody = request().body();
         JsonNode jsonNode = requestBody.asJson();
 
@@ -103,47 +94,24 @@ public class EventManager extends AbstractController {
             user.save();
 
             if (newEvent.id != null) {
-                ObjectWriter objectWriter = mapper.writerWithView(JsonView.ShortView.class);
                 try {
-                    String response = objectWriter.writeValueAsString(newEvent);
-                    status = ok(response);
+                    String response = createJsonStringWithView(JsonView.ShortView.class, newEvent);
+                    status = created(response);
                 }
                 catch (JsonGenerationException e) {
-                    Logger.error("A new Event with the id " + newEvent.id + " had been saved. " +
-                            "Couldn't generate JSON response with a new Event model's data");
-
-                    JsonNode error = errorResponse();
-                    status = internalServerError(error);
+                    Logger.error(e.getMessage());
+                    status = internalServerError();
                 }
             }
             else {
-                Logger.error("Couldn't save new Event for a user with id " + user.id);
-
-                JsonNode error = errorResponse();
-                status = internalServerError(error);
+                status = internalServerError();
             }
         }
         catch (IOException e) {
             Logger.error(e.getMessage(), e);
-
-            JsonNode error = errorResponse();
-            status = internalServerError(error);
+            status = internalServerError();
         }
 
         return status.as(CONTENT_TYPE_JSON);
-    }
-
-    private static JsonNode errorResponse(String ... message) {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode responseJson = mapper.createObjectNode();
-
-        if (message.length == 1) {
-            responseJson.put("error", message[0]);
-        }
-        else {
-            responseJson.put("error", true);
-        }
-
-        return responseJson;
     }
 }

@@ -6,6 +6,11 @@ locations:
   - &barLocation !!models.event.Location
     title: bar
     address: Baker's street
+
+  - &thirdLocation !!models.event.Location
+    title: Third Location
+    address: 14/1 Zarichanska Street
+
 stages:
   - &fooStage !!models.event.Stage
     title: foo
@@ -63,6 +68,12 @@ events:
     stages:
       - *secondEventStage
 
+  - &thirdEvent !!models.event.Event
+    title: Third Event
+    description: Simple Event (Third One)
+    location:
+      *thirdLocation
+
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount
     id: 1
@@ -73,6 +84,12 @@ linkedAccounts:
     id: 2
     providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
     providerKey: password
+
+  - &thirdAccount !!models.authentication.LinkedAccount
+    id: 3
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
 
 roles:
   - &fooRole !!models.authentication.SecurityRole
@@ -112,3 +129,20 @@ users:
       - *barAccount
     permissions:
     events:
+
+  - &thirdUser !!models.authentication.User
+    id: 3
+    email: third@gmail.com
+    name: Third
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+      - *fooRole
+    linkedAccounts:
+      - *thirdAccount
+    permissions:
+    events:
+      - *thirdEvent
