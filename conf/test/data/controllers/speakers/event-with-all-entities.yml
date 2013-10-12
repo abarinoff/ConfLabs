@@ -7,6 +7,10 @@ locations:
     title: bar
     address: Baker's street
 
+  - &thirdLocation !!models.event.Location
+    title: third location
+    address: Dzhordzha Vashingtona street
+
 stages:
   - &fooStage !!models.event.Stage
     title: foo
@@ -21,10 +25,25 @@ stages:
     capacity: 512
 
 speakers:
-  - &fooSpeaker !!models.event.Speaker
+  - &firstSpeaker !!models.event.Speaker
     name: John Doe
     position: Engineer
     description: Senior Software Engineer, Lead
+
+  - &secondSpeaker !!models.event.Speaker
+    name: Second Speaker of Event 1
+    position: Project Manager
+    description: 10 yrs of experience
+
+  - &thirdSpeaker !!models.event.Speaker
+    name: Third Speaker, Event 2
+    position: Junior Dev
+    description: Junior dev passed through incubator
+
+  - &fourthSpeaker !!models.event.Speaker
+    name: Fourth Speaker
+    position: Software developer, trainer
+    description: Had great experience in producing high quality juniors
 
 speeches:
   - &fooSpeech !!models.event.Speech
@@ -50,7 +69,8 @@ events:
       - *fooStage
       - *barStage
     speakers:
-      - *fooSpeaker
+      - *firstSpeaker
+      - *secondSpeaker
     slots:
       - *fooSlot
     speeches:
@@ -63,6 +83,17 @@ events:
       *barLocation
     stages:
       - *secondEventStage
+    speakers:
+      - *thirdSpeaker
+
+  - &thirdEvent !!models.event.Event
+    title: Third Event
+    description: Just a third test event
+    location:
+      *thirdLocation
+    speakers:
+      - *fourthSpeaker
+
 
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount
@@ -113,3 +144,4 @@ users:
       - *barAccount
     permissions:
     events:
+      - *thirdEvent

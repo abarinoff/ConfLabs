@@ -62,4 +62,49 @@ public class SpeakersController extends AbstractController {
 
         return status.as(CONTENT_TYPE_JSON);
     }
+
+    @Restrict(@Group(Application.USER_ROLE))
+    public static Result updateSpeaker(Long eventId, Long speakerId) {
+        if (!isXmlHttpRequest()) {
+            return notFound();
+        }
+
+        AuthUser authUser = PlayAuthenticate.getUser(session());
+        User user = User.findByAuthUserIdentity(authUser);
+
+        Results.Status status;
+        Event event = Event.find.byId(eventId);
+
+        if (event != null) {
+            JsonNode requestBody = requestAsJson();
+            if (event.user.id.equals(user.id) && requestBody.size() > 0) {
+                try {
+                    Speaker speaker = createModelFromJson(requestBody, Speaker.class);
+                    if (speaker.id != null && event.getSpeakerById(speakerId) != null) {
+                        if (speaker.id.equals(speakerId)) {
+                            speaker.update();
+                            status = ok("{}");
+                        }
+                        else {
+                            status = internalServerError();
+                        }
+                    }
+                    else {
+                        status = notFound();
+                    }
+                } catch (Exception e) {
+                    Logger.error(e.getMessage());
+                    status = internalServerError();
+                }
+            }
+            else {
+                status = internalServerError();
+            }
+        }
+        else {
+            status = notFound();
+        }
+
+        return status.as("application/json");
+    }
 }
