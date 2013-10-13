@@ -6,17 +6,21 @@ define([
 
 function(_, Backbone, AddEventDialog, template) {
     var EventsView = Backbone.View.extend({
-
         el: "#content",
+        events: {
+            "click #btn-create-event" : "createEvent"
+        },
+        
         template: _.template(template),
 
         render: function () {
             this.$el.html(this.template());
-            this.$("#btn-create-event").click(function() {
-                new AddEventDialog().render();
-            });
 
             return this;
+        },
+        
+        createEvent: function() {
+            new AddEventDialog().render();
         }
     });
 
