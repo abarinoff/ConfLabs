@@ -78,19 +78,20 @@ public class Event extends Model {
         return true;
     }
 
-    /*public boolean hasStage(long id) {
-        for(Stage stage : stages) {
-            if (stage.id == id) {
-                return true;
-            }
-        }
-        return false;
-    }*/
-
     public Stage getStageById(Long id) {
         for(Stage stage : stages) {
             if (stage.id.equals(id)) {
                 return stage;
+            }
+        }
+
+        return null;
+    }
+
+    public Speaker getSpeakerById(Long id) {
+        for(Speaker speaker : speakers) {
+            if (speaker.id.equals(id)) {
+                return speaker;
             }
         }
 

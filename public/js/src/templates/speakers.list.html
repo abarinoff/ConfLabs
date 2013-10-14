@@ -8,15 +8,15 @@
 <div>
     <div class="row">
         <div class="col-md-2 item-row">Name:</div>
-        <div class="col-md-5 item-row"><%= speaker.name %></div>
+        <div class="col-md-5 item-row"><%= speaker.getName() %></div>
     </div>
     <div class="row">
         <div class="col-md-2 item-row">Position:</div>
-        <div class="col-md-5 item-row"><%= speaker.position %></div>
+        <div class="col-md-5 item-row"><%= speaker.getPosition() %></div>
     </div>
     <div class="row">
         <div class="col-md-2 item-row">Description:</div>
-        <div class="col-md-5 item-row"><%= speaker.description %></div>
+        <div class="col-md-5 item-row"><%= speaker.getDescription() %></div>
     </div>
     <div class="row">
         <div class="col-md-6 item-buttons">
@@ -42,29 +42,27 @@
                     <label for="speaker-name" class="col-md-2 control-label">Name</label>
                     <div class="col-md-9">
                         <input id="speaker-name" class="form-control" type="text" >
+                        <span class="help-block hidden"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="speaker-position" class="col-md-2 control-label">Position</label>
                     <div class="col-md-9">
                         <input id="speaker-position" class="form-control" type="text"/>
+                        <span class="help-block hidden"></span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="speaker-description" class="col-md-2 control-label">Description</label>
                     <div class="col-md-9">
                         <textarea id="speaker-description" class="form-control" rows="3"></textarea>
-                    </div>
-                </div>
-                <div class="form-group item-buttons">
-                    <div class="col-md-11">
-                        <button id="btn-add-speech" class="btn btn-primary pull-right" type="button">Add Speech</button>
+                        <span class="help-block hidden"></span>
                     </div>
                 </div>
             </div>
             <div class="modal-footer">
                 <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
-                <button class="btn btn-primary" type="button">Save</button>
+                <button id="save-speaker" class="btn btn-primary" type="button">Save</button>
             </div>
         </div>
     </div>

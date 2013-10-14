@@ -74,6 +74,14 @@ public class AbstractControllerTest extends WithApplication {
 
     protected class CustomFakeRequest extends FakeRequest {
 
+        public CustomFakeRequest() {
+            super();
+        }
+
+        public CustomFakeRequest(String method, String path) {
+            super(method, path);
+        }
+
         public CustomFakeRequest withAuthorizationCookie(String userName, String password) {
             Http.Cookie playSession = getAuthorizationCookie(userName, password);
             this.withCookies(playSession);

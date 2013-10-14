@@ -19,8 +19,8 @@ function($, Backbone, DetailsView, StagesListView, SpeakersListView, LocationVie
             $eventData.html($tabs);
 
             new DetailsView({model: this.model}).render();
-            new StagesListView({model: this.model}).render();
-            new SpeakersListView({model: this.model}).render();
+            new StagesListView({eventModel: this.model}).render();
+            new SpeakersListView({eventModel: this.model}).render();
             new LocationView({eventModel: this.model}).render();
         }
     });

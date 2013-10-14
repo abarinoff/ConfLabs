@@ -3,15 +3,15 @@ define([
     'underscore',
     'backbone',
     'models/model',
+    'backbone.validation',
+    'validation/validation.handler',
     'require.text!templates/stages.list.html'
 ],
 
-function($, _, Backbone, Model, stagesListTemplate) {
+function($, _, Backbone, Model, Validation, ValidationHandler, stagesListTemplate) {
 
     var StagesListView = Backbone.View.extend({
         DIALOG_SELECTOR: "#dlg-stage",
-        ADD_BUTTON_SELECTOR: "button[id^='btn-edit-stage-']",
-        REMOVE_BUTTON_SELECTOR: "button[id^='btn-remove-stage-']",
 
         ID_SELECTOR: "#stage-id",
         TITLE_SELECTOR: "#stage-title",
@@ -20,24 +20,28 @@ function($, _, Backbone, Model, stagesListTemplate) {
         template : _.template(stagesListTemplate),
         el : '#stages',
 
-        initialize: function() {
-            _.bindAll(this, "stageSaved", "stageRemoved", "errorSaveStage", "errorRemoveStage");
+        events: {
+            "click #save-stage"                     : "saveStage",
+            "click button[id^='btn-edit-stage-']"   : "showModal",
+            "click button[id^='btn-remove-stage-']" : "removeStage"
+        },
+
+        initialize: function(options) {
+            _.bindAll(this, "stageSaved", "stageRemoved", "errorSaveStage", "errorRemoveStage", "dialogHidden");
+            this.eventModel = options.eventModel;
         },
 
         render : function() {
-            this.$el.html(this.template({stages : this.model.getStages()}));
-
-            $(this.ADD_BUTTON_SELECTOR).click(this, this.showModal);
-            $(this.REMOVE_BUTTON_SELECTOR).click(this, this.removeStage);
+            this.$el.html(this.template({stages : this.eventModel.getStages()}));
 
             return this;
         },
 
         showModal : function(event) {
-            var $this = $(this),
-                view = event.data,
-                event = view.model,
-                buttonId = $this.attr('id'),
+            var $target = $(event.target),
+                view = this,
+                event = view.eventModel,
+                buttonId = $target.attr('id'),
                 stageId = buttonId.replace('btn-edit-stage-', '');
 
             if (stageId == "new") {
@@ -54,16 +58,14 @@ function($, _, Backbone, Model, stagesListTemplate) {
             }
             $(view.DIALOG_SELECTOR).modal();
 
-            // Dialog Buttons
-            $("#save-stage").one('click', view, view.saveStage);
             $(view.DIALOG_SELECTOR).one('hidden.bs.modal', view, view.dialogHidden);
         },
 
         removeStage : function(event) {
-            var $this = $(this),
-                view = event.data,
-                eventModel = view.model,
-                buttonId = $this.attr('id'),
+            var $target = $(event.target),
+                view = this,
+                eventModel = view.eventModel,
+                buttonId = $target.attr('id'),
                 stageId = buttonId.replace('btn-remove-stage-', '');
 
             var stage = eventModel.getStage(stageId);
@@ -73,36 +75,40 @@ function($, _, Backbone, Model, stagesListTemplate) {
             });
         },
 
-        saveStage: function(event) {
-            var view = event.data,
-                eventModel = view.model,
-                stageId = view.$(view.ID_SELECTOR).val(),
-                stageTitle = view.$(view.TITLE_SELECTOR).val(),
-                stageCapacity = view.$(view.CAPACITY_SELECTOR).val();
+        saveStage: function() {
+            var view = this,
+                stageId = $(view.ID_SELECTOR).val(),
+                attributes = view.collectFields(),
+                stage = isNaN(parseInt(stageId)) ? null : view.eventModel.getStage(stageId);
 
-            var attributes = isNaN(parseInt(stageId)) ? {} : eventModel.getStage(stageId).toJSON(),
-                stage = new Model.Stage(attributes, {eventId: eventModel.id});
+            view.model = stage
+                ? new Model.Stage(stage.toJSON(), {eventId: view.eventModel.id})
+                : new Model.Stage({}, {eventId: view.eventModel.id});
 
+            Validation.bind(view, new ValidationHandler("stage."));
 
-            stage.set({
-                title: stageTitle,
-                capacity: stageCapacity
-            });
+            view.model.set(attributes);
 
-            stage.save({}, {
+            view.model.save({}, {
                 success: view.stageSaved,
                 error: view.errorSaveStage
             });
         },
 
         stageSaved: function(model, response, options) {
-            var event = this.model;
-            event.saveStage(model);
-            $(this.DIALOG_SELECTOR).modal('hide');
+            var view = this;
+            view.eventModel.saveStage(model);
+            $(view.DIALOG_SELECTOR).modal('hide');
         },
 
-        dialogHidden: function(event) {
-            var view = event.data;
+        dialogHidden: function() {
+            var view = this;
+            view.render();
+        },
+
+        stageRemoved: function(model, response, options) {
+            var view = this;
+            view.eventModel.removeStage(model);
             view.render();
         },
 
@@ -110,14 +116,16 @@ function($, _, Backbone, Model, stagesListTemplate) {
             console.log("Error saving updates (stages changed) to a model");
         },
 
-        stageRemoved: function(model, response, options) {
-            var event = this.model;
-            event.removeStage(model);
-            this.render();
-        },
-
         errorRemoveStage: function(model, xhr, options) {
             console.log("Error trying to remove the stage");
+        },
+
+        collectFields: function() {
+            var view = this;
+            return {
+                title:      $(view.TITLE_SELECTOR).val(),
+                capacity:   $(view.CAPACITY_SELECTOR).val()
+            }
         }
     });
 

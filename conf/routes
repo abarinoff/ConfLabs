@@ -48,15 +48,21 @@ POST        /login/password/forgot                 controllers.Signup.doForgotPa
 GET         /assets/*file                          controllers.Assets.at(path="/public", file)
 
 # Ajax Controller routes
-GET         /events                                controllers.EventManager.getEvents()
-POST        /events                                controllers.EventManager.addEvent()
-GET         /events/:id                            controllers.EventManager.getEventById(id: Long)
+GET         /events                                controllers.EventController.getEvents()
+POST        /events                                controllers.EventController.createEvent()
+GET         /events/:id                            controllers.EventController.getEventById(id: Long)
 
 # Location controller
 POST        /events/:eventId/location              controllers.LocationController.createLocation(eventId: Long)
 PUT         /events/:eventId/location              controllers.LocationController.updateLocation(eventId: Long)
 DELETE      /events/:eventId/location              controllers.LocationController.deleteLocation(eventId: Long)
 
+# Stages controller
 POST        /events/:eventId/stages                controllers.StagesController.createStage(eventId: Long)
 PUT         /events/:eventId/stages/:stageId       controllers.StagesController.updateStage(eventId: Long, stageId: Long)
 DELETE      /events/:eventId/stages/:stageId       controllers.StagesController.deleteStage(eventId: Long, stageId: Long)
+
+# Speakers controller
+POST        /events/:eventId/speakers              controllers.SpeakersController.createSpeaker(eventId: Long)
+PUT         /events/:eventId/speakers/:speakerId   controllers.SpeakersController.updateSpeaker(eventId: Long, speakerId: Long)
+#DELETE      /events/:eventId/speakers/:speakerId   controllers.SpeakerController.deleteSpeaker(eventId: Long, speakerId: Long)
