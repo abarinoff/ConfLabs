@@ -9,29 +9,36 @@
 }
 
 .events-sidenav {
+  margin-top: 20px;
   padding-top: 10px;
   padding-bottom: 10px;
   background-color: @sidebar-bg-color;
   border-radius: 5px;
 }
 
-.events-sidebar .nav > li > a {
+.events-sidebar .nav > li > span {
   display: block;
-  padding: 5px 30px;
+  padding: 5px 20px;
   .sidebar-item(@sidebar-bg-color);
 }
 
-.events-sidebar .nav > li > a:hover,
-.events-sidebar .nav > li > a:focus {
+.events-sidebar .nav > li > span:hover,
+.events-sidebar .nav > li > span:focus {
+  cursor: pointer;
   background-color: #e5e3e9;
   .sidebar-item(#dbd8e0);
 }
 
-.events-sidebar .nav > li.active > a,
-.events-sidebar .nav > li.active > a:hover,
-.events-sidebar .nav > li.active > a:focus {
+.events-sidebar .nav > li.active > span {
   font-weight: bold;
   .sidebar-item(#428bcd);
+}
+
+.events-sidebar .nav > li > span > a,
+.events-sidebar .nav > li > span > a:hover,
+.events-sidebar .nav > li > span > a:focus {
+  color: #428bcd;
+  text-decoration: none;
 }
 
 .btn-add-item {

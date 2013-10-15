@@ -57,6 +57,7 @@ public class User extends Model implements Subject {
     public List<UserPermission> permissions;
 
     @OneToMany(cascade = CascadeType.ALL)
+    @OrderBy("id DESC")
     public List<Event> events;
 
     public static final Finder<Long, User> find = new Finder<Long, User>(Long.class, User.class);

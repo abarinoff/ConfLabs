@@ -206,6 +206,14 @@ function(_, Backbone, Paginator, Validation) {
             return this.get("id");
         },
 
+        getTitle: function() {
+            return this.get("title");
+        },
+
+        getDescription: function() {
+            return this.get("description");
+        },
+
         getLocation: function() {
             return this.get("location");
         },

@@ -1,5 +1,5 @@
 <ul id="event-tabs" class="nav nav-tabs" data-tabs="event-tabs">
-    <li class="active"><a href="#description" data-toggle="tab">Description</a></li>
+    <li class="active"><a href="#details" data-toggle="tab">Details</a></li>
     <li><a href="#stages" data-toggle="tab">Stages</a></li>
     <li><a href="#speakers" data-toggle="tab">Speakers</a></li>
     <li><a href="#schedule" data-toggle="tab">Schedule</a></li>
@@ -7,17 +7,8 @@
 </ul>
 
 <div id="event-tabs-content" class="tab-content">
-    <div class="tab-pane active" id="description">
-        <h1>Description</h1>
-        <textarea class="form-control" rows="5"><%= event.get('description') %></textarea>
-    </div>
-
-    <!-- Stages -->
-
+    <div class="tab-pane active" id="details"></div>
     <div class="tab-pane" id="stages"></div>
-
-    <!-- Speakers -->
-
     <div class="tab-pane" id="speakers"></div>
 
     <div class="tab-pane" id="schedule">
