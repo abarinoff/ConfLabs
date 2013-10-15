@@ -85,11 +85,14 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
         removeSpeaker : function(event) {
             var $target = $(event.target),
                 view = this,
-                speakers = view.eventModel.getSpeakers(),
                 buttonId = $target.attr('id'),
-                id = buttonId.replace("btn-edit-speaker-", '');
-            console.log("remove speaker with id: " + id);
-            /*view.render();*/
+                id = buttonId.replace("btn-remove-speaker-", '');
+
+            var speaker = view.eventModel.getSpeaker(id);
+            speaker.destroy({
+                success: view.speakerRemoved,
+                error: view.errorRemoveSpeaker
+            });
         },
 
         speakerSaved: function(model, respose, options) {
@@ -99,7 +102,9 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
         },
 
         speakerRemoved: function(model, response, options) {
-            console.log("speaker removed");
+            var view = this;
+            view.eventModel.removeSpeaker(model);
+            view.render();
         },
 
         errorSaveSpeaker: function() {

@@ -131,6 +131,12 @@ public class AbstractControllerTest extends WithApplication {
 
             Map<String, List> all = (Map<String, List>) Yaml.load(initialDataFile);
             Ebean.save(all.get("users"));
+
+            if (all.containsKey("speeches")) {
+                for (Object speech : all.get("speeches")) {
+                    Ebean.saveManyToManyAssociations(speech, "speakers");
+                }
+            }
         }
     }
 }

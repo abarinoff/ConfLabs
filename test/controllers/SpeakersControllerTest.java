@@ -2,10 +2,12 @@ package controllers;
 
 import models.event.Event;
 import models.event.Speaker;
+import models.event.Speech;
 import org.codehaus.jackson.JsonNode;
 
 import org.junit.Test;
 
+import play.mvc.Http;
 import play.mvc.Result;
 import play.test.FakeRequest;
 import play.test.Helpers;
@@ -245,6 +247,153 @@ public class SpeakersControllerTest extends AbstractControllerTest {
 
         assertThat(status(response)).isEqualTo(INTERNAL_SERVER_ERROR);
     }
+    
+    @Test
+    public void deleteSpeakerWithNonAjaxRequestShouldReturnNotFound() {
+        startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
+
+        FakeRequest fakeRequest = createEmptyNonAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 1L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void deleteSpeakerWithAjaxRequestShouldReturnEmptyJsonAndOk() throws IOException {
+        startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 1L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(OK);
+
+        JsonNode expectedJson = jsonNodeFromString("{}");
+        JsonNode receivedJson = jsonNodeFromString(contentAsString(result));
+
+        assertEquals(expectedJson, receivedJson);
+    }
+
+    @Test
+    public void deleteSpeakerWithAjaxRequestShouldRemoveSpeaker() throws IOException {
+        startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
+
+        Speaker speaker = Speaker.find.byId(1L);
+        assertNotNull(speaker);
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 1L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 1L), fakeRequest);
+        status(result);
+
+        speaker = Speaker.find.byId(1L);
+
+        assertNull(speaker);
+    }
+    
+    @Test
+    public void deleteSpeakerWithNonExistentIdShouldReturnNotFound() {
+        startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 100L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 100L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void deleteSpeakerBelongingToDifferentEventOfTheSameUserShouldReturnNotFound() {
+        startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 3L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 3L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void deleteSpeakerBelongingToDifferentEventOfTheSameUserShouldNotRemoveSpeaker() {
+        startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
+
+        Speaker speaker = Speaker.find.byId(3L);
+        assertNotNull(speaker);
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 3L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 3L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+
+        speaker = Speaker.find.byId(3L);
+        assertNotNull(speaker);
+    }
+
+    @Test
+    public void deleteSpeakerForEventBelongingToDifferentUserShouldReturnServerError() {
+        startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsSpecificUser(Helpers.DELETE, getSpeakerUrl(1L, 1L), "bar@gmail.com", "123456");
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void deleteSpeakerForEventBelongingToDifferentUserShouldNotRemoveSpeaker() {
+        startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
+
+        Speaker speaker = Speaker.find.byId(1L);
+        assertNotNull(speaker);
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsSpecificUser(Helpers.DELETE, getSpeakerUrl(1L, 1L), "bar@gmail.com", "123456");
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 1L), fakeRequest);
+        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+
+        speaker = Speaker.find.byId(1L);
+        assertNotNull(speaker);
+    }
+    
+    @Test
+    public void deleteSpeakerShouldDeleteItsIndividualSpeeches() {
+        startFakeApplication("test/data/controllers/speakers/speaker-speech-relations.yml");
+
+        List<Speech> speechesBefore = Speaker.find.byId(1L).speeches;
+        long speakersIndividualSpeechId = speechesBefore.get(0).id;
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 1L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 1L), fakeRequest);
+        assertThat(status(result)).isEqualTo(OK);
+
+        Speech speechAfter = Speech.find.byId(speakersIndividualSpeechId);
+
+        assertNull(speechAfter);
+    }
+
+    @Test
+    public void deleteSpeakerShouldResetReferencesToItFromOtherSpeeches() {
+        startFakeApplication("test/data/controllers/speakers/speaker-speech-relations.yml");
+
+        Speaker speaker = Speaker.find.byId(2L);
+        long sharedSpeechId = speaker.speeches.get(0).id;
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 2L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 2L), fakeRequest);
+        assertThat(status(result)).isEqualTo(OK);
+
+        List<Speaker> referencedSpeakersAfter = Speech.find.byId(sharedSpeechId).speakers;
+
+        assertFalse(referencedSpeakersAfter.contains(speaker));
+    }
+
+    @Test
+    public void deleteSpeakerShouldNotCorruptOtherSpeechSpeakerReferences() {
+        startFakeApplication("test/data/controllers/speakers/speaker-speech-relations.yml");
+
+        FakeRequest fakeRequest = createEmptyAjaxRequestAsDefaultUser(Helpers.DELETE, getSpeakerUrl(1L, 1L));
+        final Result result = callAction(routes.ref.SpeakersController.deleteSpeaker(1L, 1L), fakeRequest);
+        assertThat(status(result)).isEqualTo(OK);
+
+        // Speech with id 2 should still be referencing the speaker with id 2
+        Speech speech = Speech.find.byId(2L);
+         assertTrue(speech.speakers.size() > 0);
+    }
 
     private FakeRequest createAjaxRequestWithJsonBodyWithSpecifiedUser(String method, String url, JsonNode body, String login, String password) {
         return createAjaxRequestWithJsonBody(method, url, body)
@@ -256,16 +405,38 @@ public class SpeakersControllerTest extends AbstractControllerTest {
                 .withAuthorizationCookie();
     }
 
-    private CustomFakeRequest createAjaxRequestWithJsonBody(String method, String url, JsonNode body) {
-        return (CustomFakeRequest) new CustomFakeRequest(method, url)
-                .withRequestedWithHeader()
+    private CustomFakeRequest createNonAjaxRequestWithJsonBodyAsDefaultUser(String method, String url, JsonNode body) {
+        return (CustomFakeRequest) createEmptyNonAjaxRequest(method, url)
+                .withAuthorizationCookie()
                 .withJsonBody(body);
     }
 
-    private CustomFakeRequest createNonAjaxRequestWithJsonBodyAsDefaultUser(String method, String url, JsonNode body) {
-        return (CustomFakeRequest) new CustomFakeRequest(method, url)
-                .withAuthorizationCookie()
-                .withJsonBody(body);
+    private FakeRequest createEmptyAjaxRequestAsDefaultUser(String method, String url) {
+        return  createEmptyAjaxRequest(method, url)
+                    .withAuthorizationCookie();
+    }
+
+    private FakeRequest createEmptyAjaxRequestAsSpecificUser(String method, String url, String username, String password) {
+        return  createEmptyAjaxRequest(method, url)
+                .withAuthorizationCookie(username, password);
+    }
+
+    private CustomFakeRequest createEmptyNonAjaxRequestAsDefaultUser(String method, String url) {
+        return createEmptyNonAjaxRequest(method, url)
+                .withAuthorizationCookie();
+    }
+
+    private CustomFakeRequest createAjaxRequestWithJsonBody(String method, String url, JsonNode body) {
+        return (CustomFakeRequest) createEmptyAjaxRequest(method, url).withJsonBody(body);
+    }
+
+    private CustomFakeRequest createEmptyAjaxRequest(String method, String url) {
+        return new CustomFakeRequest(method, url)
+                .withRequestedWithHeader();
+    }
+
+    private CustomFakeRequest createEmptyNonAjaxRequest(String method, String url) {
+        return new CustomFakeRequest(method, url);
     }
 
     private String getSpeakerUrl(long eventId, long speakerId) {

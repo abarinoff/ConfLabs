@@ -65,4 +65,4 @@ DELETE      /events/:eventId/stages/:stageId       controllers.StagesController.
 # Speakers controller
 POST        /events/:eventId/speakers              controllers.SpeakersController.createSpeaker(eventId: Long)
 PUT         /events/:eventId/speakers/:speakerId   controllers.SpeakersController.updateSpeaker(eventId: Long, speakerId: Long)
-#DELETE      /events/:eventId/speakers/:speakerId   controllers.SpeakerController.deleteSpeaker(eventId: Long, speakerId: Long)
+DELETE      /events/:eventId/speakers/:speakerId   controllers.SpeakersController.deleteSpeaker(eventId: Long, speakerId: Long)

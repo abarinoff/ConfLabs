@@ -42,6 +42,10 @@ public class Global extends GlobalSettings {
         if(User.find.findRowCount() == 0) {
             Map<String, List> all = (Map<String, List>) Yaml.load("initial-data.yml");
             Ebean.save(all.get("users"));
+
+            for (Object speech : all.get("speeches")) {
+                Ebean.saveManyToManyAssociations(speech, "speakers");
+            }
         }
 	}
 }

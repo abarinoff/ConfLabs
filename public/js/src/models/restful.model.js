@@ -270,7 +270,11 @@ function(_, Backbone, Paginator, Validation) {
         },
 
         removeSpeaker: function(speaker) {
+            var speakers = this.getSpeakers(),
+                speaker = this.getSpeaker(speaker.id),
+                speakerPos = speaker ? _.indexOf(speakers, speaker) : null;
 
+            speakers.splice(speakerPos, 1);
         },
 
         validation: {

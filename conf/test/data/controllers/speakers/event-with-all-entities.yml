@@ -29,26 +29,31 @@ speakers:
     name: John Doe
     position: Engineer
     description: Senior Software Engineer, Lead
+    speeches:
 
   - &secondSpeaker !!models.event.Speaker
     name: Second Speaker of Event 1
     position: Project Manager
     description: 10 yrs of experience
+    speeches:
 
   - &thirdSpeaker !!models.event.Speaker
     name: Third Speaker, Event 2
     position: Junior Dev
     description: Junior dev passed through incubator
+    speeches:
 
   - &fourthSpeaker !!models.event.Speaker
     name: Fourth Speaker
     position: Software developer, trainer
     description: Had great experience in producing high quality juniors
+    speeches:
 
 speeches:
   - &fooSpeech !!models.event.Speech
     title: Foo Speech
     speakers:
+      - *firstSpeaker
 
 slots:
   - &fooSlot !!models.event.slot.SpeechSlot
@@ -93,7 +98,6 @@ events:
       *thirdLocation
     speakers:
       - *fourthSpeaker
-
 
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount

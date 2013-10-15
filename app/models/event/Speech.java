@@ -1,5 +1,7 @@
 package models.event;
 
+import models.event.slot.Slot;
+import models.event.slot.SpeechSlot;
 import play.db.ebean.Model;
 import com.avaje.ebean.validation.NotEmpty;
 
@@ -17,11 +19,27 @@ public class Speech extends Model {
     @NotEmpty
     public String title;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "speeches")
     public List<Speaker> speakers = new LinkedList<Speaker>();
 
     public Speech(String title) {
         this.title = title;
+    }
+
+    @Override
+    public void delete() {
+        Slot slot = Slot.find
+                .where()
+                .eq("speech_id", id)
+                .findUnique();
+
+        if (slot != null) {
+            ((SpeechSlot) slot).speech = null;
+            slot.update();
+        }
+
+        deleteManyToManyAssociations("speakers");
+        super.delete();
     }
 
     @Override

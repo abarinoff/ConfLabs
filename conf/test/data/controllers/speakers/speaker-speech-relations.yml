@@ -1,0 +1,97 @@
+locations:
+  - &firstLocation !!models.event.Location
+    title: foo
+    address: 14/1 Wall Street
+
+stages:
+  - &firstStage !!models.event.Stage
+    title: foo
+    capacity: 128
+
+  - &secondStage !!models.event.Stage
+    title: Second Event Stage
+    capacity: 512
+
+speakers:
+  - &firstSpeaker !!models.event.Speaker
+    name: John Doe
+    position: Engineer
+    description: Senior Software Engineer, Lead
+
+  - &secondSpeaker !!models.event.Speaker
+    name: Second Speaker of Event 1
+    position: Project Manager
+    description: 10 yrs of experience
+
+speeches:
+  - &firstSpeech !!models.event.Speech
+    title: Foo Speech
+    speakers:
+      - *firstSpeaker
+
+  - &secondSpeech !!models.event.Speech
+    title: Second Speech
+    speakers:
+      - *firstSpeaker
+      - *secondSpeaker
+
+slots:
+  - &firstSlot !!models.event.slot.SpeechSlot
+    start: !!timestamp 2013-09-02 09:00:00 +3
+    end: !!timestamp 2013-09-02 18:00:00 +3
+    stage:
+      *firstStage
+    speech:
+      *firstSpeech
+
+events:
+  - &firstEvent !!models.event.Event
+    title: First Event
+    description: Description
+    location:
+      *firstLocation
+    stages:
+      - *firstStage
+      - *secondStage
+    speakers:
+      - *firstSpeaker
+      - *secondSpeaker
+    slots:
+      - *firstSlot
+    speeches:
+      - *firstSpeech
+      - *secondSpeech
+
+linkedAccounts:
+  - &fooAccount !!models.authentication.LinkedAccount
+    id: 1
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
+  - &barAccount !!models.authentication.LinkedAccount
+    id: 2
+    providerUserId: $2a$10$NN5qwKjNCHVARgDaaLZiOupVG228iPundphAV8zAgWiWYoSaSV/uy
+    providerKey: password
+
+roles:
+  - &fooRole !!models.authentication.SecurityRole
+    id: 1
+
+users:
+  - &userAlex !!models.authentication.User
+    id: 1
+    email: foo@bar.com
+    name: Alex
+    firstName: null
+    lastName: null
+    lastLogin: null
+    active: true
+    emailValidated: true
+    roles:
+      - *fooRole
+    linkedAccounts:
+      - *fooAccount
+    permissions:
+    events:
+      - *firstEvent
+
