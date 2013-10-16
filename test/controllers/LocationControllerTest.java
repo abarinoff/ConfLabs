@@ -4,9 +4,7 @@ import models.event.Event;
 import models.event.Location;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
-import play.api.mvc.HandlerRef;
 import play.mvc.Result;
-import play.test.FakeRequest;
 
 import java.io.IOException;
 
@@ -67,7 +65,7 @@ public class LocationControllerTest extends AbstractControllerTest {
 
     @Test
     public void createLocationWhenNonLocationModelIsPassedShouldReturnInternalServerError() throws Exception {
-        operationWhenNonLocationModelIsPassedShouldReturnInternalServerError(
+        operationWhenUnknownModelIsPassedShouldReturnInternalServerError(
                 routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID));
     }
 
@@ -79,19 +77,19 @@ public class LocationControllerTest extends AbstractControllerTest {
 
     @Test
     public void createLocationWhenInvalidLocationIsPassedShouldReturnInternalServerError() throws Exception {
-        operationWhenInvalidLocationIsPassedShouldReturnInternalServerError(
+        operationWhenInvalidModelIsPassedShouldReturnInternalServerError(
                 routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID),
                 createFakeRequestWithInvalidNewLocation());
     }
 
     @Test
     public void createLocationShouldReturnCreated() throws Exception {
-        addOperationShouldReturnCreated();
+        createOperationShouldReturnCreated();
     }
 
     @Test
     public void createLocationShouldReturnLocationIdInResponse() throws Exception {
-        Result result = addOperationShouldReturnCreated();
+        Result result = createOperationShouldReturnCreated();
 
         Event event = Event.find.byId(EVENT_WITHOUT_LOCATION_ID);
 
@@ -142,7 +140,7 @@ public class LocationControllerTest extends AbstractControllerTest {
 
     @Test
     public void updateLocationWhenNonLocationModelIsPassedShouldReturnInternalServerError() throws Exception {
-        operationWhenNonLocationModelIsPassedShouldReturnInternalServerError(
+        operationWhenUnknownModelIsPassedShouldReturnInternalServerError(
                 routes.ref.LocationController.updateLocation(EVENT_WITH_LOCATION_ID));
     }
 
@@ -154,7 +152,7 @@ public class LocationControllerTest extends AbstractControllerTest {
 
     @Test
     public void updateLocationWhenInvalidLocationIsPassedShouldReturnInternalServerError() throws Exception {
-        operationWhenInvalidLocationIsPassedShouldReturnInternalServerError(
+        operationWhenInvalidModelIsPassedShouldReturnInternalServerError(
                 routes.ref.LocationController.updateLocation(EVENT_WITH_LOCATION_ID),
                 createFakeRequestWithInvalidUpdatedLocation());
     }
@@ -245,88 +243,7 @@ public class LocationControllerTest extends AbstractControllerTest {
         assertEquals(null, updatedEvent.getLocation());
     }
 
-    private void testJsonResponse(Result result, JsonNode expectedJson) throws IOException {
-        String responseBody = contentAsString(result);
-        JsonNode actualJson = jsonNodeFromString(responseBody);
-
-        assertEquals(expectedJson, actualJson);
-    }
-
-    private Result testOperation(HandlerRef operationHandler,
-                                 FakeRequest request, int expectedStatus) {
-        Result result = callAction(operationHandler, request);
-        assertThat(status(result)).isEqualTo(expectedStatus);
-
-        return result;
-    }
-
-    private Result testOperationWithAllHeadersAndCookies(HandlerRef operationHandler,
-                                                         CustomFakeRequest requestWithBody, int expectedStatus) {
-
-        FakeRequest request = requestWithBody
-                .withAuthorizationCookie()
-                .withRequestedWithHeader()
-                .withContentTypeHeader();
-
-        return testOperation(operationHandler, request, expectedStatus);
-    }
-
-    private void operationForNonAuthorizedUserShouldReturnUnauthorized(
-            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
-
-        FakeRequest request = requestWithBody
-                .withRequestedWithHeader()
-                .withContentTypeHeader();
-        testOperation(operationHandler, request, UNAUTHORIZED);
-    }
-
-    public void operationForNonExistingEventShouldReturnNotFound(
-            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
-
-        testOperationWithAllHeadersAndCookies(operationHandler, requestWithBody, NOT_FOUND);
-    }
-
-    public void operationViaNonXmlHttpRequestShouldReturnNotFound(
-            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
-
-        FakeRequest request = requestWithBody
-                .withAuthorizationCookie()
-                .withContentTypeHeader();
-        testOperation(operationHandler, request, NOT_FOUND);
-    }
-
-    public void operationForEventOfAnotherUserShouldReturnInternalServerError(
-            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
-
-        FakeRequest request = requestWithBody
-                .withAuthorizationCookie("bar@gmail.com", "123456")
-                .withRequestedWithHeader()
-                .withContentTypeHeader();
-
-        testOperation(operationHandler, request, INTERNAL_SERVER_ERROR);
-    }
-
-    public void operationWhenContentIsMissingShouldReturnInternalServerError(
-            HandlerRef operationHandler) throws Exception {
-
-        CustomFakeRequest request = createEmptyFakeRequest();
-        testOperationWithAllHeadersAndCookies(operationHandler, request, INTERNAL_SERVER_ERROR);
-    }
-
-    public void operationWhenNonLocationModelIsPassedShouldReturnInternalServerError(
-            HandlerRef operationHandler) throws Exception {
-
-        CustomFakeRequest request = createFakeRequestWithUnknownModel();
-        testOperationWithAllHeadersAndCookies(operationHandler, request, INTERNAL_SERVER_ERROR);
-    }
-
-    public void operationWhenInvalidLocationIsPassedShouldReturnInternalServerError(
-            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
-
-        testOperationWithAllHeadersAndCookies(operationHandler, requestWithBody, INTERNAL_SERVER_ERROR);
-    }
-
-    private Result addOperationShouldReturnCreated() throws IOException {
+    private Result createOperationShouldReturnCreated() throws IOException {
         return testOperationWithAllHeadersAndCookies(
                 routes.ref.LocationController.createLocation(EVENT_WITHOUT_LOCATION_ID),
                 createFakeRequestWithValidNewLocation(), CREATED);
@@ -368,7 +285,4 @@ public class LocationControllerTest extends AbstractControllerTest {
         return createFakeRequestWithJsonBody("conf/test/data/controllers/location/invalid-updated-location.json");
     }
 
-    private CustomFakeRequest createEmptyFakeRequest() {
-        return new CustomFakeRequest();
-    }
 }

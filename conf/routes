@@ -51,6 +51,8 @@ GET         /assets/*file                          controllers.Assets.at(path="/
 GET         /events                                controllers.EventController.getEvents()
 POST        /events                                controllers.EventController.createEvent()
 GET         /events/:id                            controllers.EventController.getEventById(id: Long)
+PUT         /events/:id                            controllers.EventController.updateEvent(id: Long)
+DELETE      /events/:id                            controllers.EventController.deleteEvent(id: Long)
 
 # Location controller
 POST        /events/:eventId/location              controllers.LocationController.createLocation(eventId: Long)

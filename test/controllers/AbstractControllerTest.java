@@ -8,6 +8,7 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.junit.Before;
 import play.GlobalSettings;
+import play.api.mvc.HandlerRef;
 import play.libs.Yaml;
 import play.mvc.Http;
 import play.mvc.Result;
@@ -21,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.fest.assertions.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.*;
 
 public class AbstractControllerTest extends WithApplication {
@@ -70,6 +73,90 @@ public class AbstractControllerTest extends WithApplication {
 
     protected CustomFakeRequest createFakeRequestWithUnknownModel() throws IOException {
         return createFakeRequestWithJsonBody("conf/test/data/controllers/unknown-model.json");
+    }
+
+    protected Result testOperation(HandlerRef operationHandler,
+                                   FakeRequest request, int expectedStatus) {
+        Result result = callAction(operationHandler, request);
+        assertThat(status(result)).isEqualTo(expectedStatus);
+
+        return result;
+    }
+
+    protected Result testOperationWithAllHeadersAndCookies(HandlerRef operationHandler,
+                                                           CustomFakeRequest requestWithBody, int expectedStatus) {
+
+        FakeRequest request = requestWithBody
+                .withAuthorizationCookie()
+                .withRequestedWithHeader()
+                .withContentTypeHeader();
+
+        return testOperation(operationHandler, request, expectedStatus);
+    }
+
+    protected void testJsonResponse(Result result, JsonNode expectedJson) throws IOException {
+        String responseBody = contentAsString(result);
+        JsonNode actualJson = jsonNodeFromString(responseBody);
+
+        assertEquals(expectedJson, actualJson);
+    }
+
+    protected void operationForNonAuthorizedUserShouldReturnUnauthorized(
+            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
+
+        FakeRequest request = requestWithBody
+                .withRequestedWithHeader()
+                .withContentTypeHeader();
+        testOperation(operationHandler, request, UNAUTHORIZED);
+    }
+
+    protected void operationForNonExistingEventShouldReturnNotFound(
+            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
+
+        testOperationWithAllHeadersAndCookies(operationHandler, requestWithBody, NOT_FOUND);
+    }
+
+    protected void operationViaNonXmlHttpRequestShouldReturnNotFound(
+            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
+
+        FakeRequest request = requestWithBody
+                .withAuthorizationCookie()
+                .withContentTypeHeader();
+        testOperation(operationHandler, request, NOT_FOUND);
+    }
+
+    protected void operationForEventOfAnotherUserShouldReturnInternalServerError(
+            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
+
+        FakeRequest request = requestWithBody
+                .withAuthorizationCookie("bar@gmail.com", "123456")
+                .withRequestedWithHeader()
+                .withContentTypeHeader();
+
+        testOperation(operationHandler, request, INTERNAL_SERVER_ERROR);
+    }
+
+    protected void operationWhenContentIsMissingShouldReturnInternalServerError(
+            HandlerRef operationHandler) throws Exception {
+
+        CustomFakeRequest request = createEmptyFakeRequest();
+        testOperationWithAllHeadersAndCookies(operationHandler, request, INTERNAL_SERVER_ERROR);
+    }
+
+    protected void operationWhenUnknownModelIsPassedShouldReturnInternalServerError(
+            HandlerRef operationHandler) throws Exception {
+
+        CustomFakeRequest request = createFakeRequestWithUnknownModel();
+        testOperationWithAllHeadersAndCookies(operationHandler, request, INTERNAL_SERVER_ERROR);
+    }
+
+    protected void operationWhenInvalidModelIsPassedShouldReturnInternalServerError(
+            HandlerRef operationHandler, CustomFakeRequest requestWithBody) throws Exception {
+
+        testOperationWithAllHeadersAndCookies(operationHandler, requestWithBody, INTERNAL_SERVER_ERROR);
+    }
+    protected CustomFakeRequest createEmptyFakeRequest() {
+        return new CustomFakeRequest();
     }
 
     protected class CustomFakeRequest extends FakeRequest {

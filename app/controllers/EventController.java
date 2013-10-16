@@ -114,4 +114,66 @@ public class EventController extends AbstractController {
 
         return status.as(CONTENT_TYPE_JSON);
     }
+
+    @Restrict(@Group(Application.USER_ROLE))
+    public static Result updateEvent(long id) {
+        Result result;
+        Event event = Event.find.byId(id);
+
+        if((event != null) && isXmlHttpRequest()) {
+            AuthUser authUser = PlayAuthenticate.getUser(session());
+            User user = User.findByAuthUserIdentity(authUser);
+
+            if(event.user.id.equals(user.id)) {
+                JsonNode jsonNode = requestAsJson();
+
+                try {
+                    Event updatedEvent = createModelFromJson(jsonNode, Event.class);
+
+                    if(event.id.equals(updatedEvent.id)) {
+                        event.title = updatedEvent.title;
+                        event.description = updatedEvent.description;
+                        event.update();
+                        result = emptySuccessResponse();
+                    } else {
+                        result = internalServerError();
+                    }
+                } catch (Exception e) {
+                    result = internalServerError();
+                }
+            } else {
+                result = internalServerError();
+            }
+        } else {
+            result = notFound();
+        }
+
+        return result;
+    }
+
+    @Restrict(@Group(Application.USER_ROLE))
+    public static Result deleteEvent(long id) {
+        Result result;
+        Event event = Event.find.byId(id);
+
+        if((event != null) && isXmlHttpRequest()) {
+            AuthUser authUser = PlayAuthenticate.getUser(session());
+            User user = User.findByAuthUserIdentity(authUser);
+
+            if(event.user.id.equals(user.id)) {
+                try {
+                    event.delete();
+                    result = emptySuccessResponse();
+                } catch (Exception e) {
+                    result = internalServerError();
+                }
+            } else {
+                result = internalServerError();
+            }
+        } else {
+            result = notFound();
+        }
+
+        return result;
+    }
 }

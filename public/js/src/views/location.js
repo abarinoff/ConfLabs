@@ -95,7 +95,6 @@ function($, _, Backbone, Validation, Model, ValidationHandler, template) {
         onError: function(model, response) {
             this.hideDialog(Model.ErrorHandler[response.status]);
         }
-
     });
 
     return LocationView;

@@ -12,6 +12,7 @@ function (_, Backbone, EventsListItemView) {
         },
 
         renderItems: function () {
+            console.log("renderItems");
             this.$el.empty();
             this.activeEventItem = undefined;
 
@@ -19,7 +20,7 @@ function (_, Backbone, EventsListItemView) {
         },
 
         renderItem: function(eventModel) {
-            var eventListItem = new EventsListItemView({model: eventModel});
+            var eventListItem = new EventsListItemView({model: eventModel, eventsCollection: this.model});
             eventListItem.on("selected", this.itemSelected, this);
             this.$el.append(eventListItem.render().el);
 

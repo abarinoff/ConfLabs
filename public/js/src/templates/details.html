@@ -24,7 +24,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Edit Event Details</h4>
+                <h4 class="modal-title">Edit Details</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal" role="form">
@@ -36,10 +36,9 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="location-address" class="col-md-2 control-label">Address</label>
+                        <label for="event-description" class="col-md-2 control-label">Description</label>
                         <div class="col-md-10">
-                            <input id="location-address" class="form-control" type="text" value="">
-                            <textarea class="form-control" rows="5"><%= event.get('description') %></textarea>
+                            <textarea id="event-description" class="form-control" rows="5"></textarea>
                             <span class="help-block hidden"></span>
                         </div>
                     </div>
@@ -47,7 +46,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" id="btn-save-location" class="btn btn-primary">Save</button>
+                <button type="button" id="btn-save-details" class="btn btn-primary">Save</button>
             </div>
         </div>
     </div>

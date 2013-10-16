@@ -5,8 +5,10 @@ import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.ObjectWriter;
+import org.codehaus.jackson.node.ObjectNode;
 import play.mvc.Controller;
 import play.mvc.Http;
+import play.mvc.Result;
 import util.JsonView;
 
 import java.io.IOException;
@@ -32,8 +34,8 @@ public class AbstractController extends Controller {
         return requestBody.asJson();
     }
 
-    public static String createJsonStringWithView (Class<? extends JsonView> jsonViewClass, Object object)
-            throws JsonGenerationException, JsonMappingException, IOException {
+    public static String createJsonStringWithView(Class<? extends JsonView> jsonViewClass, Object object)
+            throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         ObjectWriter objectWriter = mapper.writerWithView(jsonViewClass);
         String json = objectWriter.writeValueAsString(object);
@@ -41,4 +43,10 @@ public class AbstractController extends Controller {
         return json;
     }
 
+    public static Result emptySuccessResponse() {
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode responseJson = mapper.createObjectNode();
+
+        return ok(responseJson);
+    }
 }

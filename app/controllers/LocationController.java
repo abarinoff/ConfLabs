@@ -127,11 +127,4 @@ public class LocationController extends AbstractController {
 
         return created(responseJson);
     }
-
-    private static Result emptySuccessResponse() {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode responseJson = mapper.createObjectNode();
-
-        return ok(responseJson);
-    }
 }

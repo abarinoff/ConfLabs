@@ -1,5 +1,6 @@
 package controllers;
 
+import models.event.Event;
 import org.codehaus.jackson.JsonNode;
 import org.junit.Test;
 import play.mvc.Http;
@@ -14,11 +15,17 @@ import static org.junit.Assert.assertTrue;
 import static play.test.Helpers.*;
 
 public class EventControllerTest extends AbstractControllerTest {
+    private static Long EXISTING_EVENT_ID = 1L;
+    private static Long NON_EXISTING_EVENT_ID = 10L;
+
+    @Override
+    public void setUp() {
+        super.setUp();
+        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
+    }
 
     @Test
     public void getEventsForAuthorizedUserShouldReturnOkAndJsonContentType() {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         Http.Cookie playSession = getAuthorizationCookie();
 
         Result result = callAction(routes.ref.EventController.getEvents(), fakeRequest().withCookies(playSession));
@@ -29,8 +36,6 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void getEventsForNonAuthorizedUserShouldReturnUnauthorized() {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         Result result = callAction(routes.ref.EventController.getEvents());
 
         assertThat(status(result)).isEqualTo(UNAUTHORIZED);
@@ -38,8 +43,6 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void getEventsForUserWithNoEventsShouldReturnEmptyJson() throws IOException {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         JsonNode expectedEventsJson = jsonNodeFromString("[]");
 
         Http.Cookie playSession = getAuthorizationCookie("bar@gmail.com", "123456");
@@ -53,8 +56,6 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void getEventsForUserWithEventsShouldReturnValidJsonResponse() throws IOException {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         JsonNode preparedEventsJson = jsonNodeFromFile(new File("conf/test/data/controllers/events/events-for-user-with-id-1-short-view.json"));
 
         Http.Cookie playSession = getAuthorizationCookie();
@@ -68,8 +69,6 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void createNewEventWithJsonForDifferentModelShouldReturnServerError() throws IOException {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         Http.Cookie playSession = getAuthorizationCookie();
 
         JsonNode jsonNode = jsonNodeFromString("{\"fooKey\" : \"fooValue\", \"barKey\" : \"barValue\"}");
@@ -86,8 +85,6 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void createNewEventWithCorrectPostDataShouldReturnCreated() throws IOException {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         Result result = sendPostWithJsonDataAsAuthorizedUser("conf/test/data/controllers/events/event-with-location.json");
 
         assertThat(status(result)).isEqualTo(CREATED);
@@ -104,17 +101,12 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void createMultipleEventsShouldReturnServerError() throws IOException {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
-        Result result = sendPostWithJsonDataAsAuthorizedUser("conf/test/data/controllers/events/array-of-events.json");
-
-        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+        testOperationWithAllHeadersAndCookies(routes.ref.EventController.createEvent(),
+                createFakeRequestWithMultipleEvents(), INTERNAL_SERVER_ERROR);
     }
 
     @Test
     public void getEventWithNonAjaxRequestShouldReturnNotFound() {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         Http.Cookie playSession = getAuthorizationCookie();
 
         final Result result = callAction(routes.ref.EventController.getEventById(1L),
@@ -127,8 +119,6 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void getEventWithAjaxRequestShouldSucceed() throws IOException {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         Http.Cookie playSession = getAuthorizationCookie();
 
         final Result result = callAction(routes.ref.EventController.getEventById(1L),
@@ -150,8 +140,6 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void getEventWithNonexistentIdShouldReturnNotFound() throws IOException {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         Http.Cookie playSession = getAuthorizationCookie();
 
         final Result result = callAction(routes.ref.EventController.getEventById(100L),
@@ -165,8 +153,6 @@ public class EventControllerTest extends AbstractControllerTest {
 
     @Test
     public void getEventBelongingToAnotherUserShouldReturnServerError() {
-        startFakeApplication("test/data/controllers/events/event-with-all-entities.yml");
-
         Http.Cookie playSession = getAuthorizationCookie();
 
         final Result result = callAction(routes.ref.EventController.getEventById(3L),
@@ -176,6 +162,163 @@ public class EventControllerTest extends AbstractControllerTest {
         );
 
         assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void updateEventForNonAuthorizedUserShouldReturnUnauthorized() throws Exception {
+        operationForNonAuthorizedUserShouldReturnUnauthorized(
+                routes.ref.EventController.updateEvent(EXISTING_EVENT_ID),
+                createFakeRequestWithValidUpdatedEvent());
+    }
+
+    @Test
+    public void updateEventForNonExistingEventShouldReturnNotFound() throws Exception {
+        operationForNonExistingEventShouldReturnNotFound(
+                routes.ref.EventController.updateEvent(NON_EXISTING_EVENT_ID),
+                createFakeRequestWithValidUpdatedEvent());
+    }
+
+    @Test
+    public void updateLocationViaNonXmlHttpRequestShouldReturnNotFound() throws Exception {
+        operationViaNonXmlHttpRequestShouldReturnNotFound(
+                routes.ref.EventController.updateEvent(EXISTING_EVENT_ID),
+                createFakeRequestWithValidUpdatedEvent());
+    }
+
+    @Test
+    public void updateEventOfAnotherUserShouldReturnInternalServerError() throws Exception {
+        operationForEventOfAnotherUserShouldReturnInternalServerError(
+                routes.ref.EventController.updateEvent(EXISTING_EVENT_ID),
+                createFakeRequestWithValidUpdatedEvent());
+    }
+
+    @Test
+    public void updateEventWhenContentIsMissingShouldReturnInternalServerError() throws Exception {
+        operationWhenContentIsMissingShouldReturnInternalServerError(
+                routes.ref.EventController.updateEvent(EXISTING_EVENT_ID));
+    }
+
+    @Test
+    public void updateEventWhenNonEventModelIsPassedShouldReturnInternalServerError() throws Exception {
+        operationWhenUnknownModelIsPassedShouldReturnInternalServerError(
+                routes.ref.EventController.updateEvent(EXISTING_EVENT_ID));
+    }
+
+    @Test
+    public void updateEventWhenEventIdDiffersShouldReturnInternalServerError() throws Exception {
+        testOperationWithAllHeadersAndCookies(routes.ref.EventController.updateEvent(EXISTING_EVENT_ID),
+                createFakeRequestWithUpdatedEventWithDifferentId(), INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void updateEventWhenInvalidEventIsPassedShouldReturnInternalServerError() throws Exception {
+        operationWhenInvalidModelIsPassedShouldReturnInternalServerError(
+                routes.ref.EventController.updateEvent(EXISTING_EVENT_ID),
+                createFakeRequestWithInvalidUpdatedEvent());
+    }
+
+    @Test
+    public void updateEventShouldReturnOk() throws Exception {
+        updateOperationShouldReturnOk();
+    }
+
+    @Test
+    public void updateEventShouldReturnEmptyJsonInResponse() throws Exception {
+        Result result = updateOperationShouldReturnOk();
+
+        JsonNode expectedJson = jsonNodeFromString("{}");
+        testJsonResponse(result, expectedJson);
+    }
+
+    @Test
+    public void updateEventShouldPerformUpdateCorrectly() throws Exception {
+        updateOperationShouldReturnOk();
+
+        Event updatedEvent = Event.find.byId(EXISTING_EVENT_ID);
+
+        assertThat(updatedEvent.id).isEqualTo(1);
+        assertThat(updatedEvent.title).isEqualTo("updated title");
+        assertThat(updatedEvent.description).isEqualTo("updated description");
+    }
+
+    @Test
+    public void deleteEventForNonAuthorizedUserShouldReturnUnauthorized() throws Exception {
+        operationForNonAuthorizedUserShouldReturnUnauthorized(
+                routes.ref.EventController.deleteEvent(EXISTING_EVENT_ID),
+                createEmptyFakeRequest());
+    }
+
+    @Test
+    public void deleteEventForNonExistingEventShouldReturnNotFound() throws Exception {
+        operationForNonExistingEventShouldReturnNotFound(
+                routes.ref.EventController.deleteEvent(NON_EXISTING_EVENT_ID),
+                createEmptyFakeRequest());
+    }
+
+    @Test
+    public void deleteEventViaNonXmlHttpRequestShouldReturnNotFound() throws Exception {
+        operationViaNonXmlHttpRequestShouldReturnNotFound(
+                routes.ref.EventController.deleteEvent(EXISTING_EVENT_ID),
+                createEmptyFakeRequest());
+    }
+
+    @Test
+    public void deleteEventOfAnotherUserShouldReturnInternalServerError() throws Exception {
+        operationForEventOfAnotherUserShouldReturnInternalServerError(
+                routes.ref.EventController.deleteEvent(EXISTING_EVENT_ID),
+                createEmptyFakeRequest());
+    }
+
+    @Test
+    public void deleteEventShouldReturnOk() throws Exception {
+        deleteOperationShouldReturnOk();
+    }
+
+    @Test
+    public void deleteEventShouldReturnEmptyJsonInResponse() throws Exception {
+        Result result = deleteOperationShouldReturnOk();
+
+        JsonNode expectedJson = jsonNodeFromString("{}");
+        testJsonResponse(result, expectedJson);
+    }
+
+    @Test
+    public void deleteEventShouldPerformDeletionCorrectly() throws Exception {
+        Event event = Event.find.byId(EXISTING_EVENT_ID);
+        Long removedEventId = event.id;
+
+        deleteOperationShouldReturnOk();
+
+        Event removedEvent = Event.find.byId(removedEventId);
+        assertEquals(null, removedEvent);
+    }
+
+    private Result updateOperationShouldReturnOk() throws IOException {
+        return testOperationWithAllHeadersAndCookies(
+                routes.ref.EventController.updateEvent(EXISTING_EVENT_ID),
+                createFakeRequestWithValidUpdatedEvent(), OK);
+    }
+
+    private Result deleteOperationShouldReturnOk() throws IOException {
+        return testOperationWithAllHeadersAndCookies(
+                routes.ref.EventController.deleteEvent(EXISTING_EVENT_ID),
+                createEmptyFakeRequest(), OK);
+    }
+
+    private CustomFakeRequest createFakeRequestWithMultipleEvents() throws IOException {
+        return createFakeRequestWithJsonBody("conf/test/data/controllers/events/array-of-events.json");
+    }
+
+    private CustomFakeRequest createFakeRequestWithValidUpdatedEvent() throws IOException {
+        return createFakeRequestWithJsonBody("conf/test/data/controllers/events/valid-updated-event.json");
+    }
+
+    private CustomFakeRequest createFakeRequestWithUpdatedEventWithDifferentId() throws IOException {
+        return createFakeRequestWithJsonBody("conf/test/data/controllers/events/valid-updated-event-with-different-id.json");
+    }
+
+    private CustomFakeRequest createFakeRequestWithInvalidUpdatedEvent() throws IOException {
+        return createFakeRequestWithJsonBody("conf/test/data/controllers/events/invalid-updated-event.json");
     }
 
     private Result sendPostWithJsonDataAsAuthorizedUser(String jsonDataFile) throws IOException {

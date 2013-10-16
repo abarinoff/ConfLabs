@@ -12,15 +12,27 @@ function($, _, Backbone, Model, EventView, template) {
         template: _.template(template),
 
         events: {
-            "click": "select"
+            "click": "select",
+            "click button[id^='btn-remove-event-']"   : "removeEvent"
+        },
+
+        initialize: function(options) {
+            console.log("test1");
+            console.log(options);
+            this.eventsCollection = options.eventsCollection;
         },
 
         render: function() {
-            $(this.el).html(this.template({event: this.model}));
+            this.renderFromModel(this.model);
             return this;
         },
 
+        renderFromModel: function(model) {
+            $(this.el).html(this.template({event: model}));
+        },
+
         select: function(event) {
+            console.log("selected " + this.model.id);
             this.trigger("selected", this);
             this.show();
 
@@ -28,6 +40,19 @@ function($, _, Backbone, Model, EventView, template) {
             this.updateRoute(replaceRoute);
 
             return false;
+        },
+
+        removeEvent: function(clickEvent) {
+            var buttonId = $(clickEvent.target).attr('id'),
+                eventId = buttonId.replace("btn-remove-event-", '');
+
+            console.log("remove event with id: " + eventId);
+            clickEvent.stopPropagation();
+
+            this.model.destroy({
+                success: _.bind(this.onDestroySuccess, this),
+                error: _.bind(this.onError, this)
+            });
         },
 
         activate: function(item) {
@@ -41,8 +66,11 @@ function($, _, Backbone, Model, EventView, template) {
         show: function() {
             var event = new Model.Event({id: this.model.get("id")});
             var eventView = new EventView({model: event});
+            var changeHandler = _.bind(this.renderFromModel, this, event);
+
             event.fetch({
                 success: function(model) {
+                    event.on("change:title", changeHandler);
                     eventView.render();
                 }
             });
@@ -50,6 +78,15 @@ function($, _, Backbone, Model, EventView, template) {
 
         updateRoute: function(replaceRoute) {
             window.application.router.navigate("events/" + this.model.get("id"), {replace: replaceRoute});
+        },
+
+        onDestroySuccess: function() {
+            this.eventsCollection.remove(this.model);
+            this.eventsCollection.pager();
+        },
+
+        onError: function(model, response) {
+            Model.ErrorHandler[response.status]();
         }
     });
 
