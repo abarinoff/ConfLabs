@@ -1,11 +1,17 @@
 package models.event;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
 import play.db.ebean.Model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Id;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 
 import com.avaje.ebean.validation.NotEmpty;
+
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 public class Speaker extends Model {
@@ -20,8 +26,22 @@ public class Speaker extends Model {
 
     public String description;
 
+    @JsonIgnore
+    @ManyToMany(cascade = CascadeType.ALL)
+    public List<Speech> speeches;
+
     public Speaker(String name) {
         this.name = name;
+    }
+
+    @Override
+    public void delete() {
+        for(Speech speech : speeches) {
+            if (speech.speakers.size() == 1) {
+                speech.delete();
+            }
+        }
+        super.delete();
     }
 
     @Override

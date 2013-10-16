@@ -14,8 +14,6 @@ import play.Logger;
 import play.mvc.Result;
 import play.mvc.Results;
 
-import java.io.IOException;
-
 public class SpeakersController extends AbstractController {
 
     @Restrict(@Group(Application.USER_ROLE))
@@ -29,7 +27,6 @@ public class SpeakersController extends AbstractController {
 
         Results.Status status;
         Event event = Event.find.byId(eventId);
-
         if (event != null) {
             if (event.user.id.equals(user.id)) {
                 JsonNode jsonBody = requestAsJson();
@@ -74,7 +71,6 @@ public class SpeakersController extends AbstractController {
 
         Results.Status status;
         Event event = Event.find.byId(eventId);
-
         if (event != null) {
             JsonNode requestBody = requestAsJson();
             if (event.user.id.equals(user.id) && requestBody.size() > 0) {
@@ -106,5 +102,43 @@ public class SpeakersController extends AbstractController {
         }
 
         return status.as("application/json");
+    }
+
+    @Restrict(@Group(Application.USER_ROLE))
+    public static Result deleteSpeaker(Long eventId, Long speakerId) {
+        if (!isXmlHttpRequest()) {
+            return notFound();
+        }
+
+        AuthUser authUser = PlayAuthenticate.getUser(session());
+        User user = User.findByAuthUserIdentity(authUser);
+
+        Results.Status status;
+        Event event = Event.find.byId(eventId);
+        if (event != null) {
+            if (event.user.id.equals(user.id)) {
+                if (event.getSpeakerById(speakerId) != null) {
+                    try {
+                        Speaker speaker = Speaker.find.byId(speakerId);
+                        speaker.delete();
+                        status = ok("{}");
+                    }
+                    catch(Exception e) {
+                        status = internalServerError(e.getMessage());
+                    }
+                }
+                else {
+                    status = notFound();
+                }
+            }
+            else {
+                status = internalServerError();
+            }
+        }
+        else {
+            status = notFound();
+        }
+
+        return status.as(CONTENT_TYPE_JSON);
     }
 }
