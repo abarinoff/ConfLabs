@@ -4,21 +4,20 @@ define([
     "backbone",
     "models/model",
     "views/event",
+    "views/remove.event.dialog",
     "require.text!templates/events.list.item.html"],
 
-function($, _, Backbone, Model, EventView, template) {
+function($, _, Backbone, Model, EventView, RemoveEventDialog, template) {
     var EventsListItemView = Backbone.View.extend({
         tagName: "li",
         template: _.template(template),
 
         events: {
             "click": "select",
-            "click button[id^='btn-remove-event-']"   : "removeEvent"
+            "click button#btn-remove-event": "confirmRemoval"
         },
 
         initialize: function(options) {
-            console.log("test1");
-            console.log(options);
             this.eventsCollection = options.eventsCollection;
         },
 
@@ -32,7 +31,6 @@ function($, _, Backbone, Model, EventView, template) {
         },
 
         select: function(event) {
-            console.log("selected " + this.model.id);
             this.trigger("selected", this);
             this.show();
 
@@ -40,19 +38,6 @@ function($, _, Backbone, Model, EventView, template) {
             this.updateRoute(replaceRoute);
 
             return false;
-        },
-
-        removeEvent: function(clickEvent) {
-            var buttonId = $(clickEvent.target).attr('id'),
-                eventId = buttonId.replace("btn-remove-event-", '');
-
-            console.log("remove event with id: " + eventId);
-            clickEvent.stopPropagation();
-
-            this.model.destroy({
-                success: _.bind(this.onDestroySuccess, this),
-                error: _.bind(this.onError, this)
-            });
         },
 
         activate: function(item) {
@@ -65,14 +50,14 @@ function($, _, Backbone, Model, EventView, template) {
 
         show: function() {
             var event = new Model.Event({id: this.model.get("id")});
-            var eventView = new EventView({model: event});
+            this.eventView = new EventView({model: event});
             var changeHandler = _.bind(this.renderFromModel, this, event);
 
             event.fetch({
-                success: function(model) {
+                success: _.bind(function(model) {
                     event.on("change:title", changeHandler);
-                    eventView.render();
-                }
+                    this.eventView.render();
+                }, this)
             });
         },
 
@@ -80,9 +65,25 @@ function($, _, Backbone, Model, EventView, template) {
             window.application.router.navigate("events/" + this.model.get("id"), {replace: replaceRoute});
         },
 
-        onDestroySuccess: function() {
-            this.eventsCollection.remove(this.model);
-            this.eventsCollection.pager();
+        confirmRemoval: function(clickEvent) {
+            clickEvent.stopPropagation();
+
+            var callback = _.bind(this.removeEvent, this);
+            var dialog = new RemoveEventDialog({model: this.model, callback: callback});
+            dialog.render();
+        },
+
+        removeEvent: function(clickEvent) {
+            var eventIndex = this.model.collection.getEventIndex(this.model.id)
+
+            this.model.destroy({
+                success: _.bind(this.onDestroySuccess, this, eventIndex),
+                error: _.bind(this.onError, this)
+            });
+        },
+
+        onDestroySuccess: function(eventIndex) {
+            this.trigger("deleted", this, eventIndex);
         },
 
         onError: function(model, response) {
