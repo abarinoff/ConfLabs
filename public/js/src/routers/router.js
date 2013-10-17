@@ -32,8 +32,7 @@ function($, Backbone, EventsView, EventsListView, EventsPaginationView, Model) {
 
             events.fetch({
                 success: function() {
-                    var eventPage = events.getActiveEventPage(id);
-                    eventPage === -1 ? events.pager() : events.goTo(eventPage);
+                    events.switchToActiveEventPage();
                 }
             });
 

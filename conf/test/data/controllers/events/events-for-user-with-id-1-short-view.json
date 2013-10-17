@@ -1,10 +1,10 @@
 [
     {
-        "id":1,
-        "title":"Foo Event"
-    },
-    {
         "id": 2,
         "title": "Second Event"
+    },
+    {
+        "id":1,
+        "title":"Foo Event"
     }
 ]

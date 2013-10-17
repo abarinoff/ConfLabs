@@ -19,8 +19,9 @@ function (_, Backbone, EventsListItemView) {
         },
 
         renderItem: function(eventModel) {
-            var eventListItem = new EventsListItemView({model: eventModel});
+            var eventListItem = new EventsListItemView({model: eventModel, eventsCollection: this.model});
             eventListItem.on("selected", this.itemSelected, this);
+            eventListItem.on("deleted", this.itemDeleted, this);
             this.$el.append(eventListItem.render().el);
 
             var activeEventId = this.model.activeEventId;
@@ -36,8 +37,18 @@ function (_, Backbone, EventsListItemView) {
                 this.activeEventItem.deactivate();
             }
 
+            this.model.setActiveEventId(eventItem.model.id);
             this.activeEventItem = eventItem;
             this.activeEventItem.activate();
+        },
+
+        itemDeleted: function (event, index) {
+            this.model.remove(event.model);
+            if(this.activeEventItem === event) {
+                event.eventView.remove();
+                this.model.updateActiveEventOnRemoval(index);
+            }
+            this.model.switchToActiveEventPage();
         }
     });
 

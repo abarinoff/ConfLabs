@@ -444,15 +444,34 @@ function(_, Backbone, Paginator, Validation) {
             this.activeEventId = undefined;
         },
 
-        getActiveEventPage: function() {
+        switchToActiveEventPage: function() {
+            var eventPage = this.getActiveEventPage();
+            eventPage === -1 ? this.pager() : this.goTo(eventPage);
+        },
+
+        getEventIndex: function(eventId) {
             var eventIndex = _.chain(this.origModels)
-                .map(function(event) {
+                .map(function (event) {
                     return event.get("id");
                 })
-                .indexOf(this.activeEventId)
+                .indexOf(eventId)
                 .value();
+            return eventIndex;
+        },
 
+        getActiveEventPage: function() {
+            var eventIndex = this.getEventIndex(this.activeEventId);
             return _.isEqual(eventIndex, -1) ? -1 : Math.ceil((eventIndex + 1) / this.perPage);
+        },
+
+        updateActiveEventOnRemoval: function(removedEventIndex) {
+            var collection = this.origModels;
+            var collectionLength = collection.length;
+
+            var nextActiveEventIndex = removedEventIndex < collectionLength ? removedEventIndex : collectionLength - 1;
+            var activeEvent = collection[nextActiveEventIndex];
+
+            this.setActiveEventId(_.isEmpty(activeEvent) ? 0 : activeEvent.id);
         },
 
         handleError: function(model, error) {
