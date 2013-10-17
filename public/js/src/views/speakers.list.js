@@ -3,11 +3,12 @@ define([
     'jquery',
     'backbone',
     'models/model',
+    'views/speaker',
     'backbone.validation',
     'validation/validation.handler',
     'require.text!templates/speakers.list.html'
 ],
-function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTemplate) {
+function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, speakersListTemplate) {
     var SpeakersListView = Backbone.View.extend({
         ID_SELECTOR         : "#hdn-speaker-id",
         NAME_SELECTOR       : "#speaker-name",
@@ -15,26 +16,55 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
         DESCRIPTION_SELECTOR: "#speaker-description",
 
         DIALOG_SELECTOR     : "#dlg-speaker",
+        ADD_SPEECH_DIALOG   : "#dlg-speech",
 
-        speakersListTemplate : _.template(speakersListTemplate),
+        SELECT_SPEECH_BLOCK : "#select-speech-block",
+        NEW_SPEECH_BLOCK    : "#new-speech-block",
 
-        el : "#speakers",
+        SPEECH_SPEAKER_ID   : "#hdn-speech-speaker-id",
+        SPEECHES_SELECT     : "#existing-speeches",
+        SPEECH_TITLE        : "#new-speech-title",
+
+        template: _.template(speakersListTemplate),
+
+        el: "#speakers",
 
         events: {
             "click button[id^='btn-edit-speaker-']"     : "showModal",
             "click button[id^='btn-remove-speaker-']"   : "removeSpeaker",
-            "click button#save-speaker"                 : "saveSpeaker"
+            "click button[id^='btn-add-speech-']"       : "showAddSpeechModal",
+            "click button#save-speaker"                 : "saveSpeaker",
+            "click button[id^='remove-speech-']"        : "removeSpeech",
+            "click button[id^='edit-speech-']"          : "editSpeech",
+            "change #existing-speeches"                 : "speechSelected",
+            "click button#save-speech"                  : "addSpeech"
         },
 
         initialize: function(options) {
+            _.bindAll(this,
+                "speakerSaved",
+                "speakerRemoved",
+                "errorSaveSpeaker",
+                "errorRemoveSpeaker",
+                "dialogHidden",
+                "addSpeechModalHidden"
+            );
             this.eventModel = options.eventModel;
-            _.bindAll(this, "speakerSaved", "speakerRemoved", "errorSaveSpeaker", "errorRemoveSpeaker", "dialogHidden");
         },
 
-        render : function() {
-            this.$el.html(this.speakersListTemplate({speakers : this.eventModel.getSpeakers()}));
+        render: function() {
+            // Render container for speakers along with dialog to add a new speaker
+            this.$el.html(this.template());
+            this.$("#speakers-list").empty();
+
+            // Here we have to create a View object for each Speaker and render it
+            _.each(this.eventModel.getSpeakers(), function(speaker, index, list) {
+                var speakerView = new SpeakerView({speaker: speaker, eventModel: this.eventModel}).render();
+                this.$("#speakers-list").append(speakerView.$el.contents());
+            }, this);
 
             $(this.DIALOG_SELECTOR).on('hidden.bs.modal', this.dialogHidden);
+            $(this.ADD_SPEECH_DIALOG).on('hidden.bs.modal', this.addSpeechModalHidden);
 
             return this;
         },
@@ -82,7 +112,13 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
             });
         },
 
-        removeSpeaker : function(event) {
+        speakerSaved: function(model, respose, options) {
+            var view = this;
+            view.eventModel.saveSpeaker(model);
+            $(view.DIALOG_SELECTOR).modal('hide');
+        },
+
+        removeSpeaker: function(event) {
             var $target = $(event.target),
                 view = this,
                 buttonId = $target.attr('id'),
@@ -95,16 +131,122 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
             });
         },
 
-        speakerSaved: function(model, respose, options) {
-            var view = this;
-            view.eventModel.saveSpeaker(model);
-            $(view.DIALOG_SELECTOR).modal('hide');
-        },
-
         speakerRemoved: function(model, response, options) {
             var view = this;
             view.eventModel.removeSpeaker(model);
             view.render();
+        },
+
+        showAddSpeechModal: function(event) {
+            var $target = $(event.target),
+                view = this,
+                buttonId = $target.attr('id'),
+                speakerId = buttonId.replace("btn-add-speech-", "");
+
+            // Initialize controls of the dialog
+            $(view.SPEECH_SPEAKER_ID).val(speakerId);
+            $(view.SELECT_SPEECH_BLOCK).removeClass("hidden");
+
+            // We have to populate the speech select element with options that has not been selected yet
+            var unassignedSpeeches = this.eventModel.getAvailableSpeeches(speakerId);
+
+            var $select = $(view.SPEECHES_SELECT)
+                .empty()
+                .append("<option value=''>Add New</option>");
+            _.each(unassignedSpeeches, function(speech){
+                $select.append($("<option value='" + speech.getId() + "'>" + speech.getTitle() + "</option>"));
+            });
+
+            $(view.ADD_SPEECH_DIALOG).modal();
+        },
+
+        addSpeechModalHidden: function() {
+            var view = this;
+            view.render();
+        },
+
+        speechSelected: function(event) {
+            var view = this,
+                $select = $(event.target),
+                value = $select.val();
+            if (parseInt(value)) {
+                $(view.NEW_SPEECH_BLOCK).addClass("hidden");
+            }
+            else {
+                $(view.NEW_SPEECH_BLOCK).removeClass("hidden");
+            }
+
+            console.log("selected speech: " + value);
+        },
+
+        addSpeech: function() {
+            var view = this,
+                speakerId = $(view.SPEECH_SPEAKER_ID).val();
+
+            var speechId = $(this.SPEECHES_SELECT).val();
+            var speech;
+            if (parseInt(speechId)) {
+                console.log("update existing");
+                speech = view.eventModel.getSpeech(speechId);
+            }
+            else {
+                speech = new Model.Speech({eventId: view.eventModel.id, speakerId: speakerId});
+            }
+            speech.setSpeaker(this.eventModel.getSpeaker(speakerId));
+            speech.setSpeakerId(speakerId);
+            /*speech.save({}, {
+                success: function() {
+                    console.log("speech save succeeded");
+                },
+                error: function() {
+                    console.log("Speech save error");
+                }
+            });*/
+        },
+
+        /*editSpeech: function(event) {
+            var view = this,
+                $target = $(event.target),
+                buttonId = $target.attr('id'),
+                suffix = buttonId.replace("edit-speech-", "");
+            var speakerSpeech = suffix.split("-"),
+                speechId = speakerSpeech.pop(),
+                speakerId = speakerSpeech.pop();
+
+            console.log("edit speech with id " + speechId);
+        },*/
+
+        /*removeSpeech: function(event) {
+            var view = this,
+                $target = $(event.target),
+                buttonId = $target.attr('id'),
+                suffix = buttonId.replace("remove-speech-", "");
+            var speakerSpeech = suffix.split("-"),
+                speechId = speakerSpeech.pop(),
+                speakerId = speakerSpeech.pop();
+
+            var speech = _.findWhere(view.eventModel.getSpeeches(), {id: parseInt(speechId)});
+            if (speech) {
+                speech.setSpeakerId(speakerId);
+                console.log("remove");
+                *//*speech.__destroy({
+                 success: view.speechRemoved,
+                 error: view.errorSpeechRemove
+                 });*//*
+
+                // debug (imitate speech removal)
+                this.eventModel.removeSpeechFromSpeaker(speakerId, speechId);
+                view.render();
+                // end debug
+            }
+        },*/
+
+        speechRemoved: function() {
+            console.log("speech removed from the storage");
+        },
+
+        errorSpeechRemove: function() {
+            console.log("error removing speech from the storage");
         },
 
         errorSaveSpeaker: function() {

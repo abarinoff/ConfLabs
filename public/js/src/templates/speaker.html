@@ -1,0 +1,22 @@
+<div>
+    <div class="row">
+        <div class="col-md-2 item-row">Name:</div>
+        <div class="col-md-5 item-row"><%= speaker.getName() %></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 item-row">Position:</div>
+        <div class="col-md-5 item-row"><%= speaker.getPosition() %></div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 item-row">Description:</div>
+        <div class="col-md-5 item-row"><%= speaker.getDescription() %></div>
+    </div>
+    <div class="speeches-list row"></div>
+    <div class="row">
+        <div class="col-md-6 item-buttons">
+            <button id="btn-edit-speaker-<%= speaker.id %>" class="btn btn-primary" type="button">Edit</button>
+            <button id="btn-remove-speaker-<%= speaker.id %>" class="btn btn-primary" type="button">Remove</button>
+            <button id="btn-add-speech-<%= speaker.id %>" class="btn btn-primary" type="button">Add Speech</button>
+        </div>
+    </div>
+</div>

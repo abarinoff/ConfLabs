@@ -145,6 +145,11 @@ function(_, Backbone, Paginator, Validation) {
             return this.get("description");
         },
 
+        getSpeeches: function(eventModel) {
+            //console.log("model's id we get speeches for: " + this.id);
+            console.log(this.model);
+        },
+
         validation: {
             name: {
                 required: true,
@@ -155,13 +160,65 @@ function(_, Backbone, Paginator, Validation) {
         }
     });
 
+    Model.Speech = Backbone.Model.extend({
+        initialize: function(attributes, options) {
+            this.eventId = options.eventId;
+            this.speakerId = options.speakerId;
+        },
+
+        url: function() {
+            var url = "/events/" + this.eventId + "/speakers/" + this.speakerId + "/speeches";
+            if (!this.isNew()) {
+                url += "/" + this.id;
+            }
+            console.log("Speech URL is: " + url);
+            return url;
+        },
+
+        getId: function() {
+            return this.id;
+        },
+
+        getTitle: function() {
+            return this.get('title');
+        },
+
+        getSpeakers: function() {
+            return this.get('speakers');
+        },
+
+        /**
+         * Needed for url generation
+         */
+        setSpeakerId: function(speakerId) {
+            this.speakerId = speakerId;
+        },
+
+        /**
+         * Search through the collection of the speakers of a current speech and if the speaker is found it is updated with a supplied one
+         * or new speaker added if there is no speaker
+         * @param speaker
+         */
+        setSpeaker: function(speaker) {
+            var existingSpeaker = _.findWhere(this.getSpeakers(), {id: parseInt(speaker.getId())});
+            if (existingSpeaker) {
+                var index = _.indexOf(this.getSpeakers(), existingSpeaker);
+                this.getSpeakers().splice(index, 1, JSON.stringify(speaker));
+            }
+            else {
+                this.getSpeakers().pop(JSON.stringify(speaker));
+            }
+        }
+    });
+
     Model.Event = Backbone.Model.extend({
         urlRoot: "/events",
 
         model: {
             location: Model.Location,
             stages: Model.Stage,
-            speakers: Model.Speaker
+            speakers: Model.Speaker,
+            speeches: Model.Speech
         },
 
         parseProperty: function(response, propertyName) {
@@ -283,6 +340,65 @@ function(_, Backbone, Paginator, Validation) {
                 speakerPos = speaker ? _.indexOf(speakers, speaker) : null;
 
             speakers.splice(speakerPos, 1);
+        },
+
+        getSpeech: function(id) {
+            return _.findWhere(this.getSpeeches(), {id: parseInt(id)});
+        },
+
+        getSpeeches: function() {
+            return this.get('speeches');
+        },
+
+        /**
+         * Since the speakers do not have the references to associated speeches but speeches do keep references to
+         * speakers we have to pass through all the speeches of a given event establishing speaker-to-speech relation
+         * @param speakerId
+         * @returns {Array}
+         */
+        getSpeechesForSpeaker: function(speakerId) {
+            var speeches = [];
+            _.each(this.getSpeeches(), function(speech){
+                _.each(speech.get('speakers'), function(speaker) {
+                    if (speaker.id == speakerId) {
+                        speeches.push(speech);
+                    }
+                })
+            });
+
+            return speeches;
+        },
+
+        /**
+         * Get the speeches of the current event thar are not assigned to a speaker with a given Id
+         * @param speakerId
+         */
+        getAvailableSpeeches: function(speakerId) {
+            return _.difference(this.getSpeeches(), this.getSpeechesForSpeaker(speakerId));
+        },
+
+        removeSpeechFromSpeaker: function(speakerId, speechId) {
+            var removeIndexes = [];
+            var speech = _.findWhere(this.getSpeeches(), {id: parseInt(speechId)});
+
+            // @todo Careful, check for null/undefined values
+            _.each(speech.getSpeakers(), function(speaker, index){
+                if (speaker.id == speakerId) {
+                    removeIndexes.push(index);
+                }
+            });
+
+            _.each(removeIndexes, function(index) {
+                speech.getSpeakers().splice(index, 1);
+            });
+        },
+
+        saveSpeech: function() {
+
+        },
+
+        removeSpeech: function() {
+
         },
 
         validation: {
