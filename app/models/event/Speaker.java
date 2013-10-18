@@ -26,7 +26,6 @@ public class Speaker extends Model {
 
     public String description;
 
-    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     public List<Speech> speeches;
 

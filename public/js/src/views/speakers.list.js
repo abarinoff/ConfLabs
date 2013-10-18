@@ -34,8 +34,8 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
             "click button[id^='btn-remove-speaker-']"   : "removeSpeaker",
             "click button[id^='btn-add-speech-']"       : "showAddSpeechModal",
             "click button#save-speaker"                 : "saveSpeaker",
-            "click button[id^='remove-speech-']"        : "removeSpeech",
-            "click button[id^='edit-speech-']"          : "editSpeech",
+            //"click button[id^='remove-speech-']"        : "removeSpeech",
+            //"click button[id^='edit-speech-']"          : "editSpeech",
             "change #existing-speeches"                 : "speechSelected",
             "click button#save-speech"                  : "addSpeech"
         },
@@ -57,9 +57,11 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
             this.$el.html(this.template());
             this.$("#speakers-list").empty();
 
-            // Here we have to create a View object for each Speaker and render it
             _.each(this.eventModel.getSpeakers(), function(speaker, index, list) {
-                var speakerView = new SpeakerView({speaker: speaker, eventModel: this.eventModel}).render();
+                var speakerView = new SpeakerView({
+                    model: speaker,
+                    eventModel: this.eventModel
+                }).render();
                 this.$("#speakers-list").append(speakerView.$el.contents());
             }, this);
 
@@ -203,43 +205,6 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
                 }
             });*/
         },
-
-        /*editSpeech: function(event) {
-            var view = this,
-                $target = $(event.target),
-                buttonId = $target.attr('id'),
-                suffix = buttonId.replace("edit-speech-", "");
-            var speakerSpeech = suffix.split("-"),
-                speechId = speakerSpeech.pop(),
-                speakerId = speakerSpeech.pop();
-
-            console.log("edit speech with id " + speechId);
-        },*/
-
-        /*removeSpeech: function(event) {
-            var view = this,
-                $target = $(event.target),
-                buttonId = $target.attr('id'),
-                suffix = buttonId.replace("remove-speech-", "");
-            var speakerSpeech = suffix.split("-"),
-                speechId = speakerSpeech.pop(),
-                speakerId = speakerSpeech.pop();
-
-            var speech = _.findWhere(view.eventModel.getSpeeches(), {id: parseInt(speechId)});
-            if (speech) {
-                speech.setSpeakerId(speakerId);
-                console.log("remove");
-                *//*speech.__destroy({
-                 success: view.speechRemoved,
-                 error: view.errorSpeechRemove
-                 });*//*
-
-                // debug (imitate speech removal)
-                this.eventModel.removeSpeechFromSpeaker(speakerId, speechId);
-                view.render();
-                // end debug
-            }
-        },*/
 
         speechRemoved: function() {
             console.log("speech removed from the storage");

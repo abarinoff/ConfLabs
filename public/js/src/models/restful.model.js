@@ -146,8 +146,11 @@ function(_, Backbone, Paginator, Validation) {
         },
 
         getSpeeches: function(eventModel) {
-            //console.log("model's id we get speeches for: " + this.id);
             console.log(this.model);
+        },
+
+        unsetSpeech: function(speech) {
+            console.log(this);
         },
 
         validation: {
