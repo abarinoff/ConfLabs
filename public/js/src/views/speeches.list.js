@@ -38,11 +38,13 @@ define([
         removeSpeech: function(event) {
             var view = this,
                 speechId = this.extractSpeechId(event.target);
-            console.log("Remove speech clicked, handler belongs to SpeechesListView, speech id: " + speechId);
 
-            // debug
-            this.speaker.unsetSpeech();
-            // end debug
+            var speech = this.getSpeechById(speechId);
+            this.speaker.detachSpeech(speech);
+        },
+
+        getSpeechById: function(id) {
+            return _.findWhere(this.speeches, {id: parseInt(id)});
         },
 
         extractSpeechId: function(selector) {

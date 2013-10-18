@@ -32,12 +32,9 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
         events: {
             "click button[id^='btn-edit-speaker-']"     : "showModal",
             "click button[id^='btn-remove-speaker-']"   : "removeSpeaker",
-            "click button[id^='btn-add-speech-']"       : "showAddSpeechModal",
-            "click button#save-speaker"                 : "saveSpeaker",
-            //"click button[id^='remove-speech-']"        : "removeSpeech",
-            //"click button[id^='edit-speech-']"          : "editSpeech",
-            "change #existing-speeches"                 : "speechSelected",
-            "click button#save-speech"                  : "addSpeech"
+            "click button#save-speaker"                 : "saveSpeaker"
+            //"change #existing-speeches"                 : "speechSelected",
+            //"click button#save-speech"                  : "addSpeech"
         },
 
         initialize: function(options) {
@@ -46,14 +43,19 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
                 "speakerRemoved",
                 "errorSaveSpeaker",
                 "errorRemoveSpeaker",
-                "dialogHidden",
-                "addSpeechModalHidden"
+                "dialogHidden"
             );
             this.eventModel = options.eventModel;
+
+            // Event: Speech has been detached from the current speaker
+            _.each(this.eventModel.getSpeakers(), function(speaker) {
+                speaker.on("speech:detach", function(){
+                    this.render();
+                }, this);
+            }, this);
         },
 
         render: function() {
-            // Render container for speakers along with dialog to add a new speaker
             this.$el.html(this.template());
             this.$("#speakers-list").empty();
 
@@ -62,11 +64,10 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
                     model: speaker,
                     eventModel: this.eventModel
                 }).render();
-                this.$("#speakers-list").append(speakerView.$el.contents());
+                this.$("#speakers-list").append(speakerView.$el);
             }, this);
 
             $(this.DIALOG_SELECTOR).on('hidden.bs.modal', this.dialogHidden);
-            $(this.ADD_SPEECH_DIALOG).on('hidden.bs.modal', this.addSpeechModalHidden);
 
             return this;
         },
@@ -139,35 +140,7 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
             view.render();
         },
 
-        showAddSpeechModal: function(event) {
-            var $target = $(event.target),
-                view = this,
-                buttonId = $target.attr('id'),
-                speakerId = buttonId.replace("btn-add-speech-", "");
-
-            // Initialize controls of the dialog
-            $(view.SPEECH_SPEAKER_ID).val(speakerId);
-            $(view.SELECT_SPEECH_BLOCK).removeClass("hidden");
-
-            // We have to populate the speech select element with options that has not been selected yet
-            var unassignedSpeeches = this.eventModel.getAvailableSpeeches(speakerId);
-
-            var $select = $(view.SPEECHES_SELECT)
-                .empty()
-                .append("<option value=''>Add New</option>");
-            _.each(unassignedSpeeches, function(speech){
-                $select.append($("<option value='" + speech.getId() + "'>" + speech.getTitle() + "</option>"));
-            });
-
-            $(view.ADD_SPEECH_DIALOG).modal();
-        },
-
-        addSpeechModalHidden: function() {
-            var view = this;
-            view.render();
-        },
-
-        speechSelected: function(event) {
+/*        speechSelected: function(event) {
             var view = this,
                 $select = $(event.target),
                 value = $select.val();
@@ -179,9 +152,9 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
             }
 
             console.log("selected speech: " + value);
-        },
+        },*/
 
-        addSpeech: function() {
+/*        addSpeech: function() {
             var view = this,
                 speakerId = $(view.SPEECH_SPEAKER_ID).val();
 
@@ -196,23 +169,15 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
             }
             speech.setSpeaker(this.eventModel.getSpeaker(speakerId));
             speech.setSpeakerId(speakerId);
-            /*speech.save({}, {
+            *//*speech.save({}, {
                 success: function() {
                     console.log("speech save succeeded");
                 },
                 error: function() {
                     console.log("Speech save error");
                 }
-            });*/
-        },
-
-        speechRemoved: function() {
-            console.log("speech removed from the storage");
-        },
-
-        errorSpeechRemove: function() {
-            console.log("error removing speech from the storage");
-        },
+            });*//*
+        },*/
 
         errorSaveSpeaker: function() {
             console.log("Error saving Speaker on the remote server");

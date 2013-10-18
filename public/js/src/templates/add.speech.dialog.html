@@ -1,0 +1,37 @@
+<!-- Edit Speech Dialog -->
+<div id="dlg-speech" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Speeches</h4>
+            </div>
+            <div class="modal-body form-horizontal">
+                <input id="hdn-speech-speaker-id" type="hidden" />
+                <div id="select-speech-block" class="form-group">
+                    <label for="existing-speeches" class="col-md-2 control-label">Speech</label>
+                    <div class="col-md-9">
+                        <select id="existing-speeches" class="form-control">
+                            <option value="">Add New</option>
+                            <% _.each(speeches, function(speech){ %>
+                                <option value="<% speech.getId() %>"><%= speech.getTitle() %></option>
+                            <% }); %>
+                        </select>
+                        <span class="help-block hidden"></span>
+                    </div>
+                </div>
+                <div id="new-speech-block" class="form-group">
+                    <label for="new-speech-title" class="col-md-2 control-label">Title</label>
+                    <div class="col-md-9">
+                        <input id="new-speech-title" class="form-control" type="text"/>
+                        <span class="help-block hidden"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
+                <button id="save-speech" class="btn btn-primary" type="button">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -145,12 +145,31 @@ function(_, Backbone, Paginator, Validation) {
             return this.get("description");
         },
 
-        getSpeeches: function(eventModel) {
-            console.log(this.model);
+        getSpeeches: function() {
+            return this.get('speeches');
         },
 
-        unsetSpeech: function(speech) {
-            console.log(this);
+        setSpeeches: function(speeches) {
+            this.set('speeches', speeches);
+        },
+
+        /**
+         * Remove the speech object from the Speaker's array of speeches
+         */
+        detachSpeech: function(speechModel) {
+            var index = undefined;
+            _.each(this.getSpeeches(), function(speechObj, i) {
+                if (speechObj.id == speechModel.id) {
+                    index = i;
+                }
+            });
+
+            if (!isNaN(index)) {
+                this.getSpeeches().splice(index, 1);
+
+                speechModel.trigger('speech:destroy');
+                this.trigger('speech:detach');
+            }
         },
 
         validation: {
@@ -193,6 +212,7 @@ function(_, Backbone, Paginator, Validation) {
         /**
          * Needed for url generation
          */
+        // @todo Under question due to change of the logic
         setSpeakerId: function(speakerId) {
             this.speakerId = speakerId;
         },
@@ -202,6 +222,7 @@ function(_, Backbone, Paginator, Validation) {
          * or new speaker added if there is no speaker
          * @param speaker
          */
+         // @todo Under question due to change of the logic
         setSpeaker: function(speaker) {
             var existingSpeaker = _.findWhere(this.getSpeakers(), {id: parseInt(speaker.getId())});
             if (existingSpeaker) {
@@ -353,38 +374,64 @@ function(_, Backbone, Paginator, Validation) {
             return this.get('speeches');
         },
 
-        /**
-         * Since the speakers do not have the references to associated speeches but speeches do keep references to
-         * speakers we have to pass through all the speeches of a given event establishing speaker-to-speech relation
-         * @param speakerId
-         * @returns {Array}
-         */
         getSpeechesForSpeaker: function(speakerId) {
             var speeches = [];
-            _.each(this.getSpeeches(), function(speech){
-                _.each(speech.get('speakers'), function(speaker) {
-                    if (speaker.id == speakerId) {
+            var speaker = this.getSpeaker(speakerId);
+            _.each(speaker.getSpeeches(), function(speakersSpeech) {
+                _.each(this.getSpeeches(), function(speech) {
+                    if (speech.id == speakersSpeech.id) {
                         speeches.push(speech);
                     }
-                })
-            });
+                });
+            }, this);
 
             return speeches;
         },
 
         /**
          * Get the speeches of the current event thar are not assigned to a speaker with a given Id
-         * @param speakerId
          */
         getAvailableSpeeches: function(speakerId) {
             return _.difference(this.getSpeeches(), this.getSpeechesForSpeaker(speakerId));
         },
 
-        removeSpeechFromSpeaker: function(speakerId, speechId) {
+        // @todo Once debugged the whole thing replace the implementation with the one using _.findWhere/indexOf/difference etc.
+        removeSpeech: function(speech) {
+            var index = undefined;
+            _.each(this.getSpeeches(), function(eventSpeech, i) {
+                if (eventSpeech.id == speech.id) {
+                    index = i;
+                }
+            });
+
+            if (!isNaN(index)) {
+                console.log("Removing the speech with id " + speech.getId() + " from event model since there are no references to it anymore");
+                this.getSpeeches().splice(index, 1);
+            }
+        },
+
+        /**
+         * Remove the Speech from the Event's list of Speeches if the Speech is not assigned to any of Speakers
+         * @param speech
+         */
+        onSpeechUnset: function(speech) {
+            var occurrences = 0;
+            _.each(this.getSpeakers(), function(speaker) {
+                _.each(speaker.getSpeeches(), function(speechObj) {
+                    if (speechObj.id == speech.getId()) {
+                        occurrences++;
+                    }
+                })
+            });
+            if (occurrences == 0) {
+                this.removeSpeech(speech);
+            }
+        },
+
+        /*removeSpeechFromSpeaker: function(speakerId, speechId) {
             var removeIndexes = [];
             var speech = _.findWhere(this.getSpeeches(), {id: parseInt(speechId)});
 
-            // @todo Careful, check for null/undefined values
             _.each(speech.getSpeakers(), function(speaker, index){
                 if (speaker.id == speakerId) {
                     removeIndexes.push(index);
@@ -394,15 +441,7 @@ function(_, Backbone, Paginator, Validation) {
             _.each(removeIndexes, function(index) {
                 speech.getSpeakers().splice(index, 1);
             });
-        },
-
-        saveSpeech: function() {
-
-        },
-
-        removeSpeech: function() {
-
-        },
+        },*/
 
         validation: {
             title: {
