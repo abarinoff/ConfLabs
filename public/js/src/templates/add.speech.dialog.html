@@ -14,7 +14,7 @@
                         <select id="existing-speeches" class="form-control">
                             <option value="">Add New</option>
                             <% _.each(speeches, function(speech){ %>
-                                <option value="<% speech.getId() %>"><%= speech.getTitle() %></option>
+                                <option value="<%= speech.getId() %>"><%= speech.getTitle() %></option>
                             <% }); %>
                         </select>
                         <span class="help-block hidden"></span>

@@ -18,8 +18,7 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
         DIALOG_SELECTOR     : "#dlg-speaker",
         ADD_SPEECH_DIALOG   : "#dlg-speech",
 
-        SELECT_SPEECH_BLOCK : "#select-speech-block",
-        NEW_SPEECH_BLOCK    : "#new-speech-block",
+//        NEW_SPEECH_BLOCK    : "#new-speech-block",
 
         SPEECH_SPEAKER_ID   : "#hdn-speech-speaker-id",
         SPEECHES_SELECT     : "#existing-speeches",
@@ -33,8 +32,6 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
             "click button[id^='btn-edit-speaker-']"     : "showModal",
             "click button[id^='btn-remove-speaker-']"   : "removeSpeaker",
             "click button#save-speaker"                 : "saveSpeaker"
-            //"change #existing-speeches"                 : "speechSelected",
-            //"click button#save-speech"                  : "addSpeech"
         },
 
         initialize: function(options) {
