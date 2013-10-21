@@ -154,14 +154,9 @@ function(_, Backbone, Paginator, Validation) {
         },
 
         saveSpeech: function(speech) {
-            var speechId = speech.id,
-                position = undefined;
-            _.each(this.getSpeeches(), function(speech, index){
-                if (speech.id == speechId) {
-                    position = index;
-                }
-            });
-            if (position !== undefined) {
+            var item = _.findWhere(this.getSpeeches(), {id: parseInt(speech.id)});
+            if (item !== undefined) {
+                var position = _.indexOf(this.getSpeeches(), item);
                 this.getSpeeches()[position] = speech.toJSON();
             }
             else {
@@ -170,15 +165,11 @@ function(_, Backbone, Paginator, Validation) {
         },
 
         unsetSpeech: function(speechModel) {
-            var index = undefined;
-            _.each(this.getSpeeches(), function(speechObj, i) {
-                if (speechObj.id == speechModel.id) {
-                    index = i;
-                }
-            });
-
-            if (!isNaN(index)) {
-                this.getSpeeches().splice(index, 1);
+            var speeches = this.getSpeeches(),
+                item = _.findWhere(this.getSpeeches(), {id: parseInt(speechModel.id)});
+            if (item !== undefined) {
+                var index = _.indexOf(speeches, item);
+                speeches.splice(index, 1);
                 this.trigger('speech:changed');
             }
         },
@@ -383,33 +374,23 @@ function(_, Backbone, Paginator, Validation) {
         },
 
         saveSpeech: function(speechModel) {
-            var position = undefined,
-                speeches = this.getSpeeches();
-
-            _.each(speeches, function(speech, index) {
-                if (speech.id == speechModel.id) {
-                    position = index;
-                }
-            });
-            if (position != undefined) {
-                speeches[position] = speechModel;
+            var speeches = this.getSpeeches(),
+                item = _.findWhere(speeches, {id: parseInt(speechModel.id)});
+            if (item !== undefined) {
+                var index = _.indexOf(item);
+                speeches[index] = speechModel;
             }
             else {
-                speeches.push(speechModel);
+                speechModel.push(speechModel);
             }
         },
 
         removeSpeech: function(speechModel) {
-            var index = undefined;
-            _.each(this.getSpeeches(), function(eventSpeech, i) {
-                if (eventSpeech.id == speechModel.id) {
-                    index = i;
-                }
-            });
-
-            if (!isNaN(index)) {
-                //console.log("Removing the speech with id " + speechModel.getId() + " from event model since there are no references to it anymore");
-                this.getSpeeches().splice(index, 1);
+            var speeches = this.getSpeeches(),
+                item = _.findWhere(speeches, {id: parseInt(speechModel.id)});
+            if (item !== undefined) {
+                var index = _.indexOf(speeches, item);
+                speeches.splice(index, 1);
             }
         },
 
