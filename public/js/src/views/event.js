@@ -4,11 +4,12 @@ define([
     "views/details",
     "views/stages.list",
     "views/speakers.list",
+    "views/schedule",
     "views/location",
     "require.text!templates/tabs.html"
 ],
 
-function($, Backbone, DetailsView, StagesListView, SpeakersListView, LocationView, tabsTemplate) {
+function($, Backbone, DetailsView, StagesListView, SpeakersListView, ScheduleView, LocationView, tabsTemplate) {
     var EventView = Backbone.View.extend({
         template: _.template(tabsTemplate),
 
@@ -21,6 +22,7 @@ function($, Backbone, DetailsView, StagesListView, SpeakersListView, LocationVie
             new DetailsView({model: this.model}).render();
             new StagesListView({eventModel: this.model}).render();
             new SpeakersListView({eventModel: this.model}).render();
+            new ScheduleView({eventModel: this.model}).render();
             new LocationView({eventModel: this.model}).render();
         }
     });

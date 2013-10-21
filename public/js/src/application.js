@@ -20,11 +20,17 @@ requirejs.config({
         "bootstrap": {
             deps: ["jquery"],
             exports: "$.fn.popover"
+        },
+
+        "jquery.ui": {
+            deps: ["jquery"],
+            exports: "$.fn.draggable"
         }
     },
 
     paths: {
         "jquery": "../lib/jquery",
+        "jquery.ui": "../lib/jquery.ui",
         "underscore": "../lib/underscore",
         "backbone": "../lib/backbone",
         "backbone.paginator": "../lib/backbone.paginator",
@@ -39,6 +45,8 @@ requirejs.config({
 define([
     "backbone",
     "routers/router",
+    "jquery",
+    "jquery.ui",
     "validation/validation.config",
     "bootstrap"],
 
