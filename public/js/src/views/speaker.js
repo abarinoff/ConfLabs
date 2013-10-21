@@ -22,7 +22,6 @@ function($, _, Backbone, Model, SpeechesListView, speakerTemplate) {
         initialize: function(options) {
             this.model = options.model;
             this.eventModel = options.eventModel;
-            console.log(this.eventModel);
         },
 
         render: function() {
@@ -33,13 +32,10 @@ function($, _, Backbone, Model, SpeechesListView, speakerTemplate) {
         },
 
         renderSpeeches: function(el) {
-            var speeches = this.eventModel.getSpeechesForSpeaker(this.model.id);
-
             return new SpeechesListView({
                 el: el,
                 speaker: this.model,
-                speeches: speeches,
-                availableSpeeches: this.eventModel.getAvailableSpeeches(this.model.id)
+                eventModel: this.eventModel
             }).render();
         },
 

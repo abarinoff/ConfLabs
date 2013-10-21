@@ -18,8 +18,6 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
         DIALOG_SELECTOR     : "#dlg-speaker",
         ADD_SPEECH_DIALOG   : "#dlg-speech",
 
-//        NEW_SPEECH_BLOCK    : "#new-speech-block",
-
         SPEECH_SPEAKER_ID   : "#hdn-speech-speaker-id",
         SPEECHES_SELECT     : "#existing-speeches",
         SPEECH_TITLE        : "#new-speech-title",
@@ -35,20 +33,9 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
         },
 
         initialize: function(options) {
-            _.bindAll(this,
-                "speakerSaved",
-                "speakerRemoved",
-                "errorSaveSpeaker",
-                "errorRemoveSpeaker",
-                "dialogHidden"
-            );
             this.eventModel = options.eventModel;
-
-            // Event: Speech has been detached from the current speaker
-            _.each(this.eventModel.getSpeakers(), function(speaker) {
-                speaker.on("speech:detach", function(){
-                    this.render();
-                }, this);
+            this.eventModel.on("speech:changed", function(){
+                this.render();
             }, this);
         },
 
@@ -64,7 +51,7 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
                 this.$("#speakers-list").append(speakerView.$el);
             }, this);
 
-            $(this.DIALOG_SELECTOR).on('hidden.bs.modal', this.dialogHidden);
+            $(this.DIALOG_SELECTOR).on('hidden.bs.modal', this.dialogHidden.bind(this));
 
             return this;
         },
@@ -107,8 +94,8 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
             view.model.set(attributes);
 
             view.model.save({}, {
-                success : view.speakerSaved,
-                error   : view.errorSaveSpeaker
+                success : view.speakerSaved.bind(this),
+                error   : view.errorSaveSpeaker.bind(this)
             });
         },
 
@@ -126,8 +113,8 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
 
             var speaker = view.eventModel.getSpeaker(id);
             speaker.destroy({
-                success: view.speakerRemoved,
-                error: view.errorRemoveSpeaker
+                success: view.speakerRemoved.bind(this),
+                error: view.errorRemoveSpeaker.bind(this)
             });
         },
 
@@ -136,45 +123,6 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
             view.eventModel.removeSpeaker(model);
             view.render();
         },
-
-/*        speechSelected: function(event) {
-            var view = this,
-                $select = $(event.target),
-                value = $select.val();
-            if (parseInt(value)) {
-                $(view.NEW_SPEECH_BLOCK).addClass("hidden");
-            }
-            else {
-                $(view.NEW_SPEECH_BLOCK).removeClass("hidden");
-            }
-
-            console.log("selected speech: " + value);
-        },*/
-
-/*        addSpeech: function() {
-            var view = this,
-                speakerId = $(view.SPEECH_SPEAKER_ID).val();
-
-            var speechId = $(this.SPEECHES_SELECT).val();
-            var speech;
-            if (parseInt(speechId)) {
-                console.log("update existing");
-                speech = view.eventModel.getSpeech(speechId);
-            }
-            else {
-                speech = new Model.Speech({eventId: view.eventModel.id, speakerId: speakerId});
-            }
-            speech.setSpeaker(this.eventModel.getSpeaker(speakerId));
-            speech.setSpeakerId(speakerId);
-            *//*speech.save({}, {
-                success: function() {
-                    console.log("speech save succeeded");
-                },
-                error: function() {
-                    console.log("Speech save error");
-                }
-            });*//*
-        },*/
 
         errorSaveSpeaker: function() {
             console.log("Error saving Speaker on the remote server");

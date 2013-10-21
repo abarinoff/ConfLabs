@@ -153,10 +153,28 @@ function(_, Backbone, Paginator, Validation) {
             this.set('speeches', speeches);
         },
 
+        saveSpeech: function(speech) {
+            var speechId = speech.id,
+                position = undefined;
+            _.each(this.getSpeeches(), function(speech, index){
+                if (speech.id == speechId) {
+                    position = index;
+                }
+            });
+            if (position !== undefined) {
+                console.log("replacing existing speech");
+                this.getSpeeches()[position] = speech.toJSON();
+            }
+            else {
+                console.log("adding a new speech");
+                this.getSpeeches().push(speech.toJSON());
+            }
+        },
+
         /**
          * Remove the speech object from the Speaker's array of speeches
          */
-        detachSpeech: function(speechModel) {
+        unsetSpeech: function(speechModel) {
             var index = undefined;
             _.each(this.getSpeeches(), function(speechObj, i) {
                 if (speechObj.id == speechModel.id) {
@@ -168,7 +186,7 @@ function(_, Backbone, Paginator, Validation) {
                 this.getSpeeches().splice(index, 1);
 
                 speechModel.trigger('speech:destroy');
-                this.trigger('speech:detach');
+                this.trigger('speech:changed');
             }
         },
 
@@ -395,53 +413,58 @@ function(_, Backbone, Paginator, Validation) {
             return _.difference(this.getSpeeches(), this.getSpeechesForSpeaker(speakerId));
         },
 
+        /**
+         * Add a new Speech to the Event or replace existing one if found
+         * @param speechModel
+         */
+        saveSpeech: function(speechModel) {
+            // @todo extract the search method
+            var position = undefined,
+                speeches = this.getSpeeches();
+
+            _.each(speeches, function(speech, index) {
+                if (speech.id == speechModel.id) {
+                    position = index;
+                }
+            });
+            if (position != undefined) {
+                speeches[position] = speechModel;
+            }
+            else {
+                speeches.push(speechModel);
+            }
+        },
+
         // @todo Once debugged the whole thing replace the implementation with the one using _.findWhere/indexOf/difference etc.
-        removeSpeech: function(speech) {
+        // Remove the speech from the Event's speeches list. Does not take into account whether speech is assigned to speakers
+        removeSpeech: function(speechModel) {
             var index = undefined;
             _.each(this.getSpeeches(), function(eventSpeech, i) {
-                if (eventSpeech.id == speech.id) {
+                if (eventSpeech.id == speechModel.id) {
                     index = i;
                 }
             });
 
             if (!isNaN(index)) {
-                console.log("Removing the speech with id " + speech.getId() + " from event model since there are no references to it anymore");
+                //console.log("Removing the speech with id " + speechModel.getId() + " from event model since there are no references to it anymore");
                 this.getSpeeches().splice(index, 1);
             }
         },
 
-        /**
-         * Remove the Speech from the Event's list of Speeches if the Speech is not assigned to any of Speakers
-         * @param speech
-         */
-        onSpeechUnset: function(speech) {
+        // Remove the given speech from Event speeches array in case there are no speakers referencing it anymore
+        onSpeechUnset: function(speechModel) {
             var occurrences = 0;
             _.each(this.getSpeakers(), function(speaker) {
                 _.each(speaker.getSpeeches(), function(speechObj) {
-                    if (speechObj.id == speech.getId()) {
+                    if (speechObj.id == speechModel.getId()) {
                         occurrences++;
                     }
                 })
             });
             if (occurrences == 0) {
-                this.removeSpeech(speech);
+                this.removeSpeech(speechModel);
             }
         },
-
-        /*removeSpeechFromSpeaker: function(speakerId, speechId) {
-            var removeIndexes = [];
-            var speech = _.findWhere(this.getSpeeches(), {id: parseInt(speechId)});
-
-            _.each(speech.getSpeakers(), function(speaker, index){
-                if (speaker.id == speakerId) {
-                    removeIndexes.push(index);
-                }
-            });
-
-            _.each(removeIndexes, function(index) {
-                speech.getSpeakers().splice(index, 1);
-            });
-        },*/
 
         validation: {
             title: {

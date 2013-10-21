@@ -10,6 +10,7 @@ define([
     var SpeechesListView = Backbone.View.extend({
         ADD_SPEECH_MODAL    : "#dlg-speech",
         SPEECH_SELECT       : "#existing-speeches",
+        SPEECH_TITLE        : "#new-speech-title",
 
         SELECT_SPEECH_BLOCK : "#select-speech-block",
         NEW_SPEECH_BLOCK    : "#new-speech-block",
@@ -23,9 +24,12 @@ define([
         },
 
         initialize: function(options) {
-            this.speeches = options.speeches;
             this.speaker = options.speaker;
-            this.availableSpeeches = options.availableSpeeches;
+            this.eventModel = options.eventModel;
+
+            // @todo Temporal solution, must be replaced with a calls to eventModel
+            this.speeches = this.eventModel.getSpeechesForSpeaker(this.speaker.id);
+            this.availableSpeeches = this.eventModel.getAvailableSpeeches(this.speaker.id);
         },
 
         render: function() {
@@ -41,19 +45,73 @@ define([
             this.showAddSpeechModal();
         },
 
+        saveSpeech: function() {
+            var speechId = $(this.SPEECH_SELECT).val(),
+                speech = undefined;
+            if (!speechId) {
+                var speechTitle = $(this.SPEECH_TITLE).val();
+
+                speech = new Model.Speech({
+                    title: speechTitle}, {
+                    eventId: this.speaker.eventId,
+                    speakerId: this.speaker.id
+                });
+            }
+            else {
+                speech = _.findWhere(this.availableSpeeches, {id: parseInt(speechId)});
+                speech.setSpeakerId(this.speaker.id);
+            }
+
+            speech.save({}, {
+                success: this.speechSaved.bind(this),
+                error: this.speechSaveError.bind(this)
+            });
+        },
+
+        speechSaved: function(speechModel) {
+            var view = this;
+
+            // We have to add a new speech to the Speeches array of the current speaker as well as to the Event's speeches array
+            this.speaker.saveSpeech(speechModel);
+            this.eventModel.saveSpeech(speechModel);
+
+            view.$(view.ADD_SPEECH_MODAL).modal('hide');
+        },
+
+        speechSaveError: function() {
+            console.log("Error saving a new speech");
+        },
+
         editSpeech: function(event) {
             var view = this,
                 speechId = this.extractSpeechId(event.target);
 
             console.log("Edit speech clicked, handler belongs to SpeechesListView, speech id: " + speechId);
-         },
+        },
 
         removeSpeech: function(event) {
             var view = this,
-                speechId = this.extractSpeechId(event.target);
+                speechId = this.extractSpeechId(event.target),
+                speech = this.getSpeechById(speechId);
 
-            var speech = this.getSpeechById(speechId);
-            this.speaker.detachSpeech(speech);
+            speech.setSpeakerId(this.speaker.id);
+            speech.destroy({
+                success: this.speechDestroyed.bind(this),
+                error: this.speechDestroyError.bind(this)
+            });
+        },
+
+        speechDestroyed: function(speechModel) {
+            // Unset the speech from the current speaker's array of speeches as well as from the Event's speeches
+            // array (in case there are no speakers this speech belongs to)
+            this.speaker.unsetSpeech(speechModel);
+            this.eventModel.onSpeechUnset(speechModel);
+
+            this.eventModel.trigger("speech:changed");
+        },
+
+        speechDestroyError: function() {
+            console.log("Error deleting given speech");
         },
 
         getSpeechById: function(id) {
@@ -77,20 +135,6 @@ define([
             this.setDialogControls();
         },
 
-        saveSpeech: function() {
-            console.log("save speech for speaker " + this.speaker.id);
-            var speechId = $(this.SPEECH_SELECT).val();
-            var speech = undefined;
-            if (!speechId) {
-                console.log("Creating a new speech");
-                speech = new Model.Speech();
-            }
-            else {
-                console.log("Looking for an existing speech");
-                speech = _.findWhere(this.speeches, {id: speechId});
-            }
-        },
-
         setDialogControls: function() {
             $(this.SPEECH_SELECT).change(this, function(event){
                 var view = event.data,
@@ -108,6 +152,7 @@ define([
         onDialogClosed: function() {
             var view = this;
             view.$(view.ADD_SPEECH_MODAL).remove();
+            view.eventModel.trigger("speech:changed");
         }
     });
 
