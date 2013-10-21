@@ -57,13 +57,6 @@ function($, _, Backbone, Model, EventView, RemoveEventDialog, template) {
                 success: _.bind(function(model) {
                     event.on("change:title", changeHandler);
                     this.eventView.render();
-                    _.each(event.getSpeeches(), function(speech){
-                        speech.on("speech:destroy", function() {
-                            // We've already detached the speech from a speaker but we have to remove the speech from the
-                            // event's speeches list if it is not referenced by any of the speakers
-                            this.onSpeechUnset(speech);
-                        }, this);
-                    }, event);
                 }, this)
             });
         },

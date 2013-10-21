@@ -162,18 +162,13 @@ function(_, Backbone, Paginator, Validation) {
                 }
             });
             if (position !== undefined) {
-                console.log("replacing existing speech");
                 this.getSpeeches()[position] = speech.toJSON();
             }
             else {
-                console.log("adding a new speech");
                 this.getSpeeches().push(speech.toJSON());
             }
         },
 
-        /**
-         * Remove the speech object from the Speaker's array of speeches
-         */
         unsetSpeech: function(speechModel) {
             var index = undefined;
             _.each(this.getSpeeches(), function(speechObj, i) {
@@ -184,8 +179,6 @@ function(_, Backbone, Paginator, Validation) {
 
             if (!isNaN(index)) {
                 this.getSpeeches().splice(index, 1);
-
-                speechModel.trigger('speech:destroy');
                 this.trigger('speech:changed');
             }
         },
@@ -211,7 +204,7 @@ function(_, Backbone, Paginator, Validation) {
             if (!this.isNew()) {
                 url += "/" + this.id;
             }
-            console.log("Speech URL is: " + url);
+
             return url;
         },
 
@@ -227,29 +220,8 @@ function(_, Backbone, Paginator, Validation) {
             return this.get('speakers');
         },
 
-        /**
-         * Needed for url generation
-         */
-        // @todo Under question due to change of the logic
         setSpeakerId: function(speakerId) {
             this.speakerId = speakerId;
-        },
-
-        /**
-         * Search through the collection of the speakers of a current speech and if the speaker is found it is updated with a supplied one
-         * or new speaker added if there is no speaker
-         * @param speaker
-         */
-         // @todo Under question due to change of the logic
-        setSpeaker: function(speaker) {
-            var existingSpeaker = _.findWhere(this.getSpeakers(), {id: parseInt(speaker.getId())});
-            if (existingSpeaker) {
-                var index = _.indexOf(this.getSpeakers(), existingSpeaker);
-                this.getSpeakers().splice(index, 1, JSON.stringify(speaker));
-            }
-            else {
-                this.getSpeakers().pop(JSON.stringify(speaker));
-            }
         }
     });
 
@@ -406,19 +378,11 @@ function(_, Backbone, Paginator, Validation) {
             return speeches;
         },
 
-        /**
-         * Get the speeches of the current event thar are not assigned to a speaker with a given Id
-         */
         getAvailableSpeeches: function(speakerId) {
             return _.difference(this.getSpeeches(), this.getSpeechesForSpeaker(speakerId));
         },
 
-        /**
-         * Add a new Speech to the Event or replace existing one if found
-         * @param speechModel
-         */
         saveSpeech: function(speechModel) {
-            // @todo extract the search method
             var position = undefined,
                 speeches = this.getSpeeches();
 
@@ -435,8 +399,6 @@ function(_, Backbone, Paginator, Validation) {
             }
         },
 
-        // @todo Once debugged the whole thing replace the implementation with the one using _.findWhere/indexOf/difference etc.
-        // Remove the speech from the Event's speeches list. Does not take into account whether speech is assigned to speakers
         removeSpeech: function(speechModel) {
             var index = undefined;
             _.each(this.getSpeeches(), function(eventSpeech, i) {

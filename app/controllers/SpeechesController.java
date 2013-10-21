@@ -31,26 +31,45 @@ public class SpeechesController extends AbstractController {
         Results.Status status;
         Event event = Event.find.byId(eventId);
 
-        // So far we leave the check the correctness of the Event and Speaker and Authorized user, will do it after we have the tests written
+        if (event != null) {
+            JsonNode jsonRequest = requestAsJson();
+            if (user.id.equals(event.user.id) && jsonRequest.size() > 0) {
+                Speaker speaker = event.getSpeakerById(speakerId);
+                if (speaker != null) {
+                    System.out.println("speaker is not null");
+                    try {
+                        Speech speech = createModelFromJson(jsonRequest, Speech.class);
+                        if (speech.id == null) {
+                            if (speech.speakers == null) {
+                                speech.speakers = new LinkedList<Speaker>();
+                            }
+                            speech.speakers.add(speaker);
+                            event.speeches.add(speech);
 
-        JsonNode jsonRequest = requestAsJson();
+                            event.save();
+                            speech.saveManyToManyAssociations("speakers");
 
-        try {
-            Speech speech = createModelFromJson(jsonRequest, Speech.class);
-            Speaker speaker = Speaker.find.byId(speakerId);
-            speech.speakers = new LinkedList<Speaker>();
-            speech.speakers.add(speaker);
-            event.speeches.add(speech);
-
-            event.save();
-
-            ObjectMapper mapper = new ObjectMapper();
-            ObjectNode node = mapper.createObjectNode();
-            node.put("id", speech.id);
-
-            status = ok(node);
-        } catch (IOException e) {
-            status = internalServerError();
+                            ObjectMapper mapper = new ObjectMapper();
+                            ObjectNode node = mapper.createObjectNode();
+                            node.put("id", speech.id);
+                            status = created(node);
+                        }
+                        else {
+                            status = internalServerError();
+                        }
+                    } catch (Exception e) {
+                        status = internalServerError();
+                    }
+                }
+                else {
+                    status = notFound();
+                }
+            }
+            else {
+                status = internalServerError();
+            }
+        } else {
+            status = notFound();
         }
 
         return status.as("application/json");

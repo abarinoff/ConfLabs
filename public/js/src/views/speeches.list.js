@@ -102,8 +102,6 @@ define([
         },
 
         speechDestroyed: function(speechModel) {
-            // Unset the speech from the current speaker's array of speeches as well as from the Event's speeches
-            // array (in case there are no speakers this speech belongs to)
             this.speaker.unsetSpeech(speechModel);
             this.eventModel.onSpeechUnset(speechModel);
 
