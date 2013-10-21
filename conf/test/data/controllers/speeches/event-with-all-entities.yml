@@ -55,6 +55,17 @@ speeches:
     speakers:
       - *firstSpeaker
 
+  - &secondSpeech !!models.event.Speech
+    title: Second speech
+    speakers:
+      - *firstSpeaker
+      - *secondSpeaker
+
+  - &thirdSpeech !!models.event.Speech
+    title: Third Speech
+    speakers:
+      - *thirdSpeaker
+
 slots:
   - &fooSlot !!models.event.slot.SpeechSlot
     start: !!timestamp 2013-09-02 09:00:00 +3
@@ -80,6 +91,7 @@ events:
       - *fooSlot
     speeches:
       - *fooSpeech
+      - *secondSpeech
 
   - &secondEvent !!models.event.Event
     title: Second Event
@@ -90,6 +102,8 @@ events:
       - *secondEventStage
     speakers:
       - *thirdSpeaker
+    speeches:
+      - *thirdSpeech
 
   - &thirdEvent !!models.event.Event
     title: Third Event

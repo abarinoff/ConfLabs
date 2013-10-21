@@ -117,7 +117,7 @@ public class SpeechesController extends AbstractController {
             status = notFound();
         }
 
-        return status.as("application/json");
+        return status.as(CONTENT_TYPE_JSON);
     }
 
     @Restrict(@Group(Application.USER_ROLE))
@@ -132,17 +132,41 @@ public class SpeechesController extends AbstractController {
         Results.Status status;
         Event event = Event.find.byId(eventId);
 
-        Speech speech = Speech.find.byId(speechId);
-        if (speech.speakers.size() == 1) {
-            // remove the speech from storage
-            speech.delete();
+        if (event != null) {
+            if (user.id.equals(event.user.id)) {
+                Speaker speaker = event.getSpeakerById(speakerId);
+                if (speaker != null) {
+                    Speech speech = speaker.getSpeechById(speechId);
+                    if (speech != null) {
+                        try {
+                            if (speech.speakers.size() > 1) {
+                                speech.speakers.remove(speaker);
+                                speech.save();
+                            }
+                            else {
+                                speech.delete();
+                            }
+                            status = ok("{}");
+                        } catch (Exception e) {
+                            status = internalServerError();
+                        }
+                    }
+                    else {
+                        status = notFound();
+                    }
+                }
+                else {
+                    status = notFound();
+                }
+            }
+            else {
+                status = internalServerError();
+            }
         }
         else {
-            // reset speech-speaker reference
-            speech.deleteManyToManyAssociations("speakers");
+            status = notFound();
         }
-        status = ok("{}");
 
-        return status;
+        return status.as(CONTENT_TYPE_JSON);
     }
 }

@@ -33,6 +33,18 @@ public class Speaker extends Model {
         this.name = name;
     }
 
+    public Speech getSpeechById(Long speechId) {
+        Speech result = null;
+        for(Speech speech : speeches) {
+            if (speech.id.equals(speechId)) {
+                result = speech;
+                break;
+            }
+        }
+
+        return result;
+    }
+
     @Override
     public void delete() {
         for(Speech speech : speeches) {
