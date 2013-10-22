@@ -207,6 +207,10 @@ function(_, Backbone, Paginator, Validation) {
             return this.get('title');
         },
 
+        setTitle: function(title) {
+            this.set('title', title);
+        },
+
         getSpeakers: function() {
             return this.get('speakers');
         },
@@ -335,6 +339,7 @@ function(_, Backbone, Paginator, Validation) {
                 speakers[speakerPos] = speaker;
             }
             else {
+                speaker.set('speeches', []);
                 speakers.push(speaker);
             }
         },
@@ -381,7 +386,7 @@ function(_, Backbone, Paginator, Validation) {
                 speeches[index] = speechModel;
             }
             else {
-                speechModel.push(speechModel);
+                speeches.push(speechModel);
             }
         },
 

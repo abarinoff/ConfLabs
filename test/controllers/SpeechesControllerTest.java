@@ -568,8 +568,6 @@ public class SpeechesControllerTest extends AbstractControllerTest {
         assertEquals(speechBefore, speechAfter);
     }
 
-
-
     private FakeRequest createAjaxRequestWithJsonBodyWithSpecifiedUser(String method, String url, JsonNode body, String login, String password) {
         return createAjaxRequestWithJsonBody(method, url, body)
                 .withAuthorizationCookie(login, password);

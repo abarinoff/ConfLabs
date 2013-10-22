@@ -11,6 +11,7 @@ define([
         ADD_SPEECH_MODAL    : "#dlg-speech",
         SPEECH_SELECT       : "#existing-speeches",
         SPEECH_TITLE        : "#new-speech-title",
+        SPEECH_ID           : "#hdn-speech-id",
 
         SELECT_SPEECH_BLOCK : "#select-speech-block",
         NEW_SPEECH_BLOCK    : "#new-speech-block",
@@ -27,7 +28,7 @@ define([
             this.speaker = options.speaker;
             this.eventModel = options.eventModel;
 
-            // @todo Temporal solution, must be replaced with a calls to eventModel
+            // Aliases for speeches of a current speaker and speeches that can be assigned to a current speaker
             this.speeches = this.eventModel.getSpeechesForSpeaker(this.speaker.id);
             this.availableSpeeches = this.eventModel.getAvailableSpeeches(this.speaker.id);
         },
@@ -42,25 +43,32 @@ define([
         },
 
         addSpeech: function() {
-            this.showAddSpeechModal();
+            this.showAddSpeechModal(false);
         },
 
         saveSpeech: function() {
-            var speechId = $(this.SPEECH_SELECT).val(),
-                speech = undefined;
-            if (!speechId) {
-                var speechTitle = $(this.SPEECH_TITLE).val();
+            var speechId, speech;
 
-                speech = new Model.Speech({
-                    title: speechTitle}, {
-                    eventId: this.speaker.eventId,
-                    speakerId: this.speaker.id
-                });
+            if ($(this.SPEECH_SELECT).length > 0) {
+                speechId = $(this.SPEECH_SELECT).val();
+                if (!speechId) {
+                    var speechTitle = $(this.SPEECH_TITLE).val();
+                    speech = new Model.Speech({
+                        title: speechTitle}, {
+                        eventId: this.speaker.eventId,
+                        speakerId: this.speaker.id
+                    });
+                }
+                else {
+                    speech = _.findWhere(this.availableSpeeches, {id: parseInt(speechId)});
+                }
             }
             else {
-                speech = _.findWhere(this.availableSpeeches, {id: parseInt(speechId)});
-                speech.setSpeakerId(this.speaker.id);
+                speechId = $(this.SPEECH_ID).val();
+                speech = _.findWhere(this.speeches, {id: parseInt(speechId)});
+                speech.setTitle($(this.SPEECH_TITLE).val());
             }
+            speech.setSpeakerId(this.speaker.id);
 
             speech.save({}, {
                 success: this.speechSaved.bind(this),
@@ -86,7 +94,11 @@ define([
             var view = this,
                 speechId = this.extractSpeechId(event.target);
 
-            console.log("Edit speech clicked, handler belongs to SpeechesListView, speech id: " + speechId);
+            var speech = _.findWhere(this.speeches, {id: parseInt(speechId)});
+            this.showAddSpeechModal(true, {
+                id: speechId,
+                title: speech.getTitle()
+            });
         },
 
         removeSpeech: function(event) {
@@ -121,11 +133,18 @@ define([
             return elementId.substr(elementId.lastIndexOf("-") + 1);
         },
 
-        showAddSpeechModal: function() {
-            var template = _.template(addSpeechDialogTemplate);
-            var speeches = this.availableSpeeches;
+        showAddSpeechModal: function(edit, speech) {
+            edit = edit || false;
+            speech = speech || {id: '', title: ''}
 
-            this.$el.append($(template({speeches: speeches})));
+            var template = _.template(addSpeechDialogTemplate);
+            var speeches = this.availableSpeeches,
+                dialogContent = $(template({
+                    speeches: speeches,
+                    edit    : edit,
+                    speech  : speech
+                }));
+            this.$el.append(dialogContent);
 
             $(this.ADD_SPEECH_MODAL).modal();
             $(this.ADD_SPEECH_MODAL).on('hidden.bs.modal', this.onDialogClosed.bind(this));

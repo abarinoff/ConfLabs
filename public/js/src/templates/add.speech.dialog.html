@@ -7,23 +7,25 @@
                 <h4 class="modal-title">Speeches</h4>
             </div>
             <div class="modal-body form-horizontal">
-                <input id="hdn-speech-speaker-id" type="hidden" />
-                <div id="select-speech-block" class="form-group">
-                    <label for="existing-speeches" class="col-md-2 control-label">Speech</label>
-                    <div class="col-md-9">
-                        <select id="existing-speeches" class="form-control">
-                            <option value="">Add New</option>
-                            <% _.each(speeches, function(speech){ %>
-                                <option value="<%= speech.getId() %>"><%= speech.getTitle() %></option>
-                            <% }); %>
-                        </select>
-                        <span class="help-block hidden"></span>
+                <input id="hdn-speech-id" type="hidden" value="<%= speech.id %>"/>
+                <% if (edit === false) { %>
+                    <div id="select-speech-block" class="form-group">
+                        <label for="existing-speeches" class="col-md-2 control-label">Speech</label>
+                        <div class="col-md-9">
+                            <select id="existing-speeches" class="form-control">
+                                <option value="">Add New</option>
+                                <% _.each(speeches, function(speech){ %>
+                                    <option value="<%= speech.getId() %>"><%= speech.getTitle() %></option>
+                                <% }); %>
+                            </select>
+                            <span class="help-block hidden"></span>
+                        </div>
                     </div>
-                </div>
+                <% } %>
                 <div id="new-speech-block" class="form-group">
                     <label for="new-speech-title" class="col-md-2 control-label">Title</label>
                     <div class="col-md-9">
-                        <input id="new-speech-title" class="form-control" type="text"/>
+                        <input id="new-speech-title" class="form-control" type="text" value="<%= speech.title %>" />
                         <span class="help-block hidden"></span>
                     </div>
                 </div>

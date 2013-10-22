@@ -28,18 +28,6 @@ public class Speech extends Model {
         this.title = title;
     }
 
-    /*public Speaker getSpeakerById(Long speakerId) {
-        Speaker speaker = null;
-        for (Speaker existingSpeaker : speakers) {
-            if (existingSpeaker.id.equals(speakerId)) {
-                speaker = existingSpeaker;
-                break;
-            }
-        }
-
-        return speaker;
-    }*/
-
     @Override
     public void delete() {
         Slot slot = Slot.find
