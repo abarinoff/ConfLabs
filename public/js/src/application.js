@@ -45,8 +45,6 @@ requirejs.config({
 define([
     "backbone",
     "routers/router",
-    "jquery",
-    "jquery.ui",
     "validation/validation.config",
     "bootstrap"],
 

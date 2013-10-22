@@ -4,7 +4,7 @@ define([
     "views/details",
     "views/stages.list",
     "views/speakers.list",
-    "views/schedule",
+    "views/schedule/schedule",
     "views/location",
     "require.text!templates/tabs.html"
 ],

@@ -79,16 +79,33 @@ button[id*='btn-add-'] {
   table-layout: fixed;
 }
 
-.droppable-table-cell {
+.schedule-table th {
+  text-align: center;
+}
+
+.schedule-table td {
   height: 100px;
   text-align: center;
 }
 
-.droppable-list {
+.unscheduled-list {
   background-color: #f9f9f9;
-  padding: 25px !important;
+  padding: 25px;
 }
 
-.drop-over {
+.unscheduled-list-item {
+  display: block;
+  padding: 10px 15px;
+  margin-bottom: -1px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+
+.draggable-item {
+  .unscheduled-list-item;
+  width: 150px !important;
+}
+
+.droppable-item-hover {
   background-color: #fcefa1 !important;
 }
