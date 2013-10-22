@@ -26,12 +26,23 @@ public class Speaker extends Model {
 
     public String description;
 
-    @JsonIgnore
     @ManyToMany(cascade = CascadeType.ALL)
     public List<Speech> speeches;
 
     public Speaker(String name) {
         this.name = name;
+    }
+
+    public Speech getSpeechById(Long speechId) {
+        Speech result = null;
+        for(Speech speech : speeches) {
+            if (speech.id.equals(speechId)) {
+                result = speech;
+                break;
+            }
+        }
+
+        return result;
     }
 
     @Override

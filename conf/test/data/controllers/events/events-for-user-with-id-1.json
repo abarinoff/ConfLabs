@@ -24,12 +24,12 @@
             "id" : 1,
             "name" : "John Doe",
             "position" : "Engineer",
-            "description" : "Senior Software Engineer, Lead"
+            "description" : "Senior Software Engineer, Lead",
+            "speeches": []
         }],
         "speeches":[{
             "id" : 1,
-            "title" : "Foo Speech",
-            "speakers" : []
+            "title" : "Foo Speech"
         }],
         "slots":[{
             "id" : 1,
@@ -42,8 +42,7 @@
             },
             "speech" : {
                 "id" : 1,
-                "title" : "Foo Speech",
-                "speakers" : []
+                "title" : "Foo Speech"
             }
         }]
     }
