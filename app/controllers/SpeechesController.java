@@ -76,7 +76,7 @@ public class SpeechesController extends AbstractController {
     }
 
     @Restrict(@Group(Application.USER_ROLE))
-    public static Result assignSpeechToSpeaker(Long eventId, Long speakerId, Long speechId) {
+    public static Result updateSpeech(Long eventId, Long speakerId, Long speechId) {
         if (!isXmlHttpRequest()) {
             return notFound();
         }
@@ -86,25 +86,32 @@ public class SpeechesController extends AbstractController {
 
         Results.Status status;
         Event event = Event.find.byId(eventId);
+        Speaker speaker;
 
-        if (event != null) {
-            if (event.user.id.equals(user.id)) {
-                JsonNode request = requestAsJson();
-
+        if (event != null && (speaker = event.getSpeakerById(speakerId)) != null) {
+            JsonNode request = requestAsJson();
+            if (event.user.id.equals(user.id) && request.size() > 0) {
                 try {
                     Speech speech = createModelFromJson(request, Speech.class);
-                    speech.saveManyToManyAssociations("speakers");
-                    status = ok("{}");
+                    if (speech.id.equals(speechId)) {
+                        Speech existingSpeech = event.getSpeechById(speechId);
+                        if (existingSpeech != null) {
+                            if (!existingSpeech.speakers.contains(speaker)) {
+                                existingSpeech.speakers.add(speaker);
+                            }
+                            existingSpeech.title = speech.title;
+                            event.save();
+                            existingSpeech.saveManyToManyAssociations("speakers");
 
-                    Speaker existingSpeaker = null;
-                    for(Speaker speaker : speech.speakers) {
-                        if (speaker.id.equals(speakerId)) {
-                            existingSpeaker = speaker;
-                            break;
+                            status = ok("{}");
+                        }
+                        else {
+                            status = notFound();
                         }
                     }
-
-
+                    else {
+                        status = internalServerError("Speech id does not match");
+                    }
                 } catch (IOException e) {
                     status = internalServerError();
                 }

@@ -262,6 +262,155 @@ public class SpeechesControllerTest extends AbstractControllerTest {
     }
 
     @Test
+    public void updateSpeechWithNonAjaxRequestShouldReturnNotFound() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        FakeRequest fakeRequest = createNonAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 1L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void updateSpeechWithAjaxRequestShouldReturnOkAndEmptyJson() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 1L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(OK);
+    }
+
+    @Test
+    public void updateSpeechWithInvalidJsonShouldReturnServerError() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromString("{\"foo\":\"bar\", \"bar\":\"foo\"}");
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 1L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void updateSpeechWithEmptyJsonShouldReturnServerError() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromString("{}");
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 1L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void updateSpeechWithInconsistentIdsInUrlAndJsonShouldReturnServerError() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 1L, 2L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 1L, 2L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void updateSpeechForSpeakerBelongingToDifferentEventShouldReturnNotFound() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 3L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 3L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void updateSpeechBelongingToDifferentEventShouldReturnNotFound() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(2L, 1L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(2L, 1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(NOT_FOUND);
+    }
+
+    @Test
+    public void updateSpeechForEventBelongingToDifferentUserShouldReturnServerError() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyWithSpecifiedUser(Helpers.PUT, getSpeechUrl(1L, 1L, 1L), requestBody, "bar@gmail.com", "123456");
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 1L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+    }
+
+    @Test
+    public void assignExistingSpeechToSpeakerShouldCreateReferenceToSpeaker() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        Speech speechBefore = Speech.find.byId(1L);
+        Speaker speaker = Speaker.find.byId(2L);
+        assertFalse(speechBefore.speakers.contains(speaker));
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 2L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 2L, 1L), fakeRequest);
+
+        assertThat(status(result)).isEqualTo(OK);
+
+        Speech speechAfter = Speech.find.byId(1L);
+        assertTrue(speechAfter.speakers.contains(speaker));
+    }
+
+    @Test
+    public void assignExistingSpeechToSpeakerShouldNotAffectExistingReferencesToSpeakers() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        List<Speaker> speakersBefore = Speech.find.byId(1L).speakers;
+        speakersBefore.size();
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 2L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 2L, 1L), fakeRequest);
+        assertThat(status(result)).isEqualTo(OK);
+
+        List<Speaker> speakersAfter = Speech.find.byId(1L).speakers;
+        assertTrue(speakersAfter.containsAll(speakersBefore));
+    }
+
+    @Test
+    public void assignExistingSpeechToSpeakerWithThisSpeechAlreadyAssignedShouldNotCreateExtraReference() throws IOException {
+        startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
+
+        JsonNode requestBody = jsonNodeFromFile(new File(DATA_FILE_LOCATION + "speech-with-id-1.json"));
+
+        int sizeBefore = Speech.find.byId(1L).speakers.size();
+
+        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.PUT, getSpeechUrl(1L, 1L, 1L), requestBody);
+        Result result = callAction(routes.ref.SpeechesController.updateSpeech(1L, 1L, 1L), fakeRequest);
+        assertThat(status(result)).isEqualTo(OK);
+
+        int sizeAfter = Speech.find.byId(1L).speakers.size();
+
+        assertEquals(sizeBefore, sizeAfter);
+    }
+
+    @Test
     public void deleteSpeechWithNonAjaxRequestShouldReturnNotFound() {
         startFakeApplication("test/data/controllers/speeches/event-with-all-entities.yml");
 
