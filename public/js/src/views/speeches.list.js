@@ -8,10 +8,10 @@ define([
 ], function($, _, Backbone, Model, speechesTemplate, addSpeechDialogTemplate) {
 
     var SpeechesListView = Backbone.View.extend({
-        ADD_SPEECH_MODAL    : "#dlg-speech",
+        SPEECH_ID           : "#hdn-speech-id",
         SPEECH_SELECT       : "#existing-speeches",
         SPEECH_TITLE        : "#new-speech-title",
-        SPEECH_ID           : "#hdn-speech-id",
+        ADD_SPEECH_MODAL    : "#dlg-speech",
 
         SELECT_SPEECH_BLOCK : "#select-speech-block",
         NEW_SPEECH_BLOCK    : "#new-speech-block",
@@ -35,7 +35,6 @@ define([
 
         render: function() {
             this.$el.html(this.template({
-                speakerId: this.speaker.getId(),
                 speeches: this.speeches
             }));
 
@@ -102,25 +101,24 @@ define([
         },
 
         removeSpeech: function(event) {
-            var view = this,
-                speechId = this.extractSpeechId(event.target),
+            var speechId = this.extractSpeechId(event.target),
                 speech = this.getSpeechById(speechId);
 
             speech.setSpeakerId(this.speaker.id);
             speech.destroy({
-                success: this.speechDestroyed.bind(this),
-                error: this.speechDestroyError.bind(this)
+                success: this.speechRemoved.bind(this),
+                error: this.speechRemoveError.bind(this)
             });
         },
 
-        speechDestroyed: function(speechModel) {
+        speechRemoved: function(speechModel) {
             this.speaker.unsetSpeech(speechModel);
             this.eventModel.onSpeechUnset(speechModel);
 
             this.eventModel.trigger("speech:changed");
         },
 
-        speechDestroyError: function() {
+        speechRemoveError: function() {
             console.log("Error deleting given speech");
         },
 

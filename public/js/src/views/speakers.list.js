@@ -16,11 +16,6 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
         DESCRIPTION_SELECTOR: "#speaker-description",
 
         DIALOG_SELECTOR     : "#dlg-speaker",
-        ADD_SPEECH_DIALOG   : "#dlg-speech",
-
-        SPEECH_SPEAKER_ID   : "#hdn-speech-speaker-id",
-        SPEECHES_SELECT     : "#existing-speeches",
-        SPEECH_TITLE        : "#new-speech-title",
 
         template: _.template(speakersListTemplate),
 
@@ -34,9 +29,7 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
 
         initialize: function(options) {
             this.eventModel = options.eventModel;
-            this.eventModel.on("speech:changed", function(){
-                this.render();
-            }, this);
+            this.eventModel.on("speech:changed", this.render.bind(this));
         },
 
         render: function() {

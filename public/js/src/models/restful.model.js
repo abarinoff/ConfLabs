@@ -170,7 +170,7 @@ function(_, Backbone, Paginator, Validation) {
             if (item !== undefined) {
                 var index = _.indexOf(speeches, item);
                 speeches.splice(index, 1);
-                this.trigger('speech:changed');
+                //this.trigger('speech:changed');
             }
         },
 
