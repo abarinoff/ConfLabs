@@ -3,9 +3,11 @@ define([
     'underscore',
     'backbone',
     'models/model',
+    'backbone.validation',
+    'validation/validation.handler',
     'require.text!templates/speeches.list.html',
     'require.text!templates/add.speech.dialog.html'
-], function($, _, Backbone, Model, speechesTemplate, addSpeechDialogTemplate) {
+], function($, _, Backbone, Model, Validation, ValidationHandler, speechesTemplate, addSpeechDialogTemplate) {
 
     var SpeechesListView = Backbone.View.extend({
         ADD_SPEECH_MODAL    : "#dlg-speech",
@@ -43,21 +45,21 @@ define([
         },
 
         addSpeech: function() {
-            this.showAddSpeechModal(false);
+            this.showSpeechModal(false);
         },
 
         saveSpeech: function() {
-            var speechId, speech;
+            var speechId, speech, attributes = undefined;
 
             if ($(this.SPEECH_SELECT).length > 0) {
                 speechId = $(this.SPEECH_SELECT).val();
                 if (!speechId) {
                     var speechTitle = $(this.SPEECH_TITLE).val();
-                    speech = new Model.Speech({
-                        title: speechTitle}, {
+                    speech = new Model.Speech({}, {
                         eventId: this.speaker.eventId,
                         speakerId: this.speaker.id
                     });
+                    attributes = { title: speechTitle }
                 }
                 else {
                     speech = _.findWhere(this.availableSpeeches, {id: parseInt(speechId)});
@@ -66,9 +68,15 @@ define([
             else {
                 speechId = $(this.SPEECH_ID).val();
                 speech = _.findWhere(this.speeches, {id: parseInt(speechId)});
-                speech.setTitle($(this.SPEECH_TITLE).val());
+                attributes = { title: $(this.SPEECH_TITLE).val() };
             }
             speech.setSpeakerId(this.speaker.id);
+
+            if (attributes !== undefined) {
+                this.model = speech;
+                Validation.bind(this, new ValidationHandler("new-speech."));
+                this.model.set(attributes);
+            }
 
             speech.save({}, {
                 success: this.speechSaved.bind(this),
@@ -95,7 +103,7 @@ define([
                 speechId = this.extractSpeechId(event.target);
 
             var speech = _.findWhere(this.speeches, {id: parseInt(speechId)});
-            this.showAddSpeechModal(true, {
+            this.showSpeechModal(true, {
                 id: speechId,
                 title: speech.getTitle()
             });
@@ -108,19 +116,19 @@ define([
 
             speech.setSpeakerId(this.speaker.id);
             speech.destroy({
-                success: this.speechDestroyed.bind(this),
-                error: this.speechDestroyError.bind(this)
+                success: this.speechRemoved.bind(this),
+                error: this.speechRemoveError.bind(this)
             });
         },
 
-        speechDestroyed: function(speechModel) {
+        speechRemoved: function(speechModel) {
             this.speaker.unsetSpeech(speechModel);
             this.eventModel.onSpeechUnset(speechModel);
 
             this.eventModel.trigger("speech:changed");
         },
 
-        speechDestroyError: function() {
+        speechRemoveError: function() {
             console.log("Error deleting given speech");
         },
 
@@ -133,7 +141,7 @@ define([
             return elementId.substr(elementId.lastIndexOf("-") + 1);
         },
 
-        showAddSpeechModal: function(edit, speech) {
+        showSpeechModal: function(edit, speech) {
             edit = edit || false;
             speech = speech || {id: '', title: ''}
 

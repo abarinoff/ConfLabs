@@ -217,6 +217,13 @@ function(_, Backbone, Paginator, Validation) {
 
         setSpeakerId: function(speakerId) {
             this.speakerId = speakerId;
+        },
+
+        validation: {
+            title: {
+                required: true,
+                msg     : "Required field"
+            }
         }
     });
 
