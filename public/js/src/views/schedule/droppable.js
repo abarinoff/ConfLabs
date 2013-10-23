@@ -15,8 +15,8 @@ function(_, $, jqueryUi, Draggable) {
             hoverClass: "droppable-item-hover",
             tolerance: "pointer",
 
-            accept: function() {
-                return !self.isOccupied($(this));
+            accept: function(source) {
+                return !self.isOccupied($(this)) && !$(source).hasClass("slot-template");
             },
 
             drop: function(event, ui) {
@@ -49,7 +49,7 @@ function(_, $, jqueryUi, Draggable) {
         };
 
         this.makeTargetDraggable = function(target) {
-            new Draggable(target);
+            new Draggable(target, true);
         };
 
         this.markTargetOccupied = function(target) {

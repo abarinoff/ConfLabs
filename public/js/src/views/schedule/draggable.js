@@ -5,7 +5,7 @@ define([
 
 function($, jqueryUi) {
 
-    var Draggable = function(elements) {
+    var Draggable = function(elements, hideSource) {
         var DRAGGABLE_ITEM_CLASS = "draggable-item";
         var DRAGGABLE_ITEM_Z_INDEX = 10;
 
@@ -15,12 +15,16 @@ function($, jqueryUi) {
             zIndex: DRAGGABLE_ITEM_Z_INDEX,
 
             start: function (event, ui) {
-                $(this).hide();
+                if(hideSource) {
+                    $(this).hide();
+                }
                 ui.helper.addClass(DRAGGABLE_ITEM_CLASS);
             },
 
             stop: function () {
-                $(this).show();
+                if(hideSource) {
+                    $(this).show();
+                }
             }
         });
     };
