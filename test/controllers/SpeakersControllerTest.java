@@ -7,6 +7,7 @@ import org.codehaus.jackson.JsonNode;
 
 import org.junit.Test;
 
+import play.mvc.HandlerRef;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.test.FakeRequest;
@@ -43,11 +44,9 @@ public class SpeakersControllerTest extends AbstractControllerTest {
         speakersAfter.removeAll(speakersBefore);
 
         long speakerId = speakersAfter.get(0).id;
-
         JsonNode expectedJson = jsonNodeFromString("{\"id\": " + speakerId + "}");
-        JsonNode receivedJson = jsonNodeFromString(contentAsString(result));
 
-        assertEquals(expectedJson, receivedJson);
+        testJsonResponse(result, expectedJson);
     }
 
     @Test
@@ -64,15 +63,11 @@ public class SpeakersControllerTest extends AbstractControllerTest {
     }
     
     @Test
-    public void createSpeakerWithInvalidJsonShouldReturnServerError() throws IOException {
+    public void createSpeakerWithInvalidJsonShouldReturnServerError() throws Exception {
         startFakeApplication("test/data/controllers/speakers/event-with-all-entities.yml");
 
-        JsonNode requestJson = jsonNodeFromString("{\"foo\": \"bar\", \"bar\": \"foo\"}");
-        FakeRequest fakeRequest = createAjaxRequestWithJsonBodyAsDefaultUser(Helpers.POST, getSpeakersUrl(1L), requestJson);
-
-        final Result result = callAction(routes.ref.SpeakersController.createSpeaker(1L), fakeRequest);
-
-        assertThat(status(result)).isEqualTo(INTERNAL_SERVER_ERROR);
+        play.api.mvc.HandlerRef handlerRef = routes.ref.SpeakersController.createSpeaker(1L);
+        operationWhenUnknownModelIsPassedShouldReturnInternalServerError(handlerRef);
     }
 
     @Test
