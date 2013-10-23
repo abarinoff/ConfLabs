@@ -7,14 +7,19 @@ define([
 ],
 function(_, $, Backbone, Model, addEventDialogTemplate) {
     var AddEventDialog = Backbone.View.extend({
+
+        el: "#events-sidebar",
         template: _.template(addEventDialogTemplate),
+        events: {
+            "click #save-new-event" : "saveEvent"
+        },
 
         render: function() {
-            this.$el = $(this.template());
-            this.$el.appendTo("#events-sidebar");
-            this.$el.modal();
+            var $modal = $(this.template());
+            this.$el.append($modal);
 
-            this.$("#save-new-event").click(this, this.saveNewEvent);
+            $modal.modal();
+            $modal.on('hidden.bs.modal', this.onDialogClosed.bind(this));
         },
         
         saveNewEvent : function(event) {
@@ -32,7 +37,18 @@ function(_, $, Backbone, Model, addEventDialogTemplate) {
                     view.$el.modal('hide');
                 }
             });
+        },
+
+        saveEvent: function() {
+            console.log("save new event");
+        },
+
+        onDialogClosed: function() {
+            console.log("dialog closed, remove the dialog html");
+            console.log(this.$("#dlg-add-event").length);
+            this.$("#dlg-add-event").remove();
         }
+
     });
 
     return AddEventDialog;

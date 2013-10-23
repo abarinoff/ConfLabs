@@ -9,14 +9,20 @@ function(_, Backbone, AddEventDialog, template) {
 
         el: "#content",
         template: _.template(template),
+        events: {
+            "click #btn-create-event":  "showCreateEventDialog"
+        },
 
         render: function () {
             this.$el.html(this.template());
-            this.$("#btn-create-event").click(function() {
-                new AddEventDialog().render();
-            });
 
             return this;
+        },
+
+        showCreateEventDialog: function() {
+            console.log("create event button clicked");
+
+            new AddEventDialog().render();
         }
     });
 
