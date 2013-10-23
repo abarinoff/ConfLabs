@@ -20,33 +20,11 @@ function(_, $, Backbone, template) {
         render: function() {
             this.renderTemplate();
 
-            $.widget("ui.timespinner", $.ui.spinner, {
-                options: {
-                    // seconds
-                    step: 60 * 1000,
-                    // hours
-                    page: 60
-                },
-
-                _parse: function( value ) {
-/*
-                    if ( typeof value === "string" ) {
-                        // already a timestamp
-                        if ( Number( value ) == value ) {
-                            return Number( value );
-                        }
-                        return +Globalize.parseDate( value );
-                    }
-*/
-                    return value;
-                },
-
-                _format: function( value ) {
-                    return "aaa";
-                }
+            $('#slot-start-time').datetimepicker({
+                pickDate: false,
+                pickSeconds: false,
+                defaultTime: "10:00"
             });
-
-            $("#slot-start-time").timespinner();
 
             this.attachEventHandlers();
             this.showDialog();
