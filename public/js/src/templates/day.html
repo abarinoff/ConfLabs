@@ -1,0 +1,15 @@
+<% if(stages.length > 0) { %>
+    <b>Day <%= date %></b>
+    <table class="table table-bordered table-striped schedule-table">
+        <thead>
+        <tr>
+            <th></th>
+            <% _.each(stages, function(stage) { %>
+            <th> <%= stage.getTitle() + " (" + stage.getCapacity() + " seats)" %></th>
+            <% }) %>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+<% } %>
