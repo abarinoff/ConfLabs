@@ -20,10 +20,18 @@ function(_, $, Backbone, template) {
         render: function() {
             this.renderTemplate();
 
-            $('#slot-start-time').datetimepicker({
-                pickDate: false,
-                pickSeconds: false,
-                defaultTime: "10:00"
+            $('#slot-start-time').timepicker({
+                defaultTime: '10:00',
+                minuteStep: 5,
+                showInputs: false,
+                showMeridian: false
+            });
+
+            $('#slot-end-time').timepicker({
+                defaultTime: '11:00',
+                minuteStep: 5,
+                showInputs: false,
+                showMeridian: false
             });
 
             this.attachEventHandlers();

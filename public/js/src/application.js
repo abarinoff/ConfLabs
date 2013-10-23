@@ -22,9 +22,9 @@ requirejs.config({
             exports: "$.fn.popover"
         },
 
-        "bootstrap.datetimepicker": {
+        "bootstrap.timepicker": {
             deps: ["jquery"],
-            exports: "$.fn.datetimepicker"
+            exports: "$.fn.timepicker"
         },
 
         "jquery.ui": {
@@ -41,7 +41,7 @@ requirejs.config({
         "backbone.paginator": "../lib/backbone.paginator",
         "backbone.validation": "../lib/backbone.validation",
         "bootstrap": "../lib/bootstrap",
-        "bootstrap.datetimepicker": "../lib/bootstrap.datetimepicker",
+        "bootstrap.timepicker": "../lib/bootstrap.timepicker",
         "require.text": "../lib/require.text"
     },
 
@@ -53,7 +53,7 @@ define([
     "routers/router",
     "validation/validation.config",
     "bootstrap",
-    "bootstrap.datetimepicker"],
+    "bootstrap.timepicker"],
 
 function(Backbone, Router) {
     var Application = function() {
