@@ -356,7 +356,19 @@ function(_, Backbone, Paginator, Validation) {
                 speaker = this.getSpeaker(speaker.id),
                 speakerPos = speaker ? _.indexOf(speakers, speaker) : null;
 
+            // Look for a speeches associated with a speaker being removed
+            var speeches = [];
+            _.each(speaker.getSpeeches(), function(speechObj) {
+                var speech = this.getSpeech(speechObj.id);
+                speeches.push(speech);
+            }, this);
+
             speakers.splice(speakerPos, 1);
+
+            // Remove the speeches that has single relation to the speaker being removed
+            _.each(speeches, function(speech){
+                this.onSpeechUnset(speech);
+            }, this);
         },
 
         getSpeech: function(id) {
