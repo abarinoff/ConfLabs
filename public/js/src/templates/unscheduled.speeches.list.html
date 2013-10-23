@@ -1,0 +1,8 @@
+<% _.each(speeches, function(speech) { %>
+    <span class="unscheduled-list-item">
+        <h4><%= speech.title %></h4>
+        <% _.each(speech.speakers, function(speaker) { %>
+            <p><%= speaker.name %></p>
+        <% }); %>
+    </span>
+<% }); %>

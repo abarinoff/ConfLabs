@@ -220,6 +220,19 @@ function(_, Backbone, Paginator, Validation) {
         }
     });
 
+    Model.Slot = Backbone.Model.extend({
+        initialize: function(attributes, options) {
+        },
+
+        getSpeech: function() {
+            return this.get('speech');
+        },
+
+        hasSpeech: function(speechModel) {
+            return this.getSpeech().id === speechModel.id;
+        }
+    });
+
     Model.Event = Backbone.Model.extend({
         urlRoot: "/events",
 
@@ -227,7 +240,8 @@ function(_, Backbone, Paginator, Validation) {
             location: Model.Location,
             stages: Model.Stage,
             speakers: Model.Speaker,
-            speeches: Model.Speech
+            speeches: Model.Speech,
+            slots: Model.Slot
         },
 
         parseProperty: function(response, propertyName) {
@@ -376,6 +390,51 @@ function(_, Backbone, Paginator, Validation) {
 
         getAvailableSpeeches: function(speakerId) {
             return _.difference(this.getSpeeches(), this.getSpeechesForSpeaker(speakerId));
+        },
+
+        getSlots: function() {
+            return this.get('slots');
+        },
+
+        /**
+         * Get the speeches that are not referenced by any of the slots
+         */
+        getUnscheduledItems: function() {
+            var speeches = [];
+            _.each(this.getSpeeches(), function(speech) {
+                var unscheduled = true;
+                _.each(this.getSlots(), function(slot) {
+                    if (slot.hasSpeech(speech)) {
+                        unscheduled = false;
+                    }
+                }, this);
+                if (unscheduled) {
+                    speeches.push(speech);
+                }
+            }, this);
+
+            return speeches;
+        },
+
+        getUnscheduledItemsWithAssignedSpeakers: function() {
+            var speechModels = this.getUnscheduledItems(),
+                speeches = [];
+            _.each(speechModels, function(speechModel) {
+                var speechObj = speechModel.toJSON();
+                speechObj.speakers = [];
+                speeches.push(speechObj);
+                _.each(this.getSpeakers(), function(speaker) {
+                    _.each(speaker.getSpeeches(), function(speech) {
+                        if (speech.id === speechModel.id) {
+                            speechObj.speakers.push({
+                                name        : speaker.getName()
+                            });
+                        }
+                    });
+                });
+            }, this);
+
+            return speeches;
         },
 
         saveSpeech: function(speechModel) {
