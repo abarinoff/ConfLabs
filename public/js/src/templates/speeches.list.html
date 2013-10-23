@@ -1,0 +1,17 @@
+<% if (speeches.length) { %>
+    <div class="col-md-12">Speeches</div>
+    <% _.each(speeches, function(speech, index) { %>
+        <div class="">
+            <div class="col-md-2 item-row">&nbsp;&nbsp;&nbsp;&nbsp;Title:</div>
+            <div class="col-md-3 item-row"><%= speech.getTitle() %></div>
+            <div class="col-md-7">
+                <button id="edit-speech-<%= speech.id %>" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-edit"></span>
+                </button>
+                <button id="remove-speech-<%= speech.id %>" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </button>
+            </div>
+        </div>
+    <% }); %>
+<% } %>

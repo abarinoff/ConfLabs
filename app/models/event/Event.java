@@ -98,6 +98,16 @@ public class Event extends Model {
         return null;
     }
 
+    public Speech getSpeechById(Long speechId) {
+        for(Speech speech : speeches) {
+            if (speech.id.equals(speechId)) {
+                return speech;
+            }
+        }
+
+        return null;
+    }
+
     @Override
     public void delete() {
         Ebean.delete(slots);

@@ -145,6 +145,35 @@ function(_, Backbone, Paginator, Validation) {
             return this.get("description");
         },
 
+        getSpeeches: function() {
+            return this.get('speeches');
+        },
+
+        setSpeeches: function(speeches) {
+            this.set('speeches', speeches);
+        },
+
+        saveSpeech: function(speech) {
+            var item = _.findWhere(this.getSpeeches(), {id: parseInt(speech.id)});
+            if (item !== undefined) {
+                var position = _.indexOf(this.getSpeeches(), item);
+                this.getSpeeches()[position] = speech.toJSON();
+            }
+            else {
+                this.getSpeeches().push(speech.toJSON());
+            }
+        },
+
+        unsetSpeech: function(speechModel) {
+            var speeches = this.getSpeeches(),
+                item = _.findWhere(this.getSpeeches(), {id: parseInt(speechModel.id)});
+            if (item !== undefined) {
+                var index = _.indexOf(speeches, item);
+                speeches.splice(index, 1);
+                //this.trigger('speech:changed');
+            }
+        },
+
         validation: {
             name: {
                 required: true,
@@ -155,13 +184,50 @@ function(_, Backbone, Paginator, Validation) {
         }
     });
 
+    Model.Speech = Backbone.Model.extend({
+        initialize: function(attributes, options) {
+            this.eventId = options.eventId;
+            this.speakerId = options.speakerId;
+        },
+
+        url: function() {
+            var url = "/events/" + this.eventId + "/speakers/" + this.speakerId + "/speeches";
+            if (!this.isNew()) {
+                url += "/" + this.id;
+            }
+
+            return url;
+        },
+
+        getId: function() {
+            return this.id;
+        },
+
+        getTitle: function() {
+            return this.get('title');
+        },
+
+        setTitle: function(title) {
+            this.set('title', title);
+        },
+
+        getSpeakers: function() {
+            return this.get('speakers');
+        },
+
+        setSpeakerId: function(speakerId) {
+            this.speakerId = speakerId;
+        }
+    });
+
     Model.Event = Backbone.Model.extend({
         urlRoot: "/events",
 
         model: {
             location: Model.Location,
             stages: Model.Stage,
-            speakers: Model.Speaker
+            speakers: Model.Speaker,
+            speeches: Model.Speech
         },
 
         parseProperty: function(response, propertyName) {
@@ -273,6 +339,7 @@ function(_, Backbone, Paginator, Validation) {
                 speakers[speakerPos] = speaker;
             }
             else {
+                speaker.set('speeches', []);
                 speakers.push(speaker);
             }
         },
@@ -283,6 +350,68 @@ function(_, Backbone, Paginator, Validation) {
                 speakerPos = speaker ? _.indexOf(speakers, speaker) : null;
 
             speakers.splice(speakerPos, 1);
+        },
+
+        getSpeech: function(id) {
+            return _.findWhere(this.getSpeeches(), {id: parseInt(id)});
+        },
+
+        getSpeeches: function() {
+            return this.get('speeches');
+        },
+
+        getSpeechesForSpeaker: function(speakerId) {
+            var speeches = [];
+            var speaker = this.getSpeaker(speakerId);
+            _.each(speaker.getSpeeches(), function(speakersSpeech) {
+                _.each(this.getSpeeches(), function(speech) {
+                    if (speech.id == speakersSpeech.id) {
+                        speeches.push(speech);
+                    }
+                });
+            }, this);
+
+            return speeches;
+        },
+
+        getAvailableSpeeches: function(speakerId) {
+            return _.difference(this.getSpeeches(), this.getSpeechesForSpeaker(speakerId));
+        },
+
+        saveSpeech: function(speechModel) {
+            var speeches = this.getSpeeches(),
+                item = _.findWhere(speeches, {id: parseInt(speechModel.id)});
+            if (item !== undefined) {
+                var index = _.indexOf(item);
+                speeches[index] = speechModel;
+            }
+            else {
+                speeches.push(speechModel);
+            }
+        },
+
+        removeSpeech: function(speechModel) {
+            var speeches = this.getSpeeches(),
+                item = _.findWhere(speeches, {id: parseInt(speechModel.id)});
+            if (item !== undefined) {
+                var index = _.indexOf(speeches, item);
+                speeches.splice(index, 1);
+            }
+        },
+
+        // Remove the given speech from Event speeches array in case there are no speakers referencing it anymore
+        onSpeechUnset: function(speechModel) {
+            var occurrences = 0;
+            _.each(this.getSpeakers(), function(speaker) {
+                _.each(speaker.getSpeeches(), function(speechObj) {
+                    if (speechObj.id == speechModel.getId()) {
+                        occurrences++;
+                    }
+                })
+            });
+            if (occurrences == 0) {
+                this.removeSpeech(speechModel);
+            }
         },
 
         validation: {

@@ -3,11 +3,12 @@ define([
     'jquery',
     'backbone',
     'models/model',
+    'views/speaker',
     'backbone.validation',
     'validation/validation.handler',
     'require.text!templates/speakers.list.html'
 ],
-function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTemplate) {
+function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, speakersListTemplate) {
     var SpeakersListView = Backbone.View.extend({
         ID_SELECTOR         : "#hdn-speaker-id",
         NAME_SELECTOR       : "#speaker-name",
@@ -16,9 +17,9 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
 
         DIALOG_SELECTOR     : "#dlg-speaker",
 
-        speakersListTemplate : _.template(speakersListTemplate),
+        template: _.template(speakersListTemplate),
 
-        el : "#speakers",
+        el: "#speakers",
 
         events: {
             "click button[id^='btn-edit-speaker-']"     : "showModal",
@@ -28,13 +29,22 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
 
         initialize: function(options) {
             this.eventModel = options.eventModel;
-            _.bindAll(this, "speakerSaved", "speakerRemoved", "errorSaveSpeaker", "errorRemoveSpeaker", "dialogHidden");
+            this.eventModel.on("speech:changed", this.render.bind(this));
         },
 
-        render : function() {
-            this.$el.html(this.speakersListTemplate({speakers : this.eventModel.getSpeakers()}));
+        render: function() {
+            this.$el.html(this.template());
+            this.$("#speakers-list").empty();
 
-            $(this.DIALOG_SELECTOR).on('hidden.bs.modal', this.dialogHidden);
+            _.each(this.eventModel.getSpeakers(), function(speaker, index, list) {
+                var speakerView = new SpeakerView({
+                    model: speaker,
+                    eventModel: this.eventModel
+                }).render();
+                this.$("#speakers-list").append(speakerView.$el);
+            }, this);
+
+            $(this.DIALOG_SELECTOR).on('hidden.bs.modal', this.dialogHidden.bind(this));
 
             return this;
         },
@@ -77,21 +87,8 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
             view.model.set(attributes);
 
             view.model.save({}, {
-                success : view.speakerSaved,
-                error   : view.errorSaveSpeaker
-            });
-        },
-
-        removeSpeaker : function(event) {
-            var $target = $(event.target),
-                view = this,
-                buttonId = $target.attr('id'),
-                id = buttonId.replace("btn-remove-speaker-", '');
-
-            var speaker = view.eventModel.getSpeaker(id);
-            speaker.destroy({
-                success: view.speakerRemoved,
-                error: view.errorRemoveSpeaker
+                success : view.speakerSaved.bind(this),
+                error   : view.errorSaveSpeaker.bind(this)
             });
         },
 
@@ -99,6 +96,19 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, speakersListTempl
             var view = this;
             view.eventModel.saveSpeaker(model);
             $(view.DIALOG_SELECTOR).modal('hide');
+        },
+
+        removeSpeaker: function(event) {
+            var $target = $(event.target),
+                view = this,
+                buttonId = $target.attr('id'),
+                id = buttonId.replace("btn-remove-speaker-", '');
+
+            var speaker = view.eventModel.getSpeaker(id);
+            speaker.destroy({
+                success: view.speakerRemoved.bind(this),
+                error: view.errorRemoveSpeaker.bind(this)
+            });
         },
 
         speakerRemoved: function(model, response, options) {

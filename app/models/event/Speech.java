@@ -2,6 +2,7 @@ package models.event;
 
 import models.event.slot.Slot;
 import models.event.slot.SpeechSlot;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import play.db.ebean.Model;
 import com.avaje.ebean.validation.NotEmpty;
 
@@ -19,6 +20,7 @@ public class Speech extends Model {
     @NotEmpty
     public String title;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "speeches")
     public List<Speaker> speakers = new LinkedList<Speaker>();
 

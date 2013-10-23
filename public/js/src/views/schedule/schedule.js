@@ -4,14 +4,25 @@ define([
     "views/schedule/draggable",
     "views/schedule/droppable",
     "views/schedule/multi.droppable",
+    "views/schedule/day",
     "views/schedule/slot.dialog",
     "require.text!templates/schedule.html"
 ],
 
-function(_, Backbone, Draggable, Droppable, MultiDroppable, SlotDialog, template) {
+function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, SlotDialog, template) {
     var ScheduleView = Backbone.View.extend({
+        DAYS_CONTAINER  : "#days-list",
+
         el: "#schedule",
         template: _.template(template),
+
+        events: {
+            "click #add-day"    : "addDay"
+        },
+
+        initialize: function(options) {
+            this.eventModel = options.eventModel;
+        },
 
         render: function () {
             this.renderTemplate();
@@ -26,7 +37,6 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, SlotDialog, template
                 hoverClass: "droppable-item-hover",
 
                 drop: function(event, ui) {
-                    console.log("dropped to table");
 //                    var callback = _.bind(this.removeEvent, this);
                     var dialog = new SlotDialog({callback: function() {
                         console.log("slot created");
@@ -60,6 +70,46 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, SlotDialog, template
         initializeUnscheduledItemsList: function () {
             var unscheduledItemsList = this.$(".unscheduled-list");
             new MultiDroppable(unscheduledItemsList, "unscheduled-list-item");
+        },
+
+        addDay: function(event) {
+            $("body").datepicker("dialog",
+                this.getCurrentDate(),
+                this.dateSelected.bind(this),
+                {},
+                this.getDatepickerOffset()
+            );
+        },
+
+        getCurrentDate: function() {
+            var today = new Date(),
+                dd = today.getDate(),
+                mm = today.getMonth() + 1,
+                yy = today.getYear();
+            if (dd < 10) { dd = "0" + dd };
+            if (mm < 10) { mm = "0" + mm };
+
+            return mm + "/" + "dd" + "/" + yy;
+        },
+
+        getDatepickerOffset: function() {
+            var buttonOffset = $("#add-day").offset();
+
+            return [
+                buttonOffset.left - 180,
+                buttonOffset.top + $("#add-day").outerHeight() + 10
+            ]
+        },
+
+        dateSelected: function(date) {
+            console.log("dateSelected");
+            var day = new DayView({
+                stages: this.eventModel.getStages(),
+                date: date
+            }).render();
+
+            console.log(day.$el);
+            $(this.DAYS_CONTAINER).prepend(day.$el);
         }
     });
 

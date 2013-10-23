@@ -27,6 +27,9 @@ import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.*;
 
 public class AbstractControllerTest extends WithApplication {
+    protected static final String EVENTS_URL = "events";
+    protected static final String SPEAKERS_URL = "speakers";
+    protected static final String SPEECHES_URL = "speeches";
 
     protected ObjectMapper objectMapper;
 
