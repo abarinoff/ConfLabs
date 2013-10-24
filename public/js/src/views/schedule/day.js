@@ -15,7 +15,7 @@ function(_, Backbone, Model, dayTemplate) {
         },
 
         render: function() {
-            this.$el = $(this.template({
+            this.$el.html(this.template({
                 stages  : this.stages,
                 date    : this.date
             }));

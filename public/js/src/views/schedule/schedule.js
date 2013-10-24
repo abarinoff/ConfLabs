@@ -19,7 +19,7 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         template: _.template(template),
 
         events: {
-            "click #add-day"    : "addDay"
+            "click #add-day"    : "onAddDayButtonClicked"
         },
 
         initialize: function(options) {
@@ -36,20 +36,8 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
             this.initializeUnusedScheduleCells(unusedScheduleCells);
 
             this.initializeUnscheduledItemsList();
+            this.initializeScheduleTable(this.$(".schedule-table"), this);
 
-            var self = this;
-            this.$(".schedule-table").droppable({
-                tolerance: "pointer",
-                accept: ".slot-template",
-                hoverClass: "droppable-item-hover",
-
-                drop: function(event, ui) {
-                    var type = ui.helper.attr("type");
-                    var callback = _.bind(self.createSlot, self, this, type);
-                    var dialog = new SlotDialog({callback: callback});
-                    dialog.render();
-                }
-            });
             return this;
         },
 
@@ -84,10 +72,26 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
             new MultiDroppable(unscheduledItemsList, "unscheduled-list-item");
         },
 
-        addDay: function(event) {
+        initializeScheduleTable: function(element, context) {
+            var self = context;
+            element.droppable({
+                tolerance: "pointer",
+                accept: ".slot-template",
+                hoverClass: "droppable-item-hover",
+
+                drop: function(event, ui) {
+                    var type = ui.helper.attr("type");
+                    var callback = _.bind(self.createSlot, self, this, type);
+                    var dialog = new SlotDialog({callback: callback});
+                    dialog.render();
+                }
+            });
+        },
+
+        onAddDayButtonClicked: function() {
             $("body").datepicker("dialog",
                 this.getCurrentDate(),
-                this.dateSelected.bind(this),
+                this.createDay.bind(this),
                 {},
                 this.getDatepickerOffset()
             );
@@ -113,15 +117,18 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
             ]
         },
 
-        dateSelected: function(date) {
-            console.log("dateSelected");
+        createDay: function(date) {
             var day = new DayView({
                 stages: this.eventModel.getStages(),
                 date: date
             }).render();
 
-            console.log(day.$el);
-            $(this.DAYS_CONTAINER).prepend(day.$el);
+            var unscheduledItems = day.$(".slot-template");
+            new Draggable(unscheduledItems, true);
+
+            this.initializeScheduleTable(day.$(".schedule-table"), this);
+
+            $(this.DAYS_CONTAINER).prepend(day.$el.contents());
         },
 
         createSlot: function(target, type, data) {
