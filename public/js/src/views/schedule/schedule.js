@@ -22,27 +22,30 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, SlotDialog,
 
         initialize: function(options) {
             this.eventModel = options.eventModel;
+            this.slotBuilder = options.slotBuilder;
         },
 
         render: function () {
             this.renderTemplate();
             this.initializeUnscheduledItems();
             this.initializeSlotTemplateItems();
-            this.initializeUnusedScheduleCells();
+
+            var unusedScheduleCells = this.$(".unused-schedule-table-cell");
+            this.initializeUnusedScheduleCells(unusedScheduleCells);
+
             this.initializeUnscheduledItemsList();
 
+            var self = this;
             this.$(".schedule-table").droppable({
                 tolerance: "pointer",
                 accept: ".slot-template",
                 hoverClass: "droppable-item-hover",
 
                 drop: function(event, ui) {
-//                    var callback = _.bind(this.removeEvent, this);
-                    var dialog = new SlotDialog({callback: function() {
-                        console.log("slot created");
-                    }});
+                    var type = ui.helper.attr("type");
+                    var callback = _.bind(self.createSlot, self, this, type);
+                    var dialog = new SlotDialog({callback: callback});
                     dialog.render();
-
                 }
             });
             return this;
@@ -62,9 +65,8 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, SlotDialog,
             new Draggable(unscheduledItems, false);
         },
 
-        initializeUnusedScheduleCells: function () {
-            var unusedScheduleCells = this.$(".unused-schedule-table-cell");
-            new Droppable(unusedScheduleCells);
+        initializeUnusedScheduleCells: function (cells) {
+            new Droppable(cells);
         },
 
         initializeUnscheduledItemsList: function () {
@@ -110,6 +112,18 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, SlotDialog,
 
             console.log(day.$el);
             $(this.DAYS_CONTAINER).prepend(day.$el);
+        },
+
+        createSlot: function(target, type, data) {
+            var slot = this.slotBuilder.build(type, data);
+
+            var targetBody = $(target).find("tbody");
+            var renderedSlot = slot.render();
+
+            renderedSlot.$el.appendTo($(target).find("tbody"));
+
+            var unusedScheduleCells = $(renderedSlot.$el).find(".unused-schedule-table-cell");
+            this.initializeUnusedScheduleCells(unusedScheduleCells);
         }
     });
 

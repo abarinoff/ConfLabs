@@ -19,21 +19,6 @@ function(_, $, Backbone, template) {
 
         render: function() {
             this.renderTemplate();
-
-            $('#slot-start-time').timepicker({
-                defaultTime: '10:00',
-                minuteStep: 5,
-                showInputs: false,
-                showMeridian: false
-            });
-
-            $('#slot-end-time').timepicker({
-                defaultTime: '11:00',
-                minuteStep: 5,
-                showInputs: false,
-                showMeridian: false
-            });
-
             this.attachEventHandlers();
             this.showDialog();
         },
@@ -43,20 +28,43 @@ function(_, $, Backbone, template) {
             this.hideDialog();
         },
 
+        confirmationHandler: function(data) {
+            if(!_.isUndefined(this.callback)) {
+                this.callback(data);
+            }
+        },
+
         renderTemplate: function () {
             this.$el = $(this.template());
             this.$el.appendTo(this.PARENT_SELECTOR);
         },
 
         attachEventHandlers: function () {
+            $('#slot-start-time').timepicker({
+                defaultTime: '9:00',
+                minuteStep: 5,
+                showInputs: false,
+                showMeridian: false
+            });
+
+            $('#slot-end-time').timepicker({
+                defaultTime: '10:00',
+                minuteStep: 5,
+                showInputs: false,
+                showMeridian: false
+            });
+
             this.$el.one('hidden.bs.modal', _.bind(this.remove, this));
             this.$(this.CONFIRM_BUTTON_SELECTOR).click(_.bind(this.confirm, this));
         },
 
         attachConfirmationHandler: function () {
-            if(!_.isUndefined(this.callback)) {
-                this.$el.one("hidden.bs.modal", this.callback);
-            }
+            var data = {
+                start: $("#slot-start-time").val(),
+                end: $("#slot-end-time").val()};
+            var handler = _.bind(this.confirmationHandler, this, data);
+
+            this.$el.one("hidden.bs.modal", handler);
         },
 
         showDialog: function () {
