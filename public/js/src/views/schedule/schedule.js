@@ -5,13 +5,15 @@ define([
     "views/schedule/droppable",
     "views/schedule/multi.droppable",
     "views/schedule/day",
+    "views/schedule/unscheduled.items.list",
     "views/schedule/slot.dialog",
     "require.text!templates/schedule.html"
 ],
 
-function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, SlotDialog, template) {
+function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, UnscheduledItemsView, SlotDialog, template) {
     var ScheduleView = Backbone.View.extend({
-        DAYS_CONTAINER  : "#days-list",
+        DAYS_CONTAINER              : "#days-list",
+        UNSCHEDULED_ITEMS_CONTAINER : "#unscheduled-items-list",
 
         el: "#schedule",
         template: _.template(template),
@@ -52,7 +54,15 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, SlotDialog,
         },
 
         renderTemplate: function () {
-            this.$el.html(this.template())
+            this.$el.html(this.template());
+            this.renderUnscheduledItems();
+        },
+
+        renderUnscheduledItems: function() {
+            var unscheduledItems = this.eventModel.getUnscheduledItemsWithAssignedSpeakers();
+            var unscheduledItemsView = new UnscheduledItemsView({speeches: unscheduledItems}).render();
+
+            this.$(this.UNSCHEDULED_ITEMS_CONTAINER).append(unscheduledItemsView.$el);
         },
 
         initializeUnscheduledItems: function () {
