@@ -170,7 +170,6 @@ function(_, Backbone, Paginator, Validation) {
             if (item !== undefined) {
                 var index = _.indexOf(speeches, item);
                 speeches.splice(index, 1);
-                //this.trigger('speech:changed');
             }
         },
 
@@ -221,15 +220,26 @@ function(_, Backbone, Paginator, Validation) {
     });
 
     Model.Slot = Backbone.Model.extend({
-        initialize: function(attributes, options) {
-        },
-
         getSpeech: function() {
             return this.get('speech');
         },
 
+        getStartDateAsString: function() {
+            var startDate = this.get('start');
+            startDate = new Date(startDate);
+
+            return startDate.getMonth() + "/" + startDate.getDay() + "/" + startDate.getYear();
+        },
+
+        prepareForScheduleTable: function() {
+            var slot = this.toJSON();
+            slot.span = new Date(slot.start).toTimeString() + ":" + new Date(slot.end).toTimeString();
+
+            return slot;
+        },
+
         hasSpeech: function(speechModel) {
-            return this.getSpeech().id === speechModel.id;
+            return this.getSpeech() && this.getSpeech().id === speechModel.id;
         }
     });
 
@@ -471,6 +481,21 @@ function(_, Backbone, Paginator, Validation) {
             if (occurrences == 0) {
                 this.removeSpeech(speechModel);
             }
+        },
+
+        getSlotsSortedByDay : function() {
+            var slotsPerDay = {}, slots = this.getSlots();
+            _.invoke(slots, function() {
+                // Get the string representation of the day
+                // @todo Move to a separate function
+                // @todo sort
+
+                var date = this.getStartDateAsString();
+                slotsPerDay[date] = slotsPerDay[date] || [];
+                slotsPerDay[date].push(this.prepareForScheduleTable());
+            }, slotsPerDay);
+
+            return slotsPerDay;
         },
 
         validation: {

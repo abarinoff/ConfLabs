@@ -42,7 +42,10 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         },
 
         renderTemplate: function () {
-            this.$el.html(this.template());
+            var days = this.eventModel.getSlotsSortedByDay();
+            var stages = this.eventModel.getStages();
+
+            this.$el.html(this.template({days: days, stages: stages}));
             this.renderUnscheduledItems();
         },
 

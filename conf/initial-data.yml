@@ -71,6 +71,11 @@ slots:
     speech:
       *speech1
 
+  - &slot2 !!models.event.slot.OrganizationalSlot
+    title: Org Slot
+    start: !!timestamp 2013-09-02 18:00:00 +3
+    end: !!timestamp 2013-09-02 18:45:00 +3
+
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount
     id: 1
@@ -87,6 +92,7 @@ events:
       - *stage2
     slots:
       - *slot1
+      - *slot2
     speeches:
       - *speech1
       - *speech2
