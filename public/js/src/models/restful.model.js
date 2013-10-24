@@ -436,7 +436,7 @@ function(_, Backbone, Paginator, Validation) {
         validation: {
             title: {
                 required: true,
-                msg: "Required"
+                msg: "Required field"
             }
         }
     });

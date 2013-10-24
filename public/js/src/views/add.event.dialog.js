@@ -3,52 +3,62 @@ define([
     'jquery',
     'backbone',
     'models/model',
+    'backbone.validation',
+    'validation/validation.handler',
     'require.text!templates/add.event.dialog.html'
 ],
-function(_, $, Backbone, Model, addEventDialogTemplate) {
+function(_, $, Backbone, Model, Validation, ValidationHandler, addEventDialogTemplate) {
     var AddEventDialog = Backbone.View.extend({
 
         el: "#events-sidebar",
         template: _.template(addEventDialogTemplate),
         events: {
-            "click #save-new-event" : "saveEvent"
+            "click #save-new-event"             : "saveEvent",
+            "hidden.bs.modal #dlg-add-event"    : "onDialogClosed"
         },
 
         render: function() {
             var $modal = $(this.template());
             this.$el.append($modal);
-
             $modal.modal();
-            $modal.on('hidden.bs.modal', this.onDialogClosed.bind(this));
-        },
-        
-        saveNewEvent : function(event) {
-            var view = event.data,
-                eventTitle = view.$("#new-event-title").val(),
-                event = new Model.Event({'title': eventTitle});
 
-            event.save({}, {
-                success: function(event, response, options) {
-                    var id = event.id;
-                    view.$el.one('hidden.bs.modal', id, function(event) {
-                        var id = event.data;
-                        window.application.router.navigate("events/" + id, {trigger: true});
-                    });
-                    view.$el.modal('hide');
-                }
-            });
+            return this;
         },
 
         saveEvent: function() {
-            console.log("save new event");
+            var view = this,
+                eventTitle = view.$("#new-event-title").val();
+
+            this.model = new Model.Event();
+            Validation.bind(view, new ValidationHandler("new-event."));
+
+            this.model.set({'title': eventTitle});
+            this.model.save({}, {
+                success : this.eventSaved.bind(this),
+                error   : this.eventSaveError.bind(this)
+            });
+        },
+
+        eventSaved: function(eventModel) {
+            console.log("eventSaved with id " + eventModel.id);
+            var view = this;
+            view.eventId = eventModel.id;
+            view.$("#dlg-add-event").modal('hide');
+        },
+
+        eventSaveError: function() {
+            console.log("Error trying to save Event");
         },
 
         onDialogClosed: function() {
             console.log("dialog closed, remove the dialog html");
-            console.log(this.$("#dlg-add-event").length);
             this.$("#dlg-add-event").remove();
+            if (this.eventId !== undefined) {
+                console.log("navigate to " + this.eventId);
+                window.application.router.navigate("events/" + this.eventId, {trigger: true});
+                this.eventId = undefined;
+            }
         }
-
     });
 
     return AddEventDialog;
