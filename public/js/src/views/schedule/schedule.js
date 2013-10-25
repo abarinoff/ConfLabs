@@ -15,7 +15,6 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         DAYS_CONTAINER              : "#days-list",
         UNSCHEDULED_ITEMS_CONTAINER : "#unscheduled-items-list",
 
-        el: "#schedule",
         template: _.template(template),
 
         events: {
@@ -125,7 +124,8 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         },
 
         createSlot: function(target, type, data) {
-            var slot = this.slotBuilder.build(type, data);
+            var stages = this.eventModel.getStages();
+            var slot = this.slotBuilder.build(type, stages, data);
 
             var targetBody = $(target).find("tbody");
             var renderedSlot = slot.render();

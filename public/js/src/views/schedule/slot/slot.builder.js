@@ -19,17 +19,17 @@ function(_, OrgSlotView, SpeechSlotView) {
     });
 */
 
-    var SlotBuilder = function() {
+    var SlotViewBuilder = function() {
         this.supportedSlots = {
             org: OrgSlotView,
             speech: SpeechSlotView
         };
 
-        this.build = function(type, data) {
+        this.build = function(type, stagesNumber, data) {
             var slotClass = this.supportedSlots[type];
-            return new slotClass(data);
+            return new slotClass(stagesNumber, data);
         };
     };
 
-    return SlotBuilder;
+    return SlotViewBuilder;
 });

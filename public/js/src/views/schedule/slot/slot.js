@@ -7,8 +7,8 @@ function(_, Backbone) {
 
     var SlotView = Backbone.View.extend({
 
-        initialize: function(data) {
-            console.log("initialize");
+        initialize: function(stages, data) {
+            this.stages = stages;
             this.data = data;
         },
 
@@ -19,7 +19,7 @@ function(_, Backbone) {
 
         renderTemplate: function() {
             var template = this.getTemplate();
-            return $(template({data: this.data}));
+            return $(template({stages: this.stages, data: this.data}));
         },
 
         getTemplate: function() {
