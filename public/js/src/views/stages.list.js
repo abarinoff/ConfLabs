@@ -18,7 +18,6 @@ function($, _, Backbone, Model, Validation, ValidationHandler, stagesListTemplat
         CAPACITY_SELECTOR: "#stage-capacity",
 
         template : _.template(stagesListTemplate),
-        el : '#stages',
 
         events: {
             "click #save-stage"                     : "saveStage",

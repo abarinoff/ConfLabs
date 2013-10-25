@@ -14,7 +14,6 @@ function(_, Backbone, Validation, Model, ValidationHandler, template) {
         DESCRIPTION_SELECTOR: "#event-description",
 
         template : _.template(template),
-        el : '#details',
 
         events: {
             "click button#btn-edit-details" : "editDetails",

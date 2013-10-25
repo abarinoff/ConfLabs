@@ -19,8 +19,6 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
 
         template: _.template(speakersListTemplate),
 
-        el: "#speakers",
-
         events: {
             "click button[id^='btn-edit-speaker-']"     : "showModal",
             "click button[id^='btn-remove-speaker-']"   : "removeSpeaker",

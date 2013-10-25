@@ -1,5 +1,7 @@
 <tr>
     <td><%= data.start %> - <%= data.end%></td>
-    <td class="unused-schedule-table-cell"></td>
-    <td class="unused-schedule-table-cell"></td>
+
+    <% _.each(stages, function(stage){ %>
+        <td class="unused-schedule-table-cell"></td>
+    <% }); %>
 </tr>

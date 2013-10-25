@@ -15,7 +15,6 @@ function($, _, Backbone, Validation, Model, ValidationHandler, template) {
         ADDRESS_SELECTOR: "#location-address",
 
         template : _.template(template),
-        el : '#location',
 
         events: {
             "click button#btn-add-location" : "editLocation",
