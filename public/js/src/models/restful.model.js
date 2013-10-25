@@ -224,16 +224,37 @@ function(_, Backbone, Paginator, Validation) {
             return this.get('speech');
         },
 
-        getStartDateAsString: function() {
-            var startDate = this.get('start');
-            startDate = new Date(startDate);
+        extractDate: function(datetime) {
+            return datetime.split(" ")[0];
+        },
 
-            return startDate.getMonth() + "/" + startDate.getDay() + "/" + startDate.getYear();
+        extractTime: function(datetime) {
+            return datetime.split(" ")[1];
+        },
+
+        getStartDate: function() {
+            var startDate = this.get('start');
+            return this.extractDate(startDate);
+        },
+
+        getEndDate: function() {
+            var endDate = this.get('end');
+            return this.extractDate(endDate);
+        },
+
+        getStartTime: function() {
+            var startTime = this.get('start');
+            return this.extractTime(startTime);
+        },
+
+        getEndTime: function() {
+            var endTime = this.get('end');
+            return this.extractTime(endTime);
         },
 
         prepareForScheduleTable: function() {
             var slot = this.toJSON();
-            slot.span = new Date(slot.start).toTimeString() + ":" + new Date(slot.end).toTimeString();
+            slot.timeSpan = this.getStartTime() + " - " + this.getEndTime();
 
             return slot;
         },
@@ -483,19 +504,28 @@ function(_, Backbone, Paginator, Validation) {
             }
         },
 
-        getSlotsSortedByDay : function() {
-            var slotsPerDay = {}, slots = this.getSlots();
+        getSlotsByDay : function() {
+            var slotsPerDays = {}, slots = this.getSlots();
+
             _.invoke(slots, function() {
-                // Get the string representation of the day
-                // @todo Move to a separate function
-                // @todo sort
+                var date = this.getStartDate();
+                slotsPerDays[date] = slotsPerDays[date] || [];
+                slotsPerDays[date].push(this.prepareForScheduleTable());
+            }, slotsPerDays);
 
-                var date = this.getStartDateAsString();
-                slotsPerDay[date] = slotsPerDay[date] || [];
-                slotsPerDay[date].push(this.prepareForScheduleTable());
-            }, slotsPerDay);
+            // Sort by days and by time inside the days
+            var sortedKeys = _.sortBy(_.keys(slotsPerDays), function(key) {
+                return key;
+            });
 
-            return slotsPerDay;
+            var sortedSlotsPerDays = {};
+            _.each(sortedKeys, function(key) {
+                sortedSlotsPerDays[key] = _.sortBy(slotsPerDays[key], function(slot){
+                    return slot.timeSpan;
+                });
+            });
+
+            return sortedSlotsPerDays;
         },
 
         validation: {
