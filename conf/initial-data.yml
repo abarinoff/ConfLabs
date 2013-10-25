@@ -65,11 +65,34 @@ speeches:
 slots:
   - &slot1 !!models.event.slot.SpeechSlot
     start: !!timestamp 2013-09-02 09:00:00 +3
-    end: !!timestamp 2013-09-02 18:00:00 +3
+    end: !!timestamp 2013-09-02 10:00:00 +3
     stage:
       *stage1
     speech:
       *speech1
+
+  - &slot2 !!models.event.slot.OrganizationalSlot
+    title: Org Slot
+    start: !!timestamp 2013-09-02 11:00:00 +3
+    end: !!timestamp 2013-09-02 12:45:00 +3
+
+  - &slot3 !!models.event.slot.OrganizationalSlot
+    title: First Ring
+    start: !!timestamp 2013-09-01 09:00:00 +3
+    end: !!timestamp 2013-09-01 10:00:00 +3
+
+  - &slot4 !!models.event.slot.SpeechSlot
+    start: !!timestamp 2013-09-01 10:00:00 +3
+    end: !!timestamp 2013-09-01 11:00:00 +3
+    stage:
+      *stage2
+    speech:
+      *speech2
+
+  - &slot5 !!models.event.slot.OrganizationalSlot
+    title: Preparation, inventory
+    start: !!timestamp 2013-09-01 08:00:00 +3
+    end: !!timestamp 2013-09-01 09:00:00 +3
 
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount
@@ -87,6 +110,10 @@ events:
       - *stage2
     slots:
       - *slot1
+      - *slot2
+      - *slot3
+      - *slot4
+      - *slot5
     speeches:
       - *speech1
       - *speech2
