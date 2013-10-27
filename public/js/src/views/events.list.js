@@ -33,9 +33,11 @@ function (_, Backbone, EventsListItemView) {
             }
         },
 
-        itemCreated: function() {
-            console.log("item created");
-
+        itemCreated: function(eventModel) {
+            this.model.addAsFirstElement(eventModel);
+            this.activeEventItem = eventModel;
+            this.model.setActiveEventId(eventModel.id);
+            this.model.switchToActiveEventPage();
         },
 
         itemSelected: function (eventItem) {

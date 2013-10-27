@@ -506,6 +506,12 @@ function(_, Backbone, Paginator, Validation) {
             this.setActiveEventId(_.isEmpty(activeEvent) ? 0 : activeEvent.id);
         },
 
+        addAsFirstElement: function(eventModel) {
+            this.add(eventModel, {at: 0});
+            var createdEvent = this.origModels.pop();
+            this.origModels.splice(0, 0, createdEvent);
+        },
+
         handleError: function(model, error) {
             if(error.status == 401) {
                 window.location.replace('/login');

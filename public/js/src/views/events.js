@@ -9,6 +9,7 @@ function(_, Backbone, AddEventDialog, template) {
 
         initialize: function(options) {
             this.eventsCollection = options.eventsCollection;
+            this.createEventDialog = undefined;
         },
 
         el: "#content",
@@ -16,8 +17,6 @@ function(_, Backbone, AddEventDialog, template) {
         events: {
             "click #btn-create-event":  "showCreateEventDialog"
         },
-
-        createEventDialog: undefined,
 
         render: function () {
             this.$el.html(this.template());
@@ -34,8 +33,7 @@ function(_, Backbone, AddEventDialog, template) {
 
         eventCreated: function(eventModel) {
             console.log("event created, add it to collection");
-            this.eventsCollection.add(eventModel);
-            this.eventsCollection.trigger("event:created");
+            this.eventsCollection.trigger("event:created", eventModel);
         }
     });
 
