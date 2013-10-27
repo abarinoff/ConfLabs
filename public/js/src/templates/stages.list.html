@@ -1,27 +1,32 @@
-<h3 class="col-md-5">Stages</h3>
-<div class="">
-    <button id="btn-edit-stage-new" class="btn btn-primary btn-add-item" type="button">Add</button>
+<div class="row tab-header">
+    <div class="col-md-10">
+        <h3>Stages</h3>
+    </div>
+    <div class="col-md-2">
+        <button id="btn-edit-stage-new" class="btn btn-primary btn-add-item btn-block" type="button">Add</button>
+    </div></div>
 </div>
-<div class="clearfix"></div>
 
 <% _.each(stages, function(stage, index) { %>
-<div class="">
-    <div class="row">
-        <div class="col-md-2 item-row">Title:</div>
-        <div class="col-md-5 item-row"><%= stage.get('title') %></div>
+<div class="stage-item">
+    <div class="row info-field">
+        <div class="col-md-2 info-label">Title:</div>
+        <div class="col-md-5"><%= stage.get('title') %></div>
+    </div>
+    <div class="row info-field">
+        <div class="col-md-2 info-label">Capacity:</div>
+        <div class="col-md-5"><%=stage.get('capacity') %></div>
     </div>
     <div class="row">
-        <div class="col-md-2 item-row">Capacity:</div>
-        <div class="col-md-5 item-row"><%=stage.get('capacity') %></div>
-    </div>
-    <div class="row">
-        <div class="col-md-6 item-buttons">
-            <button id="btn-edit-stage-<%= stage.id %>" class="btn btn-primary" type="button">Edit</button>
-            <button id="btn-remove-stage-<%= stage.id %>" class="btn btn-primary" type="button">Remove</button>
+        <div class="col-md-2 col-md-offset-8">
+            <button id="btn-edit-stage-<%= stage.id %>" class="btn btn-primary btn-block" type="button">Edit</button>
+        </div>
+        <div class="col-md-2">
+            <button id="btn-remove-stage-<%= stage.id %>" class="btn btn-primary btn-block" type="button">Remove</button>
         </div>
     </div>
 </div>
-<hr>
+<hr/>
 <% }); %>
 
 <div id="dlg-stage" class="modal fade" role="dialog">

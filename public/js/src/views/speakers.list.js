@@ -41,7 +41,8 @@ function(_, $, Backbone, Model, SpeakerView, Validation, ValidationHandler, spea
                     model: speaker,
                     eventModel: this.eventModel
                 }).render();
-                this.$("#speakers-list").append(speakerView.$el);
+                //this.$("#speakers-list").append(speakerView.$el);
+                this.$el.append(speakerView.$el);
             }, this);
 
             $(this.DIALOG_SELECTOR).on('hidden.bs.modal', this.dialogHidden.bind(this));
