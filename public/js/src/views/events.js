@@ -7,16 +7,31 @@ define([
 function(_, Backbone, AddEventDialog, template) {
     var EventsView = Backbone.View.extend({
 
+        initialize: function(options) {
+            this.eventsCollection = options.eventsCollection;
+            this.createEventDialog = undefined;
+        },
+
         el: "#content",
         template: _.template(template),
+        events: {
+            "click #btn-create-event":  "showCreateEventDialog"
+        },
 
         render: function () {
             this.$el.html(this.template());
-            this.$("#btn-create-event").click(function() {
-                new AddEventDialog().render();
-            });
 
             return this;
+        },
+
+        showCreateEventDialog: function() {
+            var view = this;
+            view.createEventDialog = this.createEventDialog || new AddEventDialog({parent: this});
+            view.createEventDialog.render();
+        },
+
+        eventCreated: function(eventModel) {
+            this.eventsCollection.trigger("event:created", eventModel);
         }
     });
 

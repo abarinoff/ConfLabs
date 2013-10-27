@@ -24,7 +24,7 @@ function($, Backbone, EventsView, EventsListView, EventsPaginationView, Model) {
             var events = new Model.EventCollection({activeEventId: id});
             events.pager();
 
-            var eventsView = new EventsView();
+            var eventsView = new EventsView({eventsCollection: events});
             eventsView.render();
 
             var eventsListView = new EventsListView({model: events});

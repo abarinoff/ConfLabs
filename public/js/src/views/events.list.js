@@ -9,6 +9,7 @@ function (_, Backbone, EventsListItemView) {
 
         initialize: function () {
             this.model.on("reset", this.renderItems, this);
+            this.model.on("event:created", this.itemCreated, this);
         },
 
         renderItems: function () {
@@ -30,6 +31,13 @@ function (_, Backbone, EventsListItemView) {
                 this.activeEventItem = eventListItem;
                 this.activeEventItem.select();
             }
+        },
+
+        itemCreated: function(eventModel) {
+            this.model.addAsFirstElement(eventModel);
+            this.activeEventItem = eventModel;
+            this.model.setActiveEventId(eventModel.id);
+            this.model.switchToActiveEventPage();
         },
 
         itemSelected: function (eventItem) {

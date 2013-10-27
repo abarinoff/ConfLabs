@@ -217,6 +217,13 @@ function(_, Backbone, Paginator, Validation) {
 
         setSpeakerId: function(speakerId) {
             this.speakerId = speakerId;
+        },
+
+        validation: {
+            title: {
+                required: true,
+                msg     : "Required field"
+            }
         }
     });
 
@@ -349,7 +356,19 @@ function(_, Backbone, Paginator, Validation) {
                 speaker = this.getSpeaker(speaker.id),
                 speakerPos = speaker ? _.indexOf(speakers, speaker) : null;
 
+            // Look for a speeches associated with a speaker being removed
+            var speeches = [];
+            _.each(speaker.getSpeeches(), function(speechObj) {
+                var speech = this.getSpeech(speechObj.id);
+                speeches.push(speech);
+            }, this);
+
             speakers.splice(speakerPos, 1);
+
+            // Remove the speeches that has single relation to the speaker being removed
+            _.each(speeches, function(speech){
+                this.onSpeechUnset(speech);
+            }, this);
         },
 
         getSpeech: function(id) {
@@ -417,7 +436,7 @@ function(_, Backbone, Paginator, Validation) {
         validation: {
             title: {
                 required: true,
-                msg: "Required"
+                msg: "Required field"
             }
         }
     });
@@ -485,6 +504,12 @@ function(_, Backbone, Paginator, Validation) {
             var activeEvent = collection[nextActiveEventIndex];
 
             this.setActiveEventId(_.isEmpty(activeEvent) ? 0 : activeEvent.id);
+        },
+
+        addAsFirstElement: function(eventModel) {
+            this.add(eventModel, {at: 0});
+            var createdEvent = this.origModels.pop();
+            this.origModels.splice(0, 0, createdEvent);
         },
 
         handleError: function(model, error) {
