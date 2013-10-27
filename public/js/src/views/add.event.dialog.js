@@ -19,6 +19,7 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, addEventDialogTem
 
         initialize: function(options) {
             this.parentView = options.parent;
+            this.eventModel = undefined;
         },
 
         render: function() {
@@ -30,7 +31,6 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, addEventDialogTem
         },
 
         saveEvent: function() {
-            console.log("save event");
             var view = this,
                 eventTitle = view.$("#new-event-title").val();
 
@@ -46,9 +46,7 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, addEventDialogTem
 
         eventSaved: function(eventModel) {
             var view = this;
-            view.parentView.eventCreated(eventModel);
-
-            view.eventId = eventModel.id;
+            view.eventModel = eventModel;
             view.$("#dlg-add-event").modal('hide');
         },
 
@@ -57,11 +55,10 @@ function(_, $, Backbone, Model, Validation, ValidationHandler, addEventDialogTem
         },
 
         onDialogClosed: function() {
-            console.log("dialog closed, remove the dialog html");
             this.$("#dlg-add-event").remove();
-            if (this.eventId !== undefined) {
-                window.application.router.navigate("events/" + this.eventId, {trigger: false});
-                this.eventId = undefined;
+            if (!_.isUndefined(this.eventModel) ) {
+                this.parentView.eventCreated(this.eventModel);
+                this.eventModel = undefined;
             }
         }
     });

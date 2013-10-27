@@ -24,15 +24,13 @@ function(_, Backbone, AddEventDialog, template) {
             return this;
         },
 
-        showCreateEventDialog: function(event) {
-            console.log("showCreateEventDialog");
+        showCreateEventDialog: function() {
             var view = this;
             view.createEventDialog = this.createEventDialog || new AddEventDialog({parent: this});
             view.createEventDialog.render();
         },
 
         eventCreated: function(eventModel) {
-            console.log("event created, add it to collection");
             this.eventsCollection.trigger("event:created", eventModel);
         }
     });
