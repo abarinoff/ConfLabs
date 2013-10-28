@@ -1,5 +1,7 @@
 package models.event.slot;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import play.db.ebean.Model;
@@ -24,6 +26,19 @@ public abstract class Slot extends Model {
     public Slot(Date start, Date end) {
         this.start = start;
         this.end = end;
+    }
+
+    public String getStart() {
+        return dateToString(start);
+    }
+
+    public String getEnd() {
+        return dateToString(end);
+    }
+
+    private String dateToString(Date date) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+        return dateFormat.format(date);
     }
 
     @Override

@@ -170,7 +170,6 @@ function(_, Backbone, Paginator, Validation) {
             if (item !== undefined) {
                 var index = _.indexOf(speeches, item);
                 speeches.splice(index, 1);
-                //this.trigger('speech:changed');
             }
         },
 
@@ -221,15 +220,47 @@ function(_, Backbone, Paginator, Validation) {
     });
 
     Model.Slot = Backbone.Model.extend({
-        initialize: function(attributes, options) {
-        },
-
         getSpeech: function() {
             return this.get('speech');
         },
 
+        extractDate: function(datetime) {
+            return datetime.split(" ")[0];
+        },
+
+        extractTime: function(datetime) {
+            return datetime.split(" ")[1];
+        },
+
+        getStartDate: function() {
+            var startDate = this.get('start');
+            return this.extractDate(startDate);
+        },
+
+        getEndDate: function() {
+            var endDate = this.get('end');
+            return this.extractDate(endDate);
+        },
+
+        getStartTime: function() {
+            var startTime = this.get('start');
+            return this.extractTime(startTime);
+        },
+
+        getEndTime: function() {
+            var endTime = this.get('end');
+            return this.extractTime(endTime);
+        },
+
+        prepareForScheduleTable: function() {
+            var slot = this.toJSON();
+            slot.timeSpan = this.getStartTime() + " - " + this.getEndTime();
+
+            return slot;
+        },
+
         hasSpeech: function(speechModel) {
-            return this.getSpeech().id === speechModel.id;
+            return this.getSpeech() && this.getSpeech().id === speechModel.id;
         }
     });
 
@@ -471,6 +502,30 @@ function(_, Backbone, Paginator, Validation) {
             if (occurrences == 0) {
                 this.removeSpeech(speechModel);
             }
+        },
+
+        getSlotsByDay : function() {
+            var slotsPerDays = {}, slots = this.getSlots();
+
+            _.invoke(slots, function() {
+                var date = this.getStartDate();
+                slotsPerDays[date] = slotsPerDays[date] || [];
+                slotsPerDays[date].push(this.prepareForScheduleTable());
+            }, slotsPerDays);
+
+            // Sort by days and by time inside the days
+            var sortedKeys = _.sortBy(_.keys(slotsPerDays), function(key) {
+                return key;
+            });
+
+            var sortedSlotsPerDays = {};
+            _.each(sortedKeys, function(key) {
+                sortedSlotsPerDays[key] = _.sortBy(slotsPerDays[key], function(slot){
+                    return slot.timeSpan;
+                });
+            });
+
+            return sortedSlotsPerDays;
         },
 
         validation: {

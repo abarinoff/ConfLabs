@@ -6,11 +6,11 @@ define([
     "views/schedule/multi.droppable",
     "views/schedule/day",
     "views/schedule/unscheduled.items.list",
-    "views/schedule/slot.dialog",
+    "views/schedule/slot.dialog.factory",
     "require.text!templates/schedule.html"
 ],
 
-function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, UnscheduledItemsView, SlotDialog, template) {
+function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, UnscheduledItemsView, SlotDialogFactory, template) {
     var ScheduleView = Backbone.View.extend({
         DAYS_CONTAINER              : "#days-list",
         UNSCHEDULED_ITEMS_CONTAINER : "#unscheduled-items-list",
@@ -41,7 +41,10 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         },
 
         renderTemplate: function () {
-            this.$el.html(this.template());
+            var days = this.eventModel.getSlotsByDay();
+            var stages = this.eventModel.getStages();
+
+            this.$el.html(this.template({days: days, stages: stages}));
             this.renderUnscheduledItems();
         },
 
@@ -81,7 +84,7 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
                 drop: function(event, ui) {
                     var type = ui.helper.attr("type");
                     var callback = _.bind(self.createSlot, self, this, type);
-                    var dialog = new SlotDialog({callback: callback});
+                    var dialog = new SlotDialogFactory().build(type, {callback: callback});
                     dialog.render();
                 }
             });
