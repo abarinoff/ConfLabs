@@ -41,8 +41,16 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         },
 
         renderTemplate: function () {
-            var days = this.eventModel.getSlotsByDay();
+            /*var days = this.eventModel.getSlotsByDay();
+            var stages = this.eventModel.getStages();*/
+
             var stages = this.eventModel.getStages();
+            var html = '';
+            _.each(this.eventModel.getSlotsByDay(), function(slots, date) {
+                var dayView = new DayView({date: date, slots: slots, stages: stages}).render();
+                html += dayView.$el.html();
+            });
+            console.log(html);
 
             this.$el.html(this.template({days: days, stages: stages}));
             this.renderUnscheduledItems();
@@ -122,7 +130,8 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         createDay: function(date) {
             var day = new DayView({
                 stages: this.eventModel.getStages(),
-                date: date
+                date: date,
+                slots: []
             }).render();
 
             var unscheduledItems = day.$(".slot-template");
