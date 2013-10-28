@@ -258,7 +258,8 @@ function(_, Backbone, Paginator, Validation) {
 
         prepareForScheduleTable: function() {
             var slot = this.toJSON();
-            slot.timeSpan = this.getStartTime() + " - " + this.getEndTime();
+            slot.start = this.getStartTime();
+            slot.end = this.getEndTime();
             slot.type = this.getSlotType();
 
             return slot;

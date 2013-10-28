@@ -41,18 +41,8 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         },
 
         renderTemplate: function () {
-            /*var days = this.eventModel.getSlotsByDay();
-            var stages = this.eventModel.getStages();*/
-
-            var stages = this.eventModel.getStages();
-            var html = '';
-            _.each(this.eventModel.getSlotsByDay(), function(slots, date) {
-                var dayView = new DayView({date: date, slots: slots, stages: stages}).render();
-                //html += dayView.$el.html();
-            });
-            //console.log(html);
-
-            this.$el.html(this.template({days: days, stages: stages}));
+            this.$el.html(this.template());
+            this.renderDays();
             this.renderUnscheduledItems();
         },
 
@@ -61,6 +51,20 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
             var unscheduledItemsView = new UnscheduledItemsView({speeches: unscheduledItems}).render();
 
             this.$(this.UNSCHEDULED_ITEMS_CONTAINER).append(unscheduledItemsView.$el);
+        },
+
+        renderDays: function() {
+            var stages = this.eventModel.getStages();
+
+            _.each(this.eventModel.getSlotsByDay(), function(slots, date) {
+                var dayView = new DayView({
+                    date: date,
+                    slots: slots,
+                    stages: stages
+                }).render();
+
+                this.$(this.DAYS_CONTAINER).append(dayView.$el.contents());
+            }, this);
         },
 
         initializeUnscheduledItems: function () {
