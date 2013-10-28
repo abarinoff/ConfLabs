@@ -252,9 +252,15 @@ function(_, Backbone, Paginator, Validation) {
             return this.extractTime(endTime);
         },
 
+        getSlotType: function() {
+            return _.isUndefined(this.get('title')) ? "speech" : "org";
+        },
+
         prepareForScheduleTable: function() {
             var slot = this.toJSON();
-            slot.timeSpan = this.getStartTime() + " - " + this.getEndTime();
+            slot.start = this.getStartTime();
+            slot.end = this.getEndTime();
+            slot.type = this.getSlotType();
 
             return slot;
         },
