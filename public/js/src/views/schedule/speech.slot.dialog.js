@@ -1,7 +1,9 @@
 define([
     'views/schedule/slot.dialog'
-], function(SlotDialogView) {
-    var SpeechSlotDialogView = SlotDialogView.extend({});
+],
 
-    return SpeechSlotDialogView;
+function(SlotDialog) {
+    var SpeechSlotDialog = SlotDialog.extend({});
+
+    return SpeechSlotDialog;
 });
