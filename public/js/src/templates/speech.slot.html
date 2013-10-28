@@ -1,7 +1,16 @@
 <tr>
-    <td><%= data.start %> - <%= data.end%></td>
+    <td><%= data.slot.getStartTime() %> - <%= data.slot.getEndTime() %></td>
 
     <% _.each(stages, function(stage){ %>
-        <td class="unused-schedule-table-cell"></td>
+        <% if (data.slot.getStage() !== undefined && stage.getTitle() === data.slot.getStage().title) { %>
+            <td class="unused-schedule-table-cell">
+                <span class="ui-draggable scheduled-list-item">
+                    <h4><%= data.slot.getSpeech().title %></h4>
+                    <p></p>
+                </span>
+            </td>
+        <% } else { %>
+            <td class="unused-schedule-table-cell"></td>
+        <% } %>
     <% }); %>
 </tr>

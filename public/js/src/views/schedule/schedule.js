@@ -33,6 +33,7 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
 
             var unusedScheduleCells = this.$(".unused-schedule-table-cell");
             this.initializeUnusedScheduleCells(unusedScheduleCells);
+            this.initializeScheduledItems();
 
             this.initializeUnscheduledItemsList();
             this.initializeScheduleTable(this.$(".schedule-table"), this);
@@ -70,6 +71,11 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
         initializeUnscheduledItems: function () {
             var unscheduledItems = this.$(".unscheduled-list-item");
             new Draggable(unscheduledItems, true);
+        },
+
+        initializeScheduledItems: function() {
+            var $cells = this.$(".scheduled-list-item");
+            new Draggable($cells, true);
         },
 
         initializeSlotTemplateItems: function() {

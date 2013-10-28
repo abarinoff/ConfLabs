@@ -1,4 +1,4 @@
 <tr>
-    <td><%= data.start %> - <%= data.end %></td>
-    <td colspan="<%= stages.length %>"><%= data.title %></td>
+    <td><%= data.slot.getStartTime() %> - <%= data.slot.getEndTime() %></td>
+    <td colspan="<%= stages.length %>"><%= data.slot.getTitle() %></td>
 </tr>

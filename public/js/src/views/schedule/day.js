@@ -32,7 +32,7 @@ function(_, Backbone, Model, SlotViewFactory, dayTemplate) {
             // instead of passing an array to append to or returning and array of jquery objects (<tr>s)
 
             _.each(this.slots, function(slot) {
-                var slotView = this.slotFactory.build(slot.type, this.stages, slot);
+                var slotView = this.slotFactory.build(slot.getSlotType(), this.stages, {slot: slot});
                 slotView.render();
                 container.append(slotView.$el);
             }, this);
