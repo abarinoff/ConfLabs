@@ -16,7 +16,9 @@ function(_, $, jqueryUi, Draggable) {
             tolerance: "pointer",
 
             accept: function(source) {
-                return !self.isOccupied($(this)) && !$(source).hasClass("slot-template");
+                return !self.isOccupied($(this))
+                    && !$(source).hasClass("slot-template")
+                    && !($(source).prop("tagName") === "TR");
             },
 
             drop: function(event, ui) {

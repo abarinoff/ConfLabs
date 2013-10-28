@@ -1,12 +1,20 @@
 define([
     "underscore",
     "backbone",
-    "views/schedule/slot.dialog.factory"
+    "views/schedule/slot.dialog.factory",
+    "require.text!templates/slot.html"
 ],
 
-function(_, Backbone, SlotDialogFactory) {
+function(_, Backbone, SlotDialogFactory, template) {
 
     var SlotView = Backbone.View.extend({
+
+        template: _.template(template),
+
+        events: {
+            "dblclick": "edit",
+            "click button[name='btn-remove-slot']": "removeSlot"
+        },
 
         initialize: function(stages, data) {
             this.stages = stages;
@@ -15,7 +23,12 @@ function(_, Backbone, SlotDialogFactory) {
 
         render: function() {
             this.$el = this.renderTemplate();
-            this.$el.on("dblclick", _.bind(this.edit, this));
+
+            var customEl = this.renderCustomTemplate(this.stages, this.data);
+            this.$el.append(customEl);
+
+            this.delegateEvents();
+
             return this;
         },
 
@@ -27,8 +40,11 @@ function(_, Backbone, SlotDialogFactory) {
         },
 
         renderTemplate: function() {
-            var template = this.getTemplate();
-            return $(template({stages: this.stages, data: this.data}));
+            return $(this.template({stages: this.stages, data: this.data}));
+        },
+
+        renderCustomTemplate: function(stages, data) {
+            throw "Abstract method call";
         },
 
         edit: function() {
@@ -42,6 +58,11 @@ function(_, Backbone, SlotDialogFactory) {
         update: function(data) {
             this.data = data;
             this.renderOnUpdate();
+        },
+
+        removeSlot: function() {
+            this.delegateEvents();
+            this.remove();
         },
 
         getType: function() {

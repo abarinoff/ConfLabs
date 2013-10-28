@@ -37,6 +37,19 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
             this.initializeUnscheduledItemsList();
             this.initializeScheduleTable(this.$(".schedule-table"), this);
 
+            this.$(".schedule-table tbody").sortable({
+                helper: function(event, row) {
+                    var $originals = row.children();
+                    var $helper = row.clone();
+
+                    $helper.children().each(function(index) {
+                        $(this).width($originals.eq(index).width());
+                    });
+
+                    return $helper;
+                }
+            });
+
             return this;
         },
 

@@ -9,14 +9,14 @@ function(_, SlotView, template) {
     var SpeechSlotView = SlotView.extend({
         TYPE: "speech",
 
-        template: _.template(template),
+        customTemplate: _.template(template),
 
         getType: function() {
             return this.TYPE;
         },
 
-        getTemplate: function() {
-            return this.template;
+        renderCustomTemplate: function(stages, data) {
+            return $(this.customTemplate({stages: stages, data: data}));
         }
     });
 

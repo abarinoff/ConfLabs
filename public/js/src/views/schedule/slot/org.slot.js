@@ -9,14 +9,14 @@ function(_, SlotView, template) {
     var OrgSlotView = SlotView.extend({
         TYPE: "org",
 
-        template: _.template(template),
+        customTemplate: _.template(template),
 
         getType: function() {
             return this.TYPE;
         },
 
-        getTemplate: function() {
-            return this.template;
+        renderCustomTemplate: function(stages, data) {
+            return $(this.customTemplate({stages: stages, data: data}));
         }
     });
 
