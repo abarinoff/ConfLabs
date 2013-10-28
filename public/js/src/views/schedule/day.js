@@ -24,13 +24,15 @@ function(_, Backbone, Model, SlotFactory, dayTemplate) {
                 date    : this.date
             }));*/
 
+            this.renderSlots();
+
             return this;
         },
 
         renderSlots: function() {
             var slotsHtml = '';
             _.each(this.slots, function(slot) {
-
+                slotView = this.slotFactory.build(slot.type, this.stages.length);
             });
         }
     });

@@ -48,9 +48,9 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
             var html = '';
             _.each(this.eventModel.getSlotsByDay(), function(slots, date) {
                 var dayView = new DayView({date: date, slots: slots, stages: stages}).render();
-                html += dayView.$el.html();
+                //html += dayView.$el.html();
             });
-            console.log(html);
+            //console.log(html);
 
             this.$el.html(this.template({days: days, stages: stages}));
             this.renderUnscheduledItems();
