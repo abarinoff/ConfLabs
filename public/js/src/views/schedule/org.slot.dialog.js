@@ -3,15 +3,20 @@ define([
     'views/schedule/slot.dialog',
     'require.text!templates/org.slot.dialog.html'
 ],
-function(_, SlotDialogView, dialogTemplate) {
-    var OrgSlotDialogView = SlotDialogView.extend({
+function(_, SlotDialog, template) {
+    var OrgSlotDialog = SlotDialog.extend({
 
-        slotDialogTemplate: _.template(dialogTemplate),
+        customTemplate: _.template(template),
 
-        render: function() {
-            SlotDialogView.prototype.render.call(this);
+        renderCustomTemplate: function() {
+            this.$("#slot-child-fields").append(this.customTemplate());
+        },
 
-            this.$("#slot-child-fields").append(this.slotDialogTemplate());
+        renderData: function() {
+            SlotDialog.prototype.renderData.call(this);
+
+            var title = _.isUndefined(this.data) ? "" : this.data.title;
+            $("#slot-title").val(title);
         },
 
         // Override
@@ -27,5 +32,5 @@ function(_, SlotDialogView, dialogTemplate) {
         }
     });
 
-    return OrgSlotDialogView;
+    return OrgSlotDialog;
 });
