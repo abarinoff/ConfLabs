@@ -5,12 +5,12 @@ define([
     "views/stages.list",
     "views/speakers.list",
     "views/schedule/schedule",
-    "views/schedule/slot/slot.builder",
+    "views/schedule/slot/slot.factory",
     "views/location",
     "require.text!templates/tabs.html"
 ],
 
-function($, Backbone, DetailsView, StagesListView, SpeakersListView, ScheduleView, SlotBuilder, LocationView, tabsTemplate) {
+function($, Backbone, DetailsView, StagesListView, SpeakersListView, ScheduleView, SlotViewFactory, LocationView, tabsTemplate) {
     var EventView = Backbone.View.extend({
         template: _.template(tabsTemplate),
 
@@ -26,7 +26,7 @@ function($, Backbone, DetailsView, StagesListView, SpeakersListView, ScheduleVie
             this.detailsView = new DetailsView({model: this.model});
             this.stagesListView = new StagesListView({eventModel: this.model});
             this.speakersListView = new SpeakersListView({eventModel: this.model});
-            this.scheduleView = new ScheduleView({eventModel: this.model, slotBuilder: new SlotBuilder()});
+            this.scheduleView = new ScheduleView({eventModel: this.model, slotBuilder: new SlotViewFactory()});
             this.locationView = new LocationView({eventModel: this.model});
         },
 

@@ -5,21 +5,7 @@ define([
 ],
 
 function(_, OrgSlotView, SpeechSlotView) {
-/*
-    var SlotBuilder = _.extend({}, {
-        supportedSlots: {
-            org: OrgSlotView,
-            speech: SpeechSlotView
-        },
-
-        build: function(type, data) {
-            var slotClass = this.supportedSlots[type];
-            return new slotClass(data);
-        }
-    });
-*/
-
-    var SlotViewBuilder = function() {
+    var SlotViewFactory = function() {
         this.supportedSlots = {
             org: OrgSlotView,
             speech: SpeechSlotView
@@ -31,5 +17,5 @@ function(_, OrgSlotView, SpeechSlotView) {
         };
     };
 
-    return SlotViewBuilder;
+    return SlotViewFactory;
 });
