@@ -220,6 +220,10 @@ function(_, Backbone, Paginator, Validation) {
     });
 
     Model.Slot = Backbone.Model.extend({
+        getTitle: function() {
+            return this.get('title');
+        },
+
         getSpeech: function() {
             return this.get('speech');
         },
@@ -256,14 +260,18 @@ function(_, Backbone, Paginator, Validation) {
             return _.isUndefined(this.get('title')) ? "speech" : "org";
         },
 
-        prepareForScheduleTable: function() {
+        getStage: function() {
+            return this.get("stage");
+        },
+
+        /*prepareForScheduleTable: function() {
             var slot = this.toJSON();
             slot.start = this.getStartTime();
             slot.end = this.getEndTime();
             slot.type = this.getSlotType();
 
             return slot;
-        },
+        },*/
 
         hasSpeech: function(speechModel) {
             return this.getSpeech() && this.getSpeech().id === speechModel.id;
@@ -516,7 +524,7 @@ function(_, Backbone, Paginator, Validation) {
             _.invoke(slots, function() {
                 var date = this.getStartDate();
                 slotsPerDays[date] = slotsPerDays[date] || [];
-                slotsPerDays[date].push(this.prepareForScheduleTable());
+                slotsPerDays[date].push(this);
             }, slotsPerDays);
 
             // Sort by days and by time inside the days
@@ -526,8 +534,8 @@ function(_, Backbone, Paginator, Validation) {
 
             var sortedSlotsPerDays = {};
             _.each(sortedKeys, function(key) {
-                sortedSlotsPerDays[key] = _.sortBy(slotsPerDays[key], function(slot){
-                    return slot.timeSpan;
+                sortedSlotsPerDays[key] = _.sortBy(slotsPerDays[key], function(slot) {
+                    return slot.getStartTime();
                 });
             });
 
