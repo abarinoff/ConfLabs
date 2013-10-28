@@ -14,11 +14,14 @@ function(_, $, Backbone, template) {
         template: _.template(template),
 
         initialize: function(options) {
+            this.data = options.data;
             this.callback = options.callback;
         },
 
         render: function() {
             this.renderTemplate();
+            this.renderCustomTemplate();
+            this.renderData();
             this.attachEventHandlers();
             this.showDialog();
         },
@@ -39,21 +42,27 @@ function(_, $, Backbone, template) {
             this.$el.appendTo(this.PARENT_SELECTOR);
         },
 
+        renderCustomTemplate: function() {
+        },
+
+        renderData: function() {
+            var start = _.isUndefined(this.data) ? "9:00" : this.data.start;
+            this.initializeTimePicker("#slot-start-time", start);
+
+            var end = _.isUndefined(this.data) ? "10:00" : this.data.end;
+            this.initializeTimePicker("#slot-end-time", end);
+        },
+
+        initializeTimePicker: function(selector, defaultTime) {
+            $(selector).timepicker({
+                defaultTime: defaultTime,
+                minuteStep: 5,
+                showInputs: false,
+                showMeridian: false
+            });
+        },
+
         attachEventHandlers: function () {
-            $('#slot-start-time').timepicker({
-                defaultTime: '9:00',
-                minuteStep: 5,
-                showInputs: false,
-                showMeridian: false
-            });
-
-            $('#slot-end-time').timepicker({
-                defaultTime: '10:00',
-                minuteStep: 5,
-                showInputs: false,
-                showMeridian: false
-            });
-
             this.$el.one('hidden.bs.modal', _.bind(this.remove, this));
             this.$(this.CONFIRM_BUTTON_SELECTOR).click(_.bind(this.confirm, this));
         },
