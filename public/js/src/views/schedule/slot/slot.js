@@ -21,8 +21,8 @@ function(_, Backbone, SlotDialogFactory, template) {
             this.data = data;
         },
 
-        render: function() {
-            this.$el = this.renderTemplate();
+        render: function($el) {
+            this.$el = $el;
 
             var customEl = this.renderCustomTemplate(this.stages, this.data);
             this.$el.append(customEl);

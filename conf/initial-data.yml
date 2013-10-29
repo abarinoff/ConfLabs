@@ -114,6 +114,7 @@ events:
       - *slot3
       - *slot4
       - *slot5
+      - *slot6
     speeches:
       - *speech1
       - *speech2

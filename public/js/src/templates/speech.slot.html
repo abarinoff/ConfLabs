@@ -1,12 +1,3 @@
-<% _.each(stages, function(stage){ %>
-    <% if (data.slot.getStage() !== undefined && stage.getTitle() === data.slot.getStage().title) { %>
-        <td class="unused-schedule-table-cell">
-            <span class="ui-draggable scheduled-list-item">
-                <h4><%= data.slot.getSpeech().title %></h4>
-                <p></p>
-            </span>
-        </td>
-    <% } else { %>
-        <td class="unused-schedule-table-cell"></td>
-    <% } %>
-<% }); %>
+<td>
+    <h4>Temp</h4>
+</td>

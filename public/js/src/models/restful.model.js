@@ -256,6 +256,10 @@ function(_, Backbone, Paginator, Validation) {
             return this.extractTime(endTime);
         },
 
+        getTimeSpan: function() {
+            return this.getStartTime() + " - " + this.getEndTime();
+        },
+
         getSlotType: function() {
             return _.isUndefined(this.get('title')) ? "speech" : "org";
         },
@@ -263,15 +267,6 @@ function(_, Backbone, Paginator, Validation) {
         getStage: function() {
             return this.get("stage");
         },
-
-        /*prepareForScheduleTable: function() {
-            var slot = this.toJSON();
-            slot.start = this.getStartTime();
-            slot.end = this.getEndTime();
-            slot.type = this.getSlotType();
-
-            return slot;
-        },*/
 
         hasSpeech: function(speechModel) {
             return this.getSpeech() && this.getSpeech().id === speechModel.id;
