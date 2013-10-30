@@ -21,9 +21,9 @@ define([
         template: _.template(speechesTemplate),
 
         events : {
-            "click button[id^='edit-speech-']"          : "editSpeech",
-            "click button[id^='remove-speech-']"        : "removeSpeech",
-            "click button#save-speech"                  : "saveSpeech"
+            "click a[id^='edit-speech-']"          : "editSpeech",
+            "click a[id^='remove-speech-']"        : "removeSpeech",
+            "click button#save-speech"             : "saveSpeech"
         },
 
         initialize: function(options) {
@@ -99,17 +99,19 @@ define([
 
         editSpeech: function(event) {
             var view = this,
-                speechId = this.extractSpeechId(event.target);
+                speechId = this.extractSpeechId(event.currentTarget);
 
             var speech = _.findWhere(this.speeches, {id: parseInt(speechId)});
             this.showSpeechModal(true, {
                 id: speechId,
                 title: speech.getTitle()
             });
+
+            return false;
         },
 
         removeSpeech: function(event) {
-            var speechId = this.extractSpeechId(event.target),
+            var speechId = this.extractSpeechId(event.currentTarget),
                 speech = this.getSpeechById(speechId);
 
             speech.setSpeakerId(this.speaker.id);
@@ -117,6 +119,8 @@ define([
                 success: this.speechRemoved.bind(this),
                 error: this.speechRemoveError.bind(this)
             });
+
+            return false;
         },
 
         speechRemoved: function(speechModel) {

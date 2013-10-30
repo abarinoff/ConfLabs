@@ -1,20 +1,29 @@
-<div class="row">
-    <div class="col-md-2 item-row">Name:</div>
+<div class="row info-field">
+    <div class="col-md-2 info-label">Name:</div>
     <div class="col-md-5 item-row"><%= speaker.getName() %></div>
 </div>
-<div class="row">
-    <div class="col-md-2 item-row">Position:</div>
-    <div class="col-md-5 item-row"><%= speaker.getPosition() %></div>
+<div class="row info-field">
+    <div class="col-md-2 info-label">Position:</div>
+    <div class="col-md-5"><%= speaker.getPosition() %></div>
 </div>
-<div class="row">
-    <div class="col-md-2 item-row">Description:</div>
-    <div class="col-md-5 item-row"><%= speaker.getDescription() %></div>
+<div class="row info-field">
+    <div class="col-md-2 info-label">Description:</div>
+    <div class="col-md-5"><%= speaker.getDescription() %></div>
 </div>
-<div class="speeches-list row"></div>
-<div class="row">
-    <div class="col-md-6 item-buttons">
-        <button id="btn-edit-speaker-<%= speaker.id %>" class="btn btn-primary" type="button">Edit</button>
-        <button id="btn-remove-speaker-<%= speaker.id %>" class="btn btn-primary" type="button">Remove</button>
-        <button id="btn-add-speech-<%= speaker.id %>" class="btn btn-primary" type="button">Add Speech</button>
+<div class="row info-field">
+    <div class="col-md-2 info-label">Speeches:</div>
+    <div class="col-md-2 col-md-offset-8">
+        <button id="btn-add-speech-<%= speaker.id %>" class="btn btn-primary btn-block btn-sm" type="button">Add Speech</button>
     </div>
 </div>
+<div class="row info-field speeches-list"></div>
+
+<div class="row">
+    <div class="col-md-2 col-md-offset-8">
+        <button id="btn-edit-speaker-<%= speaker.id %>" class="btn btn-primary btn-block" type="button">Edit</button>
+    </div>
+    <div class="col-md-2">
+        <button id="btn-remove-speaker-<%= speaker.id %>" class="btn btn-primary btn-block" type="button">Remove</button>
+    </div>
+</div>
+<hr/>
