@@ -45,7 +45,7 @@ define([
                         }
                     }, this);
                     if (empty) {
-                        views.push($("<td></td>"));
+                        views.push($("<td class='unused-schedule-table-cell'></td>"));
                     }
                 }, this);
             }

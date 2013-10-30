@@ -1,4 +1,8 @@
-<% var speech = data.slot !== undefined && data.slot.getSpeech() !== undefined ? data.slot.getSpeech().title : "" %>
-<td >
-    <h4><%= speech %></h4>
+<% if (data.slot !== undefined && data.slot.getSpeech() !== undefined) { %>
+<td class="unused-schedule-table-cell">
+    <span class="ui-draggable scheduled-list-item">
+        <h4><%= data.slot.getSpeech().title %></h4>
+        <p></p>
+    </span>
 </td>
+<% } %>
