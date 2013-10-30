@@ -12,7 +12,9 @@ function(_, Backbone, Model, SlotViewFactory, SlotsRow, template) {
         template: _.template(template),
 
         initialize: function(options) {
-            this.stages = options.stages;
+            this.eventModel = options.eventModel;
+            //this.stages = options.stages;
+            this.stages = this.eventModel.getStages();
             this.date = options.date;
             this.slotsByTime = this.sortByTime(options.slots);
             this.slotFactory = new SlotViewFactory();
@@ -20,7 +22,7 @@ function(_, Backbone, Model, SlotViewFactory, SlotsRow, template) {
 
         render: function() {
             this.renderTable();
-            this.renderSlots(this.$('tbody'));
+            this.renderSlotRows(this.$('tbody'));
 
             return this;
         },
@@ -32,11 +34,12 @@ function(_, Backbone, Model, SlotViewFactory, SlotsRow, template) {
             }));
         },
 
-        renderSlots: function(container) {
+        renderSlotRows: function(container) {
             _.each(this.slotsByTime, function(slotsPerTimeSpan, key) {
                 var slotsRow = new SlotsRow({
                     time    : key,
-                    stages  : this.stages,
+                    //stages  : this.stages,
+                    eventModel: this.eventModel,
                     slots   : slotsPerTimeSpan
                 }).render();
 

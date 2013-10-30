@@ -8,7 +8,8 @@ define([
 
     var SlotsRow = Backbone.View.extend({
         initialize: function(options) {
-            this.stages = options.stages;
+            //this.stages = options.stages;
+            this.eventModel = options.eventModel;
             this.slots = options.slots;
             this.time = options.time;
             this.slotFactory = new SlotFactory();
@@ -25,18 +26,18 @@ define([
             this.$el = $(this.template({
                 time: this.time
             }));
-            this.$el.append(this.renderSlots());
+            this.$el.append(this.renderSlotRows());
 
             this.delegateEvents();
 
             return this;
         },
 
-        renderSlots: function() {
+        renderSlotRows: function() {
             var slotViews = this.instantiateSlotViews();
             var views = [];
             if (this.slots.length > 0 && slotViews[0].TYPE === "speech") {
-                _.each(this.stages, function(stage) {
+                _.each(this.eventModel.getStages(), function(stage) {
                     var empty = true;
                     _.each(this.slots, function(slot, slotIndex){
                         if (slot.getStage() !== undefined && stage.getId() === slot.getStage().id) {
@@ -97,8 +98,13 @@ define([
 
         instantiateSlotViews: function() {
             var slotViews = [];
-            _.each(this.slots, function(slot){
-                var view = this.slotFactory.buildView(slot.getSlotType(), this.stages, {slot: slot}).render(this.$el);
+            _.each(this.slots, function(slot) {
+                var slotData = {
+                    slot: slot,
+                    speakers: this.eventModel.getSpeakersForSlot(slot)
+                };
+
+                var view = this.slotFactory.buildView(slot.getSlotType(), this.eventModel.getStages(), slotData).render(this.$el);
                 slotViews.push(view);
             }, this);
 

@@ -73,9 +73,10 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
 
             _.each(this.eventModel.getSlotsByDay(), function(slots, date) {
                 var dayView = new DayView({
+                    eventModel: this.eventModel,
                     date: date,
-                    slots: slots,
-                    stages: stages
+                    slots: slots
+              //      stages: stages
                 }).render();
 
                 this.$(this.DAYS_CONTAINER).append(dayView.$el.contents());
@@ -153,7 +154,8 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
 
         createDay: function(date) {
             var day = new DayView({
-                stages: this.eventModel.getStages(),
+                //stages: this.eventModel.getStages(),
+                eventModel: this.eventModel,
                 date: date,
                 slots: []
             }).render();
@@ -171,7 +173,8 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
             var slot = this.slotBuilder.buildModel(type, stages, data);
 
             var slotsRow = new SlotsRow({
-                stages  : stages,
+                //stages  : stages,
+                eventModel: this.eventModel,
                 slots   : [slot],
                 time    : data.start + " - " + data.end
             });
@@ -180,7 +183,7 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
             renderedSlotsRow.$el.appendTo($(target).find("tbody"));
 
             var unusedScheduleCells = $(renderedSlotsRow.$el).find(".unused-schedule-table-cell");
-            console.log("unusedScheduleCells length: ", $(renderedSlotsRow.$el).find(".unused-schedule-table-cell").length);
+            //console.log("unusedScheduleCells length: ", $(renderedSlotsRow.$el).find(".unused-schedule-table-cell").length);
             this.initializeUnusedScheduleCells(unusedScheduleCells);
         }
     });

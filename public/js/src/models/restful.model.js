@@ -443,6 +443,25 @@ function(_, Backbone, Paginator, Validation) {
             return speeches;
         },
 
+        getSpeakersForSlot: function(slotModel) {
+            var speech = slotModel.getSpeech();
+            var speakers = [];
+            // @todo Check for empty speech
+            if (!_.isUndefined(speech)) {
+                var speechId = speech.id;
+
+                _.each(this.getSpeakers(), function(speaker) {
+                    var speeches = speaker.getSpeeches();
+                    _.each(speeches, function(speech) {
+                        if (speech.id === speechId) {
+                            speakers.push();
+                        }
+                    });
+                });
+            }
+
+        },
+
         getAvailableSpeeches: function(speakerId) {
             return _.difference(this.getSpeeches(), this.getSpeechesForSpeaker(speakerId));
         },
