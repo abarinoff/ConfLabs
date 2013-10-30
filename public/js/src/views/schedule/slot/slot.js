@@ -22,33 +22,8 @@ function(_, Backbone, SlotDialogFactory, template) {
             return this;
         },
 
-        renderOnUpdate: function() {
-            var $old = this.$el;
-
-            this.render();
-            $old.replaceWith(this.$el);
-        },
-
         renderCustomTemplate: function(stages, data) {
             throw "Abstract method call";
-        },
-
-        edit: function() {
-            var type = this.getType();
-            var callback = _.bind(this.update, this);
-
-            var dialog = new SlotDialogFactory().build(type, {data: this.data, callback: callback});
-            dialog.render();
-        },
-
-        update: function(data) {
-            this.data = data;
-            this.renderOnUpdate();
-        },
-
-        removeSlot: function() {
-            this.delegateEvents();
-            this.remove();
         },
 
         getType: function() {

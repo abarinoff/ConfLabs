@@ -168,14 +168,19 @@ function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, Unscheduled
 
         createSlot: function(target, type, data) {
             var stages = this.eventModel.getStages();
-            var slot = this.slotBuilder.build(type, stages, data);
+            var slot = this.slotBuilder.buildModel(type, stages, data);
 
-            var targetBody = $(target).find("tbody");
-            var renderedSlot = slot.render();
+            var slotsRow = new SlotsRow({
+                stages  : stages,
+                slots   : [slot],
+                time    : data.start + " - " + data.end
+            });
 
-            renderedSlot.$el.appendTo($(target).find("tbody"));
+            var renderedSlotsRow = slotsRow.render();
+            renderedSlotsRow.$el.appendTo($(target).find("tbody"));
 
-            var unusedScheduleCells = $(renderedSlot.$el).find(".unused-schedule-table-cell");
+            var unusedScheduleCells = $(renderedSlotsRow.$el).find(".unused-schedule-table-cell");
+            console.log("unusedScheduleCells length: ", $(renderedSlotsRow.$el).find(".unused-schedule-table-cell").length);
             this.initializeUnusedScheduleCells(unusedScheduleCells);
         }
     });

@@ -224,6 +224,10 @@ function(_, Backbone, Paginator, Validation) {
             return this.get('title');
         },
 
+        setTitle: function(title) {
+            this.set('title', title);
+        },
+
         getSpeech: function() {
             return this.get('speech');
         },
@@ -232,8 +236,11 @@ function(_, Backbone, Paginator, Validation) {
             return datetime.split(" ")[0];
         },
 
+        // @todo Workaround to get time, explanation below
+        // So far, upon creating a new slot (the type does not matter) we DO NOT set the date part of the the slot but only the time part
+        // and this causes problems when we extract time (to populate edit dialog with) while editing the slot
         extractTime: function(datetime) {
-            return datetime.split(" ")[1];
+            return datetime.indexOf(" ") === -1 ? datetime : datetime.split(" ")[1];
         },
 
         getStartDate: function() {
@@ -254,6 +261,14 @@ function(_, Backbone, Paginator, Validation) {
         getEndTime: function() {
             var endTime = this.get('end');
             return this.extractTime(endTime);
+        },
+
+        setStartTime: function(startTime) {
+            this.set('start', startTime);
+        },
+
+        setEndTime: function(endTime) {
+            this.set('end', endTime);
         },
 
         getTimeSpan: function() {

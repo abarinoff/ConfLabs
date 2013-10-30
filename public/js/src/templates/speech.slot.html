@@ -1,3 +1,4 @@
-<td>
-    <h4><%= data.slot !== undefined ? data.slot.getSpeech().title : "" %></h4>
+<% var speech = data.slot !== undefined && data.slot.getSpeech() !== undefined ? data.slot.getSpeech().title : "" %>
+<td >
+    <h4><%= speech %></h4>
 </td>
