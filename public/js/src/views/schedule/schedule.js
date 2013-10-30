@@ -7,10 +7,11 @@ define([
     "views/schedule/day",
     "views/schedule/unscheduled.items.list",
     "views/schedule/slot.dialog.factory",
+    "views/schedule/slot/slots.row",
     "require.text!templates/schedule.html"
 ],
 
-function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, UnscheduledItemsView, SlotDialogFactory, template) {
+function(_, Backbone, Draggable, Droppable, MultiDroppable, DayView, UnscheduledItemsView, SlotDialogFactory, SlotsRow, template) {
     var ScheduleView = Backbone.View.extend({
         DAYS_CONTAINER              : "#days-list",
         UNSCHEDULED_ITEMS_CONTAINER : "#unscheduled-items-list",

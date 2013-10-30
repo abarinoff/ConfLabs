@@ -11,23 +11,13 @@ function(_, Backbone, SlotDialogFactory, template) {
 
         template: _.template(template),
 
-        events: {
-            "dblclick": "edit",
-            "click button[name='btn-remove-slot']": "removeSlot"
-        },
-
         initialize: function(stages, data) {
             this.stages = stages;
             this.data = data;
         },
 
-        render: function($el) {
-            this.$el = $el;
-
-            var customEl = this.renderCustomTemplate(this.stages, this.data);
-            this.$el.append(customEl);
-
-            this.delegateEvents();
+        render: function() {
+            this.$el = this.renderCustomTemplate(this.stages, this.data);
 
             return this;
         },
@@ -37,10 +27,6 @@ function(_, Backbone, SlotDialogFactory, template) {
 
             this.render();
             $old.replaceWith(this.$el);
-        },
-
-        renderTemplate: function() {
-            return $(this.template({stages: this.stages, data: this.data}));
         },
 
         renderCustomTemplate: function(stages, data) {

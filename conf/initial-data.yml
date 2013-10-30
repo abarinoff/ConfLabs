@@ -94,6 +94,14 @@ slots:
     start: !!timestamp 2013-09-01 08:00:00 +3
     end: !!timestamp 2013-09-01 09:00:00 +3
 
+  - &slot6 !!models.event.slot.SpeechSlot
+    start: !!timestamp 2013-09-01 10:00:00 +3
+    end: !!timestamp 2013-09-01 11:00:00 +3
+    stage:
+      *stage1
+    speech:
+      *speech1
+
 linkedAccounts:
   - &fooAccount !!models.authentication.LinkedAccount
     id: 1

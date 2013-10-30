@@ -15,11 +15,18 @@ define([
 
         template: _.template(template),
 
+        events: {
+            "dblclick": "edit",
+            "click button[name='btn-remove-slot']": "removeSlot"
+        },
+
         render: function() {
             this.$el = $(this.template({
                 time: this.time
             }));
             this.$el.append(this.renderSlots());
+
+            this.delegateEvents();
 
             return this;
         },
@@ -32,15 +39,20 @@ define([
                 _.each(this.stages, function(stage) {
                     var empty = true;
                     _.each(this.slots, function(slot, slotIndex){
-                        if (stage.getTitle() === slot.getStage().title) {
+                        if (stage.getId() === slot.getStage().id) {
                             empty = false;
                             views.push(slotViews[slotIndex].$el);
                         }
                     }, this);
-                    if (!empty) {
+                    if (empty) {
                         views.push($("<td></td>"));
                     }
                 }, this);
+            }
+            else {
+                _.each(slotViews, function(slotView) {
+                    views.push(slotView.$el);
+                });
             }
 
             return views;
