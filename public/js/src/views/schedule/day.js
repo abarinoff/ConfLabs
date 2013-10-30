@@ -22,7 +22,7 @@ function(_, Backbone, Model, SlotViewFactory, SlotsRow, template) {
 
         render: function() {
             this.renderTable();
-            this.renderSlotRows(this.$('tbody'));
+            this.renderSlotsRow(this.$('tbody'));
 
             return this;
         },
@@ -34,7 +34,7 @@ function(_, Backbone, Model, SlotViewFactory, SlotsRow, template) {
             }));
         },
 
-        renderSlotRows: function(container) {
+        renderSlotsRow: function(container) {
             _.each(this.slotsByTime, function(slotsPerTimeSpan, key) {
                 var slotsRow = new SlotsRow({
                     time    : key,

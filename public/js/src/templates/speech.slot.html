@@ -2,7 +2,11 @@
 <td class="unused-schedule-table-cell">
     <span class="ui-draggable scheduled-list-item">
         <h4><%= data.slot.getSpeech().title %></h4>
-        <p></p>
+        <% if(data.speakers !== undefined) { %>
+            <% _.each(data.speakers, function(speaker) { %>
+                <p><%= speaker.getName() %></p>
+            <% }); %>
+        <% } %>
     </span>
 </td>
 <% } %>

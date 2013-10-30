@@ -26,26 +26,27 @@ define([
             this.$el = $(this.template({
                 time: this.time
             }));
-            this.$el.append(this.renderSlotRows());
+            this.$el.append(this.renderSlotsRow());
 
             this.delegateEvents();
 
             return this;
         },
 
-        renderSlotRows: function() {
+        renderSlotsRow: function() {
             var slotViews = this.instantiateSlotViews();
             var views = [];
             if (this.slots.length > 0 && slotViews[0].TYPE === "speech") {
                 _.each(this.eventModel.getStages(), function(stage) {
-                    var empty = true;
-                    _.each(this.slots, function(slot, slotIndex){
+                    var slot = _.find(this.slots, function(slot, slotIndex) {
                         if (slot.getStage() !== undefined && stage.getId() === slot.getStage().id) {
-                            empty = false;
                             views.push(slotViews[slotIndex].$el);
+                            return true;
                         }
-                    }, this);
-                    if (empty) {
+                        return false;
+                    });
+
+                    if (_.isUndefined(slot)) {
                         views.push($("<td class='unused-schedule-table-cell'></td>"));
                     }
                 }, this);
@@ -97,18 +98,13 @@ define([
         },
 
         instantiateSlotViews: function() {
-            var slotViews = [];
-            _.each(this.slots, function(slot) {
+            return _.map(this.slots, function(slot) {
                 var slotData = {
                     slot: slot,
                     speakers: this.eventModel.getSpeakersForSlot(slot)
                 };
-
-                var view = this.slotFactory.buildView(slot.getSlotType(), this.eventModel.getStages(), slotData).render(this.$el);
-                slotViews.push(view);
+                return this.slotFactory.buildView(slot.getSlotType(), this.eventModel.getStages(), slotData).render(this.$el);
             }, this);
-
-            return slotViews;
         }
     });
 

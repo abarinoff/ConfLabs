@@ -452,14 +452,16 @@ function(_, Backbone, Paginator, Validation) {
 
                 _.each(this.getSpeakers(), function(speaker) {
                     var speeches = speaker.getSpeeches();
-                    _.each(speeches, function(speech) {
+                    _.find(speeches, function(speech) {
                         if (speech.id === speechId) {
-                            speakers.push();
+                            speakers.push(speaker);
+                            return true;
                         }
+                        return false;
                     });
                 });
             }
-
+            return speakers;
         },
 
         getAvailableSpeeches: function(speakerId) {
